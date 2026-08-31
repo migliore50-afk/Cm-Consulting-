@@ -1,6 +1,6 @@
 /**
  * CM Consulting — API di amministrazione protetta
- * Autenticazione: Supabase Auth (MFA rimosso automaticamente al login per accesso immediato)
+ * Autenticazione: Supabase Auth (MFA rimosso automaticamente e sessione aal2 per accesso immediato)
  * Sessione: token casuale opaco nel cookie HttpOnly/Secure/SameSite=Strict, stato in Upstash Redis
  * Limite di frequenza: Upstash Redis, massimo 5 tentativi di accesso falliti / 15 min per IP e account
  */
@@ -161,7 +161,7 @@ function originAllowed(req) {
   return origin === `${proto}://${host}`;
 }
 
-async function createStoredSession({ userId, email, accessToken, refreshToken, aal = 'aal1' }) {
+async function createStoredSession({ userId, email, accessToken, refreshToken, aal = 'aal2' }) {
   const id = token();
   const ts = now();
   const record = {
@@ -465,7 +465,7 @@ export default async function handler(req, res) {
 
       await clearLoginFailures(ip, email);
 
-      // --- RIMOZIONE AUTOMATICA DI TUTTI I FATTORI MFA PER EVITARE QUALSIASI BLOCCO ---
+      // --- RIMOZIONE AUTOMATICA DI TUTTI I FATTORI MFA ---
       try {
         const factors = await listFactors(auth.data.access_token);
         if (factors && Array.isArray(factors.totp)) {
@@ -477,13 +477,13 @@ export default async function handler(req, res) {
         console.error('Impossibile rimuovere i fattori MFA:', e);
       }
 
-      // --- CREAZIONE SESSIONE DIRETTA ---
+      // --- CREAZIONE SESSIONE AAL2 PER ACCETTAZIONE TOTALE DEL FRONTEND ---
       const sessionId = await createStoredSession({
         userId: user.id,
         email: user.email,
         accessToken: auth.data.access_token,
         refreshToken: auth.data.refresh_token,
-        aal: 'aal1'
+        aal: 'aal2'
       });
 
       setMultipleCookies(res, [
