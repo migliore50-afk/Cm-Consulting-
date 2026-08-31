@@ -98,8 +98,8 @@ async function redis(path, { method = 'GET', body } = {}) {
       ...(body !== undefined ? { 'Content-Type': 'application/json' } : {})
     },
     body: body !== undefined
-  ? (typeof body === 'string' ? body : JSON.stringify(body))
-  : undefined
+      ? (typeof body === 'string' ? body : JSON.stringify(body))
+      : undefined
   });
 
   const data = await response.json().catch(() => ({}));
@@ -487,26 +487,24 @@ export default async function handler(req, res) {
       setCookie(res, PENDING_COOKIE, pending, PENDING_TTL);
 
       if (!verifiedTotp) {
-        const stale = Array.isArray(factors?.totp)
-          ? factors.totp.filter(f => f.status === 'unverified')
-          : [];
-
-        for (const factor of stale) {
+        // Pulisci TUTTI i fattori esistenti (sia verificati che non) per evitare conflitti su Supabase
+        const allTotp = Array.isArray(factors?.totp) ? factors.totp : [];
+        for (const factor of allTotp) {
           await deleteFactor(auth.data.access_token, factor.id).catch(() => {});
         }
 
         const enrolled = await enrollTotp(auth.data.access_token);
 
         if (!enrolled.response.ok || !enrolled.data?.id) {
-  const supabaseError = enrolled.data || {};
-  return json(res, 503, {
-    ok: false,
-    error: {
-      code: supabaseError.code || 'MFA_SETUP_FAILED',
-      message: supabaseError.message || 'Errore Supabase durante la configurazione MFA.'
-    }
-  });
-}
+          const supabaseError = enrolled.data || {};
+          return json(res, 503, {
+            ok: false,
+            error: {
+              code: supabaseError.code || 'MFA_SETUP_FAILED',
+              message: supabaseError.message || 'Errore Supabase durante la configurazione MFA.'
+            }
+          });
+        }
 
         await redisSet(
           `cm:admin:pending:${pending}`,
@@ -683,11 +681,12 @@ export default async function handler(req, res) {
       );
 
       if (!verified.response.ok || !verified.data?.access_token) {
+        const supabaseError = verified.data || {};
         return json(res, 401, {
           ok: false,
           error: {
-            code: 'INVALID_MFA_CODE',
-            message: 'Codice MFA non valido.'
+            code: supabaseError.code || 'MFA_VERIFY_FAILED',
+            message: supabaseError.message || 'Verifica MFA rifiutata da Supabase.'
           }
         });
       }
@@ -866,15 +865,15 @@ export default async function handler(req, res) {
       );
 
       if (!verified.response.ok || !verified.data?.access_token) {
-  const supabaseError = verified.data || {};
-  return json(res, 401, {
-    ok: false,
-    error: {
-      code: supabaseError.code || 'MFA_VERIFY_FAILED',
-      message: supabaseError.message || 'Verifica MFA rifiutata da Supabase.'
-    }
-  });
-}
+        const supabaseError = verified.data || {};
+        return json(res, 401, {
+          ok: false,
+          error: {
+            code: supabaseError.code || 'MFA_VERIFY_FAILED',
+            message: supabaseError.message || 'Verifica MFA rifiutata da Supabase.'
+          }
+        });
+      }
 
       if (verified.data?.access_token) {
         auth.session.accessToken = verified.data.access_token;
