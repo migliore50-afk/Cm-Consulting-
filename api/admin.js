@@ -498,14 +498,15 @@ export default async function handler(req, res) {
         const enrolled = await enrollTotp(auth.data.access_token);
 
         if (!enrolled.response.ok || !enrolled.data?.id) {
-          return json(res, 503, {
-            ok: false,
-            error: {
-              code: 'MFA_SETUP_FAILED',
-              message: 'Impossibile avviare la configurazione MFA.'
-            }
-          });
-        }
+  const supabaseError = enrolled.data || {};
+  return json(res, 503, {
+    ok: false,
+    error: {
+      code: supabaseError.code || 'MFA_SETUP_FAILED',
+      message: supabaseError.message || 'Errore Supabase durante la configurazione MFA.'
+    }
+  });
+}
 
         await redisSet(
           `cm:admin:pending:${pending}`,
