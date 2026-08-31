@@ -1,8 +1,8 @@
 /**
- * CM Consulting — protected admin API
- * Authentication: Supabase Auth + mandatory TOTP MFA
- * Session: opaque random token in HttpOnly/Secure/SameSite=Strict cookie, state in Upstash Redis
- * Rate limit: Upstash Redis, max 5 failed login attempts / 15 min per IP and account
+ * CM Consulting — API di amministrazione protetta
+ * Autenticazione: Supabase Auth + autenticazione a più fattori TOTP obbligatoria
+ * Sessione: token casuale opaco nel cookie HttpOnly/Secure/SameSite=Strict, stato in Upstash Redis
+ * Limite di frequenza: Upstash Redis, massimo 5 tentativi di accesso falliti / 15 min per IP e account
  */
 
 import crypto from 'node:crypto';
@@ -15,414 +15,1394 @@ const PENDING_TTL = 10 * 60;
 const MAX_LOGIN_FAILURES = 5;
 const LOGIN_WINDOW = 15 * 60;
 
-function str(v) { return typeof v === 'string' ? v.trim() : ''; }
-function json(res, status, payload) { return res.status(status).json(payload); }
-function token() { return crypto.randomBytes(32).toString('base64url'); }
-function now() { return Math.floor(Date.now() / 1000); }
-function getIp(req) {
+funzione str(v) { restituisci typeof v === 'stringa' ? v.trim() : ''; }
+funzione json(res, status, payload) { restituisci res.status(status).json(payload); }
+funzione token() { return crypto.randomBytes(32).toString('base64url'); }
+funzione now() { return Math.floor(Date.now() / 1000); }
+
+funzione getIp(req) {
   const forwarded = req.headers['x-forwarded-for'];
-  return typeof forwarded === 'string' ? forwarded.split(',')[0].trim() : String(req.headers['x-real-ip'] || 'unknown');
+  restituisci typeof forwarded === 'stringa'
+    ? forwarded.split(',')[0].trim()
+    : String(req.headers['x-real-ip'] || 'sconosciuto');
 }
-function parseCookies(req) {
+
+funzione parseCookies(req) {
   const raw = String(req.headers.cookie || '');
-  return Object.fromEntries(raw.split(';').map(v => v.trim()).filter(Boolean).map(v => {
-    const i = v.indexOf('=');
-    return i < 0 ? [v, ''] : [v.slice(0, i), decodeURIComponent(v.slice(i + 1))];
-  }));
+  restituisci Oggetto da voci(
+    raw.split(';')
+      .map(v => v.trim())
+      .filter(Boolean)
+      .map(v => {
+        const i = v.indexOf('=');
+        restituisci i < 0
+          ? [v, '']
+          : [v.slice(0, i), decodeURIComponent(v.slice(i + 1))];
+      })
+  );
 }
-function setCookie(res, name, value, maxAge) {
-  res.setHeader('Set-Cookie', `${name}=${encodeURIComponent(value)}; Max-Age=${maxAge}; Path=/; HttpOnly; Secure; SameSite=Strict`);
+
+funzione setCookie(res, name, value, maxAge) {
+  res.setHeader(
+    'Set-Cookie',
+    `${name}=${encodeURIComponent(value)}; Max-Age=${maxAge}; Path=/; HttpOnly; Secure; SameSite=Strict`
+  );
 }
-function clearCookie(res, name) {
-  res.setHeader('Set-Cookie', `${name}=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Strict`);
+
+funzione clearCookie(res, name) {
+  res.setHeader(
+    'Set-Cookie',
+    `${name}=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Strict`
+  );
 }
-function appendCookie(res, cookie) {
-  const existing = res.getHeader('Set-Cookie');
-  const list = existing ? (Array.isArray(existing) ? existing : [existing]) : [];
-  res.setHeader('Set-Cookie', [...list, cookie]);
-}
-function setMultipleCookies(res, cookies) {
+
+funzione setMultipleCookies(res, cookies) {
   res.setHeader('Set-Cookie', cookies);
 }
-function cookieString(name, value, maxAge) {
-  return `${name}=${encodeURIComponent(value)}; Max-Age=${maxAge}; Path=/; HttpOnly; Secure; SameSite=Strict`;
+
+funzione cookieString(nome, valore, età massima) {
+  restituisci `${name}=${encodeURIComponent(value)}; Max-Age=${maxAge}; Path=/; HttpOnly; Secure; SameSite=Strict`;
 }
 
-function supabaseConfig() {
+funzione supabaseConfig() {
   const url = str(process.env.SUPABASE_URL).replace(/\/$/, '');
   const key = str(process.env.SUPABASE_ANON_KEY);
-  if (!url || !key) throw new Error('Supabase non configurato.');
-  return { url, key };
+  if (!url || !key) throw new Error('Supabase non configurabile.');
+  restituisci { url, chiave };
 }
 
-async function supabaseFetch(path, { method = 'GET', accessToken, body, headers = {} } = {}) {
+funzione asincrona supabaseFetch(
+  sentiero,
+  { metodo = 'GET', accessToken, corpo, intestazioni = {} } = {}
+) {
   const { url, key } = supabaseConfig();
-  const h = { apikey: key, ...headers };
-  if (accessToken) h.Authorization = `Bearer ${accessToken}`;
-  if (body !== undefined) h['Content-Type'] = 'application/json';
-  const r = await fetch(`${url}${path}`, { method, headers: h, body: body === undefined ? undefined : JSON.stringify(body) });
-  let data = null; try { data = await r.json(); } catch {}
-  return { response: r, data };
+  const h = { apikey: chiave, ...intestazioni };
+  se (accessToken) h.Authorization = `Portatore ${accessToken}`;
+  se (body !== undefined) h['Content-Type'] = 'application/json';
+
+  const r = await fetch(`${url}${path}`, {
+    metodo,
+    intestazioni: h,
+    corpo: corpo === undefined ? undefined : JSON.stringify(corpo)
+  });
+
+  lascia che i dati siano nulli;
+  try { data = await r.json(); } catch {}
+  restituisci { risposta: r, dati };
 }
 
-async function redis(path, { method = 'GET', body } = {}) {
+funzione asincrona redis(path, { method = 'GET', body } = {}) {
   const url = str(process.env.UPSTASH_REDIS_REST_URL).replace(/\/$/, '');
   const tokenValue = str(process.env.UPSTASH_REDIS_REST_TOKEN);
-  if (!url || !tokenValue) throw new Error('Rate limiter Redis non configurato.');
+
+  se (!url || !tokenValue) {
+    lanciare un nuovo errore('Limitatore di velocità Redis non configurato.');
+  }
+
   const r = await fetch(`${url}${path}`, {
-    method,
-    headers: { Authorization: `Bearer ${tokenValue}`, ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}) },
-    body: body !== undefined ? JSON.stringify(body) : undefined
+    metodo,
+    intestazioni: {
+      Autorizzazione: `Portatore ${tokenValue}`,
+      ...(body !== undefined ? { 'Content-Type': 'application/json' } : {})
+    },
+    corpo: corpo !== undefined ? JSON.stringify(corpo) : undefined
   });
+
   const data = await r.json().catch(() => ({}));
-  if (!r.ok || data.error) throw new Error(data.error || 'Redis error');
-  return data.result;
+  if (!r.ok || data.error) throw new Error(data.error || 'Errore Redis');
+  restituisci i dati.risultato;
 }
 
-async function redisGet(key) { return redis(`/get/${encodeURIComponent(key)}`); }
-async function redisSet(key, value, ttl) {
-  return redis(`/set/${encodeURIComponent(key)}?EX=${ttl}`, { method: 'POST', body: value });
-}
-async function redisDel(key) { return redis(`/del/${encodeURIComponent(key)}`); }
-async function redisIncr(key, ttl) {
-  const value = Number(await redis(`/incr/${encodeURIComponent(key)}`));
-  if (value === 1) await redis(`/expire/${encodeURIComponent(key)}/${ttl}`);
-  return value;
+funzione asincrona redisGet(key) {
+  restituisci redis(`/get/${encodeURIComponent(key)}`);
 }
 
-async function rateLimitLogin(ip, email) {
-  const keys = [`cm:admin:login:ip:${ip}`, `cm:admin:login:email:${email.toLowerCase()}`];
+funzione asincrona redisSet(chiave, valore, ttl) {
+  restituisci redis(`/set/${encodeURIComponent(key)}?EX=${ttl}`, {
+    metodo: 'POST',
+    corpo: valore
+  });
+}
+
+funzione asincrona redisDel(key) {
+  restituisci redis(`/del/${encodeURIComponent(key)}`);
+}
+
+funzione asincrona redisIncr(key, ttl) {
+  const valore = Numero(await redis(`/incr/${encodeURIComponent(chiave)}`));
+  se (valore === 1) {
+    await redis(`/expire/${encodeURIComponent(key)}/${ttl}`);
+  }
+  valore di ritorno;
+}
+
+funzione asincrona rateLimitLogin(ip, email) {
+  const keys = [
+    `cm:admin:login:ip:${ip}`,
+    `cm:admin:login:email:${email.toLowerCase()}`
+  ];
   const counts = [];
-  for (const key of keys) counts.push(Number(await redisGet(key) || 0));
-  return { blocked: counts.some(n => n >= MAX_LOGIN_FAILURES), counts };
+  per (costante chiave di chiavi) conta.push(Numero(aspetta redisGet(chiave) || 0));
+  ritorno {
+    bloccato: counts.some(n => n >= MAX_LOGIN_FAILURES),
+    conteggi
+  };
 }
-async function recordLoginFailure(ip, email) {
-  await Promise.all([
+
+funzione asincrona recordLoginFailure(ip, email) {
+  attendi Promise.all([
     redisIncr(`cm:admin:login:ip:${ip}`, LOGIN_WINDOW),
     redisIncr(`cm:admin:login:email:${email.toLowerCase()}`, LOGIN_WINDOW)
   ]);
 }
-async function clearLoginFailures(ip, email) {
-  await Promise.all([
+
+funzione asincrona clearLoginFailures(ip, email) {
+  attendi Promise.all([
     redisDel(`cm:admin:login:ip:${ip}`),
     redisDel(`cm:admin:login:email:${email.toLowerCase()}`)
   ]);
 }
 
-function originAllowed(req) {
+funzione originAllowed(req) {
   const origin = str(req.headers.origin);
-  if (!origin) return true;
+  se (!origine) restituisci vero;
+
   const configured = str(process.env.SITE_URL).replace(/\/$/, '');
-  if (configured) return origin === configured;
+  se (configurato) restituisci origine === configurato;
+
   const proto = str(req.headers['x-forwarded-proto'] || 'https');
   const host = str(req.headers.host);
-  return origin === `${proto}://${host}`;
+  restituisci origine === `${proto}://${host}`;
 }
 
-async function createStoredSession({ userId, email, accessToken, refreshToken, aal = 'aal2' }) {
+funzione asincrona createStoredSession({
+  ID utente,
+  e-mail,
+  accessToken,
+  refreshToken,
+  aal = 'aal2'
+}) {
   const id = token();
   const ts = now();
-  const record = { userId, email, accessToken, refreshToken, aal, createdAt: ts, lastActivityAt: ts };
-  await redisSet(`cm:admin:session:${id}`, JSON.stringify(record), SESSION_TTL);
-  return id;
-}
-async function getStoredSession(id) {
-  if (!id) return null;
-  const raw = await redisGet(`cm:admin:session:${id}`);
-  if (!raw) return null;
-  try { return { key: id, ...JSON.parse(raw) }; } catch { return null; }
-}
-async function touchSession(session) {
-  session.lastActivityAt = now();
-  const remaining = Math.max(60, SESSION_TTL - (session.lastActivityAt - session.createdAt));
-  await redisSet(`cm:admin:session:${session.key}`, JSON.stringify(session), remaining);
+
+  record costante = {
+    ID utente,
+    e-mail,
+    accessToken,
+    refreshToken,
+    aal,
+    creatoIl: ts,
+    ultimaAttivitàAlle: ts
+  };
+
+  attendi redisSet(
+    `cm:admin:session:${id}`,
+    JSON.stringify(record),
+    SESSIONE_TTL
+  );
+
+  restituisci l'ID;
 }
 
-async function requireAdmin(req, res) {
+funzione asincrona getStoredSession(id) {
+  se (!id) restituisce null;
+
+  const raw = await redisGet(`cm:admin:session:${id}`);
+  se (!raw) restituisci null;
+
+  Tentativo {
+    restituisci { chiave: id, ...JSON.parse(raw) };
+  } presa {
+    restituisci null;
+  }
+}
+
+funzione asincrona touchSession(session) {
+  sessione.ultimaAttivitàAl = ora();
+
+  const remaining = Math.max(
+    60,
+    SESSION_TTL - (session.lastActivityAt - session.createdAt)
+  );
+
+  attendi redisSet(
+    `cm:admin:session:${session.key}`,
+    JSON.stringify(session),
+    rimanente
+  );
+}
+
+funzione asincrona requireAdmin(req, res) {
   const cookies = parseCookies(req);
   const session = await getStoredSession(cookies[COOKIE]);
-  if (!session) {
+
+  se (!sessione) {
     clearCookie(res, COOKIE);
-    return null;
-  }
-  const current = now();
-  if ((current - Number(session.lastActivityAt || 0)) > IDLE_TTL || (current - Number(session.createdAt || 0)) > SESSION_TTL) {
-    await redisDel(`cm:admin:session:${session.key}`);
-    clearCookie(res, COOKIE);
-    return null;
+    restituisci null;
   }
 
-  let userResult = await supabaseFetch('/auth/v1/user', { accessToken: session.accessToken });
-  if (userResult.response.status === 401 && session.refreshToken) {
-    const refreshed = await supabaseFetch('/auth/v1/token?grant_type=refresh_token', {
-      method: 'POST', body: { refresh_token: session.refreshToken }
-    });
-    if (!refreshed.response.ok || !refreshed.data?.access_token) {
+  const current = now();
+
+  Se (
+    (corrente - Numero(session.lastActivityAt || 0)) > IDLE_TTL ||
+    (corrente - Numero(session.createdAt || 0)) > SESSION_TTL
+  ) {
+    await redisDel(`cm:admin:session:${session.key}`);
+    clearCookie(res, COOKIE);
+    restituisci null;
+  }
+
+  let userResult = await supabaseFetch('/auth/v1/user', {
+    accessToken: session.accessToken
+  });
+
+  se (userResult.response.status === 401 && session.refreshToken) {
+    const refreshed = await supabaseFetch(
+      '/auth/v1/token?grant_type=refresh_token',
+      {
+        metodo: 'POST',
+        corpo: { refresh_token: session.refreshToken }
+      }
+    );
+
+    se (!refreshed.response.ok || !refreshed.data?.access_token) {
       await redisDel(`cm:admin:session:${session.key}`);
       clearCookie(res, COOKIE);
-      return null;
+      restituisci null;
     }
+
     session.accessToken = refreshed.data.access_token;
-    session.refreshToken = refreshed.data.refresh_token || session.refreshToken;
-    userResult = await supabaseFetch('/auth/v1/user', { accessToken: session.accessToken });
+    session.refreshToken =
+      dati aggiornati.refresh_token || session.refreshToken;
+
+    userResult = await supabaseFetch('/auth/v1/user', {
+      accessToken: session.accessToken
+    });
   }
-  if (!userResult.response.ok || userResult.data?.email?.toLowerCase() !== str(process.env.CM_ADMIN_EMAIL).toLowerCase()) {
+
+  Se (
+    !userResult.response.ok ||
+    userResult.data?.email?.toLowerCase() !==
+      str(process.env.CM_ADMIN_EMAIL).toLowerCase()
+  ) {
     await redisDel(`cm:admin:session:${session.key}`);
     clearCookie(res, COOKIE);
-    return null;
+    restituisci null;
   }
-  await touchSession(session);
-  return { session, user: userResult.data };
+
+  attendi touchSession(session);
+  restituisci { sessione, utente: userResult.data };
 }
 
-async function listFactors(accessToken) {
+funzione asincrona listFactors(accessToken) {
   const r = await supabaseFetch('/auth/v1/factors', { accessToken });
-  return r.response.ok ? r.data : null;
+  restituisci r.response.ok ? r.data : null;
 }
-async function enrollTotp(accessToken) {
-  return supabaseFetch('/auth/v1/factors', {
-    method: 'POST', accessToken,
-    body: { factor_type: 'totp', friendly_name: 'CM Consulting Admin', issuer: 'CM Consulting' }
+
+funzione asincrona enrollTotp(accessToken) {
+  restituisci supabaseFetch('/auth/v1/factors', {
+    metodo: 'POST',
+    accessToken,
+    corpo: {
+      factor_type: 'totp',
+      friendly_name: 'Amministratore di CM Consulting',
+      emittente: 'CM Consulting'
+    }
   });
 }
 
-function qrDataUrl(value) {
+/**
+ * Normalizza il codice QR TOTP di Supabase in un URL di dati compatibile con <img>.
+ *
+ * Supabase può restituire:
+ * - un URL esistente data:image/svg+xml;
+ * - raw <svg>...</svg>;
+ * - una dichiarazione XML seguita da <svg>...</svg>.
+ */
+funzione qrDataUrl(valore) {
   const qr = str(value);
-  if (!qr) return null;
-  if (/^data:image\/svg\+xml[,;]/i.test(qr)) return qr;
-  if (/^<svg[\s>]/i.test(qr)) return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(qr)}`;
-  return qr;
-}
-async function challenge(accessToken, factorId) {
-  return supabaseFetch(`/auth/v1/factors/${encodeURIComponent(factorId)}/challenge`, { method: 'POST', accessToken, body: {} });
-}
-async function verify(accessToken, factorId, challengeId, code) {
-  return supabaseFetch(`/auth/v1/factors/${encodeURIComponent(factorId)}/verify`, {
-    method: 'POST', accessToken,
-    body: { challenge_id: challengeId, code }
-  });
-}
-async function deleteFactor(accessToken, factorId) {
-  return supabaseFetch(`/auth/v1/factors/${encodeURIComponent(factorId)}`, { method: 'DELETE', accessToken });
+  se (!qr) restituisci null;
+
+  se (/^data:image\/svg\+xml[,;]/i.test(qr)) {
+    returnqr;
+  }
+
+  se (/^(?:<\?xml[\s\S]*?\?>\s*)?<svg[\s>]/i.test(qr)) {
+    restituisci `data:image/svg+xml;charset=utf-8,${encodeURIComponent(qr)}`;
+  }
+
+  returnqr;
 }
 
-async function dbRequest(path, { method = 'GET', body, accessToken } = {}) {
+funzione asincrona challenge(accessToken, factorId) {
+  restituisci supabaseFetch(
+    `/auth/v1/factors/${encodeURIComponent(factorId)}/challenge`,
+    {
+      metodo: 'POST',
+      accessToken,
+      corpo: {}
+    }
+  );
+}
+
+funzione asincrona verifica(accessToken, factorId, challengeId, code) {
+  restituisci supabaseFetch(
+    `/auth/v1/factors/${encodeURIComponent(factorId)}/verify`,
+    {
+      metodo: 'POST',
+      accessToken,
+      corpo: {
+        challenge_id: challengeId,
+        codice
+      }
+    }
+  );
+}
+
+funzione asincrona deleteFactor(accessToken, factorId) {
+  restituisci supabaseFetch(
+    `/auth/v1/factors/${encodeURIComponent(factorId)}`,
+    {
+      metodo: 'CELERA',
+      accessToken
+    }
+  );
+}
+
+funzione asincrona dbRequest(
+  sentiero,
+  { metodo = 'GET', corpo } = {}
+) {
   const url = str(process.env.SUPABASE_URL).replace(/\/$/, '');
   const serviceKey = str(process.env.SUPABASE_SERVICE_ROLE_KEY);
-  if (!url || !serviceKey) throw new Error('Database Supabase non configurato.');
-  const headers = { apikey: serviceKey, Authorization: `Bearer ${serviceKey}`, 'Content-Type': 'application/json', Prefer: 'return=representation' };
-  const r = await fetch(`${url}/rest/v1/${path}`, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) });
-  let data = null; try { data = await r.json(); } catch {}
-  return { response: r, data };
+
+  se (!url || !serviceKey) {
+    genera un nuovo errore('Database Supabase non configurabile.');
+  }
+
+  const headers = {
+    apikey: serviceKey,
+    Autorizzazione: `Portatore ${serviceKey}`,
+    'Content-Type': 'application/json',
+    Preferisci: 'return=representation'
+  };
+
+  const r = await fetch(`${url}/rest/v1/${path}`, {
+    metodo,
+    intestazioni,
+    corpo: corpo === undefined ? undefined : JSON.stringify(corpo)
+  });
+
+  lascia che i dati siano nulli;
+  try { data = await r.json(); } catch {}
+  restituisci { risposta: r, dati };
 }
 
-function cleanPractice(body) {
+funzione cleanPractice(corpo) {
   const client = str(body.client);
   const type = str(body.type);
   const expiry = str(body.expiry);
   const email = str(body.email);
   const notes = str(body.notes);
-  const clientPrice = body.clientPrice === '' || body.clientPrice == null ? null : Number(body.clientPrice);
-  const reviewerCost = body.reviewerCost === '' || body.reviewerCost == null ? null : Number(body.reviewerCost);
-  if (!client || client.length > 180 || !type || type.length > 120 || !/^\d{4}-\d{2}-\d{2}$/.test(expiry)) throw new Error('Dati pratica non validi.');
-  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('Email non valida.');
-  if (notes.length > 10000) throw new Error('Note troppo lunghe.');
-  if ((clientPrice != null && !Number.isFinite(clientPrice)) || (reviewerCost != null && !Number.isFinite(reviewerCost))) throw new Error('Importi non validi.');
-  return { client, type, expiry, email: email || null, client_price: clientPrice, reviewer_cost: reviewerCost, notes: notes || null };
+
+  const clientPrice =
+    body.clientPrice === '' || body.clientPrice == null
+      ? null
+      : Numero(corpoclientePrezzo);
+
+  const reviewerCost =
+    body.reviewerCost === '' || body.reviewerCost == null
+      ? null
+      : Numero(body.reviewerCost);
+
+  Se (
+    !client ||
+    client.length > 180 ||
+    !tipo ||
+    tipo.lunghezza > 120 ||
+    !/^\d{4}-\d{2}-\d{2}$/.test(expiry)
+  ) {
+    lanciare new Error('Dati pratica non validi.');
+  }
+
+  Se (
+    email &&
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  ) {
+    genera un nuovo errore ('Email non valida');
+  }
+
+  se (notes.length > 10000) {
+    lanciare un nuovo Error('Note troppo lunghe.');
+  }
+
+  Se (
+    (clientPrice != null && !Number.isFinite(clientPrice)) ||
+    (reviewerCost != null && !Number.isFinite(reviewerCost))
+  ) {
+    lanciare un nuovo Error('Importi non validi.');
+  }
+
+  ritorno {
+    cliente,
+    tipo,
+    scadenza,
+    email: email || null,
+    prezzo_cliente: prezzo_cliente,
+    costo_revisore: costo_revisore,
+    note: note || null
+  };
 }
 
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
-  if (!originAllowed(req)) return json(res, 403, { ok: false, error: { code: 'BAD_ORIGIN', message: 'Origine non consentita.' } });
+
+  se (!originAllowed(req)) {
+    restituisci json(res, 403, {
+      ok: falso,
+      errore: {
+        codice: 'BAD_ORIGIN',
+        messaggio: 'Origine non consentita.'
+      }
+    });
+  }
+
   const action = str(req.query?.action || 'session');
 
-  try {
-    if (action === 'public-config' && req.method === 'GET') {
+  Tentativo {
+    se (azione === 'public-config' e req.method === 'GET') {
       const { url, key } = supabaseConfig();
-      return json(res, 200, { ok: true, supabaseUrl: url, supabaseAnonKey: key });
+
+      restituisci json(res, 200, {
+        ok: vero,
+        supabaseUrl: url,
+        supabaseAnonKey: chiave
+      });
     }
 
-    if (action === 'login' && req.method === 'POST') {
-      const body = req.body && typeof req.body === 'object' ? req.body : {};
-      const email = str(body.email), password = typeof body.password === 'string' ? body.password : '';
-      if (!email || !password || email.length > 254 || password.length > 256) return json(res, 400, { ok: false, error: { code: 'INVALID_CREDENTIALS', message: 'Credenziali non valide.' } });
+    se (azione === 'login' e req.method === 'POST') {
+      corpo costante =
+        req.body && typeof req.body === 'object'
+          ? corpo richiesto
+          : {};
+
+      const email = str(body.email);
+      const password =
+        typeof body.password === 'string'
+          ? bodypassword
+          : '';
+
+      Se (
+        !email ||
+        !password ||
+        email.lunghezza > 254 ||
+        lunghezza password > 256
+      ) {
+        restituisci json(res, 400, {
+          ok: falso,
+          errore: {
+            codice: 'CREDITI_NON_VALIDI',
+            messaggio: 'Credenziali non valide.'
+          }
+        });
+      }
+
       const ip = getIp(req);
       const limiter = await rateLimitLogin(ip, email);
-      if (limiter.blocked) return json(res, 429, { ok: false, error: { code: 'LOGIN_LOCKED', message: 'Troppi tentativi. Riprova tra 15 minuti.' } });
 
-      const auth = await supabaseFetch('/auth/v1/token?grant_type=password', { method: 'POST', body: { email, password } });
-      if (!auth.response.ok || !auth.data?.access_token) {
-        await recordLoginFailure(ip, email);
-        return json(res, 401, { ok: false, error: { code: 'INVALID_CREDENTIALS', message: 'Email o password non valide.' } });
+      se (limitatore bloccato) {
+        restituisci json(res, 429, {
+          ok: falso,
+          errore: {
+            codice: 'LOGIN_LOCKED',
+            messaggio: 'Troppi tentativi. Riprova tra 15 minuti.'
+          }
+        });
       }
-      const user = auth.data.user;
-      if (!user?.email || user.email.toLowerCase() !== str(process.env.CM_ADMIN_EMAIL).toLowerCase()) {
-        await recordLoginFailure(ip, email);
-        return json(res, 403, { ok: false, error: { code: 'FORBIDDEN', message: 'Account non autorizzato.' } });
+
+      const auth = await supabaseFetch(
+        '/auth/v1/token?grant_type=password',
+        {
+          metodo: 'POST',
+          corpo: { email, password }
+        }
+      );
+
+      se (!auth.response.ok || !auth.data?.access_token) {
+        attendi recordLoginFailure(ip, email);
+
+        restituisci json(res, 401, {
+          ok: falso,
+          errore: {
+            codice: 'CREDITI_NON_VALIDI',
+            messaggio: 'Email o password non valida.'
+          }
+        });
       }
-      await clearLoginFailures(ip, email);
+
+      const utente = auth.data.utente;
+
+      Se (
+        !utente?email ||
+        user.email.toLowerCase() !==
+          str(process.env.CM_ADMIN_EMAIL).toLowerCase()
+      ) {
+        attendi recordLoginFailure(ip, email);
+
+        restituisci json(res, 403, {
+          ok: falso,
+          errore: {
+            codice: 'VIETATO',
+            messaggio: 'Conto non autorizzato.'
+          }
+        });
+      }
+
+      attendi clearLoginFailures(ip, email);
 
       const factors = await listFactors(auth.data.access_token);
-      const verifiedTotp = Array.isArray(factors?.totp) ? factors.totp.find(f => f.status === 'verified') : null;
+
+      const verifiedTopp =
+        Array.isArray(factors?.totp)
+          ? factors.totp.find(f => f.status === 'verified')
+          : null;
+
       const pending = token();
-      await redisSet(`cm:admin:pending:${pending}`, JSON.stringify({ userId: user.id, email: user.email, accessToken: auth.data.access_token, refreshToken: auth.data.refresh_token, createdAt: now() }), PENDING_TTL);
-      setCookie(res, PENDING_COOKIE, pending, PENDING_TTL);
 
-      if (!verifiedTotp) {
-        const stale = Array.isArray(factors?.totp) ? factors.totp.filter(f => f.status === 'unverified') : [];
-        for (const factor of stale) await deleteFactor(auth.data.access_token, factor.id).catch(() => {});
-        const enrolled = await enrollTotp(auth.data.access_token);
-        if (!enrolled.response.ok || !enrolled.data?.id) return json(res, 503, { ok: false, error: { code: 'MFA_SETUP_FAILED', message: 'Impossibile iniziare la configurazione MFA.' } });
-        await redisSet(`cm:admin:pending:${pending}`, JSON.stringify({ userId: user.id, email: user.email, accessToken: auth.data.access_token, refreshToken: auth.data.refresh_token, createdAt: now(), factorId: enrolled.data.id }), PENDING_TTL);
-        return json(res, 200, { ok: true, state: 'mfa_setup', factorId: enrolled.data.id, qrCode: qrDataUrl(enrolled.data.totp?.qr_code), secret: enrolled.data.totp?.secret || null });
+      attendi redisSet(
+        `cm:admin:pending:${pending}`,
+        JSON.stringify({
+          userId: user.id,
+          email: user.email,
+          accessToken: auth.data.access_token,
+          refreshToken: auth.data.refresh_token,
+          creato in: ora()
+        }),
+        IN ATTESA DI TTL
+      );
+
+      setCookie(
+        res,
+        COOKIE IN SOSPESO,
+        in attesa di,
+        IN ATTESA DI TTL
+      );
+
+      se (!verifiedTotp) {
+        costante stantio =
+          Array.isArray(factors?.totp)
+            ? factors.totp.filter(f => f.status === 'unverified')
+            : [];
+
+        per (fattore costante di obsoleto) {
+          attendi deleteFactor(
+            token_di_accesso_ai_dati_di_autenticazione,
+            factor.id
+          ).catch(() => {});
+        }
+
+        costante iscritto =
+          attendi l'iscrizione al token di accesso (auth.data.access_token);
+
+        Se (
+          !enrolled.response.ok ||
+          !enrolled.data?.id
+        ) {
+          restituisci json(res, 503, {
+            ok: falso,
+            errore: {
+              codice: 'MFA_SETUP_FAILED',
+              messaggio:
+                'Impossibile avviare la configurazione MFA.'
+            }
+          });
+        }
+
+        attendi redisSet(
+          `cm:admin:pending:${pending}`,
+          JSON.stringify({
+            userId: user.id,
+            email: user.email,
+            accessToken: auth.data.access_token,
+            refreshToken: auth.data.refresh_token,
+            creatoIn: ora(),
+            factorId: enrolled.data.id
+          }),
+          IN ATTESA DI TTL
+        );
+
+        restituisci json(res, 200, {
+          ok: vero,
+          stato: 'mfa_setup',
+          factorId: enrolled.data.id,
+          codice QR: URL dati QR(
+            dati_di_iscrizione.totp?.qr_code
+          ),
+          segreto:
+            dati.totp?.segreto || null
+        });
       }
 
-      const ch = await challenge(auth.data.access_token, verifiedTotp.id);
-      if (!ch.response.ok || !ch.data?.id) return json(res, 503, { ok: false, error: { code: 'MFA_CHALLENGE_FAILED', message: 'Impossibile avviare la verifica MFA.' } });
-      await redisSet(`cm:admin:pending:${pending}`, JSON.stringify({ userId: user.id, email: user.email, accessToken: auth.data.access_token, refreshToken: auth.data.refresh_token, createdAt: now(), factorId: verifiedTotp.id, challengeId: ch.data.id }), PENDING_TTL);
-      return json(res, 200, { ok: true, state: 'mfa_required', factorId: verifiedTotp.id, challengeId: ch.data.id });
+      const ch = await challenge(
+        token_di_accesso_ai_dati_di_autenticazione,
+        verifiedTopp.id
+      );
+
+      se (!ch.response.ok || !ch.data?.id) {
+        restituisci json(res, 503, {
+          ok: falso,
+          errore: {
+            codice: 'MFA_CHALLENGE_FAILED',
+            messaggio:
+              "Impossibile avviare la verifica MFA."
+          }
+        });
+      }
+
+      attendi redisSet(
+        `cm:admin:pending:${pending}`,
+        JSON.stringify({
+          userId: user.id,
+          email: user.email,
+          accessToken: auth.data.access_token,
+          refreshToken: auth.data.refresh_token,
+          creatoIn: ora(),
+          factorId: verifiedTotp.id,
+          challengeId: ch.data.id
+        }),
+        IN ATTESA DI TTL
+      );
+
+      restituisci json(res, 200, {
+        ok: vero,
+        stato: 'mfa_required',
+        factorId: verifiedTotp.id,
+        challengeId: ch.data.id
+      });
     }
 
-    if (action === 'mfa-verify' && req.method === 'POST') {
+    se (azione === 'mfa-verify' e req.method === 'POST') {
       const cookies = parseCookies(req);
       const pendingKey = cookies[PENDING_COOKIE];
-      const raw = pendingKey ? await redisGet(`cm:admin:pending:${pendingKey}`) : null;
-      if (!raw) return json(res, 401, { ok: false, error: { code: 'MFA_SESSION_EXPIRED', message: 'Sessione di verifica scaduta. Effettua nuovamente il login.' } });
+
+      const raw = pendingKey
+        ? await redisGet(`cm:admin:pending:${pendingKey}`)
+        : null;
+
+      se (!raw) {
+        restituisci json(res, 401, {
+          ok: falso,
+          errore: {
+            codice: 'MFA_SESSION_EXPIRED',
+            messaggio:
+              'Sessione di verifica scaduta. Effettua nuovamente il login.'
+          }
+        });
+      }
+
       const pending = JSON.parse(raw);
-      const body = req.body && typeof req.body === 'object' ? req.body : {};
+
+      corpo costante =
+        req.body && typeof req.body === 'object'
+          ? corpo richiesto
+          : {};
+
       const code = str(body.code).replace(/\s/g, '');
-      if (!/^\d{6}$/.test(code) || !pending.factorId || !pending.challengeId) return json(res, 400, { ok: false, error: { code: 'INVALID_MFA_CODE', message: 'Codice MFA non valido.' } });
-      const verified = await verify(pending.accessToken, pending.factorId, pending.challengeId, code);
-      if (!verified.response.ok || !verified.data?.access_token) return json(res, 401, { ok: false, error: { code: 'INVALID_MFA_CODE', message: 'Codice MFA non valido o scaduto.' } });
-      const sessionId = await createStoredSession({ userId: pending.userId, email: pending.email, accessToken: verified.data.access_token, refreshToken: verified.data.refresh_token || pending.refreshToken, aal: 'aal2' });
-      await redisDel(`cm:admin:pending:${pendingKey}`);
-      setMultipleCookies(res, [cookieString(COOKIE, sessionId, SESSION_TTL), cookieString(PENDING_COOKIE, '', 0)]);
-      return json(res, 200, { ok: true, state: 'authenticated' });
+
+      Se (
+        !/^\d{6}$/.test(code) ||
+        !pendingfactorId ||
+        !pending.challengeId
+      ) {
+        restituisci json(res, 400, {
+          ok: falso,
+          errore: {
+            codice: 'INVALID_MFA_CODE',
+            messaggio: 'Codice MFA non valido.'
+          }
+        });
+      }
+
+      const verificato = attendi verifica(
+        in sospesoaccessToken,
+        in sospeso.factorId,
+        in sospeso.challengeId,
+        codice
+      );
+
+      Se (
+        !risposta verificata.ok ||
+        !dati verificati?.token_di_accesso
+      ) {
+        restituisci json(res, 401, {
+          ok: falso,
+          errore: {
+            codice: 'INVALID_MFA_CODE',
+            messaggio:
+              'Codice MFA non valido o scaduto.'
+          }
+        });
+      }
+
+      const sessionId =
+        attendi createStoredSession({
+          userId: in sospeso.userId,
+          email: in sospeso.email,
+          accessToken: verified.data.access_token,
+          refreshToken:
+            verified.data.refresh_token ||
+            in sospeso.refreshToken,
+          aal: 'aal2'
+        });
+
+      attendi redisDel(
+        `cm:admin:pending:${pendingKey}`
+      );
+
+      setMultipleCookies(res, [
+        cookieString(
+          BISCOTTO,
+          ID sessione,
+          SESSIONE_TTL
+        ),
+        cookieString(
+          COOKIE IN SOSPESO,
+          '',
+          0
+        )
+      ]);
+
+      restituisci json(res, 200, {
+        ok: vero,
+        stato: 'autenticato'
+      });
     }
 
-    if (action === 'mfa-setup-verify' && req.method === 'POST') {
+    Se (
+      azione === 'mfa-setup-verify' &&
+      req.method === 'POST'
+    ) {
       const cookies = parseCookies(req);
       const pendingKey = cookies[PENDING_COOKIE];
-      const raw = pendingKey ? await redisGet(`cm:admin:pending:${pendingKey}`) : null;
-      if (!raw) return json(res, 401, { ok: false, error: { code: 'MFA_SESSION_EXPIRED', message: 'Sessione di configurazione scaduta.' } });
-      const pending = JSON.parse(raw);
-      const code = str(req.body?.code).replace(/\s/g, '');
-      if (!/^\d{6}$/.test(code) || !pending.factorId) return json(res, 400, { ok: false, error: { code: 'INVALID_MFA_CODE', message: 'Codice MFA non valido.' } });
-      const ch = await challenge(pending.accessToken, pending.factorId);
-      if (!ch.response.ok || !ch.data?.id) return json(res, 503, { ok: false, error: { code: 'MFA_CHALLENGE_FAILED', message: 'Impossibile avviare la verifica MFA.' } });
-      const verified = await verify(pending.accessToken, pending.factorId, ch.data.id, code);
-      if (!verified.response.ok || !verified.data?.access_token) return json(res, 401, { ok: false, error: { code: 'INVALID_MFA_CODE', message: 'Codice MFA non valido.' } });
-      const sessionId = await createStoredSession({ userId: pending.userId, email: pending.email, accessToken: verified.data.access_token, refreshToken: verified.data.refresh_token || pending.refreshToken, aal: 'aal2' });
-      await redisDel(`cm:admin:pending:${pendingKey}`);
-      setMultipleCookies(res, [cookieString(COOKIE, sessionId, SESSION_TTL), cookieString(PENDING_COOKIE, '', 0)]);
-      return json(res, 200, { ok: true, state: 'authenticated' });
-    }
 
-    if (action === 'forgot-password' && req.method === 'POST') {
-      const email = str(req.body?.email);
-      const adminEmail = str(process.env.CM_ADMIN_EMAIL).toLowerCase();
-      if (!email || email.toLowerCase() !== adminEmail) return json(res, 200, { ok: true, message: 'Se l’account è autorizzato, riceverai le istruzioni via email.' });
-      const site = str(process.env.SITE_URL).replace(/\/$/, '');
-      const r = await supabaseFetch('/auth/v1/recover', { method: 'POST', body: { email, redirect_to: `${site}/admin/reset` } });
-      if (!r.response.ok) console.error('Password reset error', r.data);
-      return json(res, 200, { ok: true, message: 'Se l’account è autorizzato, riceverai le istruzioni via email.' });
-    }
+      const raw = pendingKey
+        ? await redisGet(`cm:admin:pending:${pendingKey}`)
+        : null;
 
-    if (action === 'session' && req.method === 'GET') {
-      const auth = await requireAdmin(req, res);
-      if (!auth) return json(res, 401, { ok: false, authenticated: false });
-      return json(res, 200, { ok: true, authenticated: true, user: { id: auth.user.id, email: auth.user.email }, idleTimeoutSeconds: IDLE_TTL });
-    }
-
-    if (action === 'logout' && req.method === 'POST') {
-      const cookies = parseCookies(req);
-      const session = await getStoredSession(cookies[COOKIE]);
-      if (session) {
-        await supabaseFetch('/auth/v1/logout', { method: 'POST', accessToken: session.accessToken, body: {} }).catch(() => {});
-        await redisDel(`cm:admin:session:${session.key}`);
+      se (!raw) {
+        restituisci json(res, 401, {
+          ok: falso,
+          errore: {
+            codice: 'MFA_SESSION_EXPIRED',
+            messaggio:
+              'Sessione di configurazione scaduta.'
+          }
+        });
       }
-      setMultipleCookies(res, [cookieString(COOKIE, '', 0), cookieString(PENDING_COOKIE, '', 0)]);
-      return json(res, 200, { ok: true });
+
+      const pending = JSON.parse(raw);
+      codice costante =
+        str(req.body?.code).replace(/\s/g, '');
+
+      Se (
+        !/^\d{6}$/.test(code) ||
+        !in sospeso factorId
+      ) {
+        restituisci json(res, 400, {
+          ok: falso,
+          errore: {
+            codice: 'INVALID_MFA_CODE',
+            messaggio: 'Codice MFA non valido.'
+          }
+        });
+      }
+
+      const ch = await challenge(
+        in sospesoaccessToken,
+        in sospeso.factorId
+      );
+
+      se (!ch.response.ok || !ch.data?.id) {
+        restituisci json(res, 503, {
+          ok: falso,
+          errore: {
+            codice: 'MFA_CHALLENGE_FAILED',
+            messaggio:
+              "Impossibile avviare la verifica MFA."
+          }
+        });
+      }
+
+      const verificato = attendi verifica(
+        in sospesoaccessToken,
+        in sospeso.factorId,
+        ch.data.id,
+        codice
+      );
+
+      Se (
+        !risposta verificata.ok ||
+        !dati verificati?.token_di_accesso
+      ) {
+        restituisci json(res, 401, {
+          ok: falso,
+          errore: {
+            codice: 'INVALID_MFA_CODE',
+            messaggio:
+              'Codice MFA non valido o scaduto.'
+          }
+        });
+      }
+
+      const sessionId =
+        attendi createStoredSession({
+          userId: in sospeso.userId,
+          email: in sospeso.email,
+          accessToken: verified.data.access_token,
+          refreshToken:
+            verified.data.refresh_token ||
+            in sospeso.refreshToken,
+          aal: 'aal2'
+        });
+
+      attendi redisDel(
+        `cm:admin:pending:${pendingKey}`
+      );
+
+      setMultipleCookies(res, [
+        cookieString(
+          BISCOTTO,
+          ID sessione,
+          SESSIONE_TTL
+        ),
+        cookieString(
+          COOKIE IN SOSPESO,
+          '',
+          0
+        )
+      ]);
+
+      restituisci json(res, 200, {
+        ok: vero,
+        stato: 'autenticato'
+      });
     }
 
-    if (action === 'mfa-enroll' && req.method === 'POST') {
-      const auth = await requireAdmin(req, res);
-      if (!auth) return json(res, 401, { ok: false, error: { code: 'UNAUTHORIZED', message: 'Autenticazione richiesta.' } });
-      const r = await enrollTotp(auth.session.accessToken);
-      if (!r.response.ok) return json(res, r.response.status, { ok: false, error: { code: 'MFA_ENROLL_FAILED', message: 'Impossibile aggiungere il fattore MFA.' } });
-      return json(res, 200, { ok: true, factorId: r.data.id, qrCode: qrDataUrl(r.data.totp?.qr_code), secret: r.data.totp?.secret || null });
+    Se (
+      azione === 'password dimenticata' &&
+      req.method === 'POST'
+    ) {
+      const email = str(req.body?.email);
+      const adminEmail =
+        str(process.env.CM_ADMIN_EMAIL).toLowerCase();
+
+      Se (
+        !email ||
+        email.toLowerCase() !== adminEmail
+      ) {
+        restituisci json(res, 200, {
+          ok: vero,
+          messaggio:
+            'Se l'account è autorizzato, riceverai le istruzioni via email.'
+        });
+      }
+
+      sito costante =
+        str(process.env.SITE_URL).replace(/\/$/, '');
+
+      const r = await supabaseFetch(
+        '/auth/v1/recover',
+        {
+          metodo: 'POST',
+          corpo: {
+            e-mail,
+            reindirizzamento a: `${site}/admin/reset`
+          }
+        }
+      );
+
+      se (!r.response.ok) {
+        console.error(
+          'Errore di reimpostazione della password',
+          r.data
+        );
+      }
+
+      restituisci json(res, 200, {
+        ok: vero,
+        messaggio:
+          'Se l'account è autorizzato, riceverai le istruzioni via email.'
+      });
     }
 
-    if (action === 'mfa-add-verify' && req.method === 'POST') {
+    Se (
+      azione === 'sessione' &&
+      req.method === 'GET'
+    ) {
       const auth = await requireAdmin(req, res);
-      if (!auth) return json(res, 401, { ok: false, error: { code: 'UNAUTHORIZED', message: 'Autenticazione richiesta.' } });
-      const code = str(req.body?.code).replace(/\s/g, '');
-      const factorId = str(req.body?.factorId);
-      if (!factorId || !/^\d{6}$/.test(code)) return json(res, 400, { ok: false, error: { code: 'INVALID_MFA_CODE', message: 'Codice MFA non valido.' } });
-      const ch = await challenge(auth.session.accessToken, factorId);
-      if (!ch.response.ok) return json(res, 400, { ok: false, error: { code: 'MFA_CHALLENGE_FAILED', message: 'Impossibile creare la verifica MFA.' } });
-      const verified = await verify(auth.session.accessToken, factorId, ch.data.id, code);
-      if (!verified.response.ok) return json(res, 401, { ok: false, error: { code: 'INVALID_MFA_CODE', message: 'Codice MFA non valido.' } });
-      if (verified.data?.access_token) auth.session.accessToken = verified.data.access_token;
-      if (verified.data?.refresh_token) auth.session.refreshToken = verified.data.refresh_token;
-      await touchSession(auth.session);
-      return json(res, 200, { ok: true });
+
+      se (!autenticazione) {
+        restituisci json(res, 401, {
+          ok: falso,
+          autenticato: falso
+        });
+      }
+
+      restituisci json(res, 200, {
+        ok: vero,
+        autenticato: vero,
+        utente: {
+          ID: auth.user.id,
+          email: auth.user.email
+        },
+        timeout inattivo in secondi: IDLE_TTL
+      });
     }
 
-    if (action === 'password' && req.method === 'POST') {
-      const auth = await requireAdmin(req, res);
-      if (!auth) return json(res, 401, { ok: false, error: { code: 'UNAUTHORIZED', message: 'Autenticazione richiesta.' } });
-      const password = typeof req.body?.password === 'string' ? req.body.password : '';
-      const currentPassword = typeof req.body?.currentPassword === 'string' ? req.body.currentPassword : '';
-      if (password.length < 12 || password.length > 256 || !/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/\d/.test(password) || !/[^A-Za-z0-9]/.test(password)) return json(res, 400, { ok: false, error: { code: 'WEAK_PASSWORD', message: 'Usa almeno 12 caratteri con maiuscole, minuscole, numeri e simboli.' } });
-      const r = await supabaseFetch('/auth/v1/user', { method: 'PUT', accessToken: auth.session.accessToken, body: { password, ...(currentPassword ? { current_password: currentPassword } : {}) } });
-      if (!r.response.ok) return json(res, 400, { ok: false, error: { code: 'PASSWORD_UPDATE_FAILED', message: 'Password non modificata.' } });
-      return json(res, 200, { ok: true });
+    Se (
+      azione === 'logout' &&
+      req.method === 'POST'
+    ) {
+      const cookies = parseCookies(req);
+      const sessione =
+        attendi getStoredSession(cookies[COOKIE]);
+
+      se (sessione) {
+        attendi supabaseFetch(
+          '/auth/v1/logout',
+          {
+            metodo: 'POST',
+            accessToken: session.accessToken,
+            corpo: {}
+          }
+        ).catch(() => {});
+
+        attendi redisDel(
+          `cm:admin:session:${session.key}`
+        );
+      }
+
+      setMultipleCookies(res, [
+        cookieString(COOKIE, '', 0),
+        cookieString(PENDING_COOKIE, '', 0)
+      ]);
+
+      restituisci json(res, 200, { ok: true });
     }
 
-    if (action === 'practices' && req.method === 'GET') {
+    Se (
+      azione === 'mfa-enroll' &&
+      req.method === 'POST'
+    ) {
       const auth = await requireAdmin(req, res);
-      if (!auth) return json(res, 401, { ok: false, error: { code: 'UNAUTHORIZED', message: 'Autenticazione richiesta.' } });
-      const r = await dbRequest('admin_practices?select=*&order=expiry.asc,created_at.desc');
-      if (!r.response.ok) return json(res, 503, { ok: false, error: { code: 'DATABASE_ERROR', message: 'Archivio non disponibile.' } });
-      return json(res, 200, { ok: true, practices: r.data || [] });
+
+      se (!autenticazione) {
+        restituisci json(res, 401, {
+          ok: falso,
+          errore: {
+            codice: 'NON AUTORIZZATO',
+            messaggio: 'Autenticazione richiesta.'
+          }
+        });
+      }
+
+      const r = await enrollTotp(
+        auth.session.accessToken
+      );
+
+      se (!r.response.ok) {
+        restituisci json(res, r.response.status, {
+          ok: falso,
+          errore: {
+            codice: 'MFA_ENROLL_FAILED',
+            messaggio:
+              'Impossibile aggiungere il fattore MFA.'
+          }
+        });
+      }
+
+      restituisci json(res, 200, {
+        ok: vero,
+        factorId: r.data.id,
+        codice QR: URL dati QR(
+          r.data.totp?.qr_code
+        ),
+        segreto:
+          r.data.totp?.secret || null
+      });
     }
 
-    if (action === 'practices' && req.method === 'POST') {
+    Se (
+      azione === 'mfa-add-verify' &&
+      req.method === 'POST'
+    ) {
       const auth = await requireAdmin(req, res);
-      if (!auth) return json(res, 401, { ok: false, error: { code: 'UNAUTHORIZED', message: 'Autenticazione richiesta.' } });
-      const practice = cleanPractice(req.body || {});
-      const r = await dbRequest('admin_practices', { method: 'POST', body: { ...practice, created_by: auth.user.id } });
-      if (!r.response.ok) return json(res, 400, { ok: false, error: { code: 'DATABASE_ERROR', message: 'Impossibile salvare la pratica.' } });
-      return json(res, 200, { ok: true, practice: r.data?.[0] || null });
+
+      se (!autenticazione) {
+        restituisci json(res, 401, {
+          ok: falso,
+          errore: {
+            codice: 'NON AUTORIZZATO',
+            messaggio: 'Autenticazione richiesta.'
+          }
+        });
+      }
+
+      codice costante =
+        str(req.body?.code).replace(/\s/g, '');
+
+      const factorId =
+        str(req.body?.factorId);
+
+      Se (
+        !factorId ||
+        !/^\d{6}$/.test(code)
+      ) {
+        restituisci json(res, 400, {
+          ok: falso,
+          errore: {
+            codice: 'INVALID_MFA_CODE',
+            messaggio: 'Codice MFA non valido.'
+          }
+        });
+      }
+
+      const ch = await challenge(
+        auth.session.accessToken,
+        ID fattore
+      );
+
+      se (!ch.response.ok) {
+        restituisci json(res, 400, {
+          ok: falso,
+          errore: {
+            codice: 'MFA_CHALLENGE_FAILED',
+            messaggio:
+              'Impossibile creare la verifica MFA.'
+          }
+        });
+      }
+
+      const verificato = attendi verifica(
+        auth.session.accessToken,
+        ID del fattore,
+        ch.data.id,
+        codice
+      );
+
+      se (!risposta verificata.ok) {
+        restituisci json(res, 401, {
+          ok: falso,
+          errore: {
+            codice: 'INVALID_MFA_CODE',
+            messaggio: 'Codice MFA non valido.'
+          }
+        });
+      }
+
+      se (verificato.data?.access_token) {
+        auth.session.accessToken =
+          Token di accesso ai dati verificato;
+      }
+
+      se (verified.data?.refresh_token) {
+        auth.session.refreshToken =
+          Token di aggiornamento dati verificato;
+      }
+
+      attendi touchSession(auth.session);
+
+      restituisci json(res, 200, { ok: true });
     }
 
-    if (action === 'practice' && req.method === 'PATCH') {
+    Se (
+      azione === 'password' &&
+      req.method === 'POST'
+    ) {
       const auth = await requireAdmin(req, res);
-      if (!auth) return json(res, 401, { ok: false, error: { code: 'UNAUTHORIZED', message: 'Autenticazione richiesta.' } });
+
+      se (!autenticazione) {
+        restituisci json(res, 401, {
+          ok: falso,
+          errore: {
+            codice: 'NON AUTORIZZATO',
+            messaggio: 'Autenticazione richiesta.'
+          }
+        });
+      }
+
+      const password =
+        typeof req.body?.password === 'string'
+          ? req.body.password
+          : '';
+
+      const currentPassword =
+        typeof req.body?.currentPassword === 'string'
+          ? req.body.currentPassword
+          : '';
+
+      Se (
+        password.lunghezza < 12 ||
+        password.lunghezza > 256 ||
+        !/[AZ]/test(password) ||
+        !/[az]/.test(password) ||
+        !/\d/.test(password) ||
+        !/[^A-Za-z0-9]/.test(password)
+      ) {
+        restituisci json(res, 400, {
+          ok: falso,
+          errore: {
+            codice: 'WEAK_PASSWORD',
+            messaggio:
+              'Usa almeno 12 caratteri con maiuscole, minuscole, numeri e simboli.'
+          }
+        });
+      }
+
+      const r = await supabaseFetch(
+        '/auth/v1/user',
+        {
+          metodo: 'PUT',
+          accessToken: auth.session.accessToken,
+          corpo: {
+            password,
+            ...(password attuale
+              { current_password: currentPassword }
+              : {})
+          }
+        }
+      );
+
+      se (!r.response.ok) {
+        restituisci json(res, 400, {
+          ok: falso,
+          errore: {
+            codice: 'PASSWORD_UPDATE_FAILED',
+            messaggio: 'Password non modificata.'
+          }
+        });
+      }
+
+      restituisci json(res, 200, { ok: true });
+    }
+
+    Se (
+      azione === 'pratiche' &&
+      req.method === 'GET'
+    ) {
+      const auth = await requireAdmin(req, res);
+
+      se (!autenticazione) {
+        restituisci json(res, 401, {
+          ok: falso,
+          errore: {
+            codice: 'NON AUTORIZZATO',
+            messaggio: 'Autenticazione richiesta.'
+          }
+        });
+      }
+
+      const r = await dbRequest(
+        'admin_practices?select=*&order=expiry.asc,created_at.desc'
+      );
+
+      se (!r.response.ok) {
+        restituisci json(res, 503, {
+          ok: falso,
+          errore: {
+            codice: 'DATABASE_ERROR',
+            messaggio: 'Archivio non disponibile.'
+          }
+        });
+      }
+
+      restituisci json(res, 200, {
+        ok: vero,
+        pratiche: r.data || []
+      });
+    }
+
+    Se (
+      azione === 'pratiche' &&
+      req.method === 'POST'
+    ) {
+      const auth = await requireAdmin(req, res);
+
+      se (!autenticazione) {
+        restituisci json(res, 401, {
+          ok: falso,
+          errore: {
+            codice: 'NON AUTORIZZATO',
+            messaggio: 'Autenticazione richiesta.'
+          }
+        });
+      }
+
+      pratica costante =
+        cleanPractice(req.body || {});
+
+      const r = await dbRequest(
+        'pratiche_amministrative',
+        {
+          metodo: 'POST',
+          corpo: {
+            ...pratica,
+            creato_da: auth.user.id
+          }
+        }
+      );
+
+      se (!r.response.ok) {
+        restituisci json(res, 400, {
+          ok: falso,
+          errore: {
+            codice: 'DATABASE_ERROR',
+            messaggio:
+              'Impossibile salvare la pratica.'
+          }
+        });
+      }
+
+      restituisci json(res, 200, {
+        ok: vero,
+        pratica: r.data?.[0] || null
+      });
+    }
+
+    Se (
+      azione === 'pratica' &&
+      req.method === 'PATCH'
+    ) {
+      const auth = await requireAdmin(req, res);
+
+      se (!autenticazione) {
+        restituisci json(res, 401, {
+          ok: falso,
+          errore: {
+            codice: 'NON AUTORIZZATO',
+            messaggio: 'Autenticazione richiesta.'
+          }
+        });
+      }
+
       const id = str(req.query?.id);
-      if (!/^[0-9a-f-]{36}$/i.test(id)) return json(res, 400, { ok: false, error: { code: 'INVALID_ID', message: 'Identificativo non valido.' } });
+
+      se (!/^[0-9a-f-]{36}$/i.test(id)) {
+        restituisci json(res, 400, {
+          ok: falso,
+          errore: {
+            codice: 'ID_INVALIDO',
+            messaggio:
+              'Identificativo non valido.'
+          }
+        });
+      }
+
       const patch = {};
-      if ('checked' in (req.body || {})) patch.checked = Boolean(req.body.checked);
-      if ('notes' in (req.body || {})) patch.notes = str(req.body.notes).slice(0, 10000);
-      const r = await dbRequest(`admin_practices?id=eq.${encodeURIComponent(id)}`, { method: 'PATCH', body: patch });
-      if (!r.response.ok) return json(res, 400, { ok: false, error: { code: 'DATABASE_ERROR', message: 'Impossibile aggiornare la pratica.' } });
-      return json(res, 200, { ok: true, practice: r.data?.[0] || null });
+
+      se ('selezionato' in (req.body || {})) {
+        patchchecked = Boolean(
+          req.bodychecked
+        );
+      }
+
+      se ('note' in (req.body || {})) {
+        patch.notes =
+          str(req.body.notes).slice(0, 10000);
+      }
+
+      const r = await dbRequest(
+        `admin_practices?id=eq.${encodeURIComponent(id)}`,
+        {
+          metodo: 'PATCH',
+          corpo: patch
+        }
+      );
+
+      se (!r.response.ok) {
+        restituisci json(res, 400, {
+          ok: falso,
+          errore: {
+            codice: 'DATABASE_ERROR',
+            messaggio:
+              'Impossibile aggiornare la pratica.'
+          }
+        });
+      }
+
+      restituisci json(res, 200, {
+        ok: vero,
+        pratica: r.data?.[0] || null
+      });
     }
 
-    if (action === 'practice' && req.method === 'DELETE') {
+    Se (
+      azione === 'pratica' &&
+      req.method === 'DELETE'
+    ) {
       const auth = await requireAdmin(req, res);
-      if (!auth) return json(res, 401, { ok: false, error: { code: 'UNAUTHORIZED', message: 'Autenticazione richiesta.' } });
+
+      se (!autenticazione) {
+        restituisci json(res, 401, {
+          ok: falso,
+          errore: {
+            codice: 'NON AUTORIZZATO',
+            messaggio: 'Autenticazione richiesta.'
+          }
+        });
+      }
+
       const id = str(req.query?.id);
-      if (!/^[0-9a-f-]{36}$/i.test(id)) return json(res, 400, { ok: false, error: { code: 'INVALID_ID', message: 'Identificativo non valido.' } });
-      const r = await dbRequest(`admin_practices?id=eq.${encodeURIComponent(id)}`, { method: 'DELETE' });
-      if (!r.response.ok) return json(res, 400, { ok: false, error: { code: 'DATABASE_ERROR', message: 'Impossibile eliminare la pratica.' } });
-      return json(res, 200, { ok: true });
+
+      se (!/^[0-9a-f-]{36}$/i.test(id)) {
+        restituisci json(res, 400, {
+          ok: falso,
+          errore: {
+            codice: 'ID_INVALIDO',
+            messaggio:
+              'Identificativo non valido.'
+          }
+        });
+      }
+
+      const r = await dbRequest(
+        `admin_practices?id=eq.${encodeURIComponent(id)}`,
+        {
+          metodo: 'CELERA'
+        }
+      );
+
+      se (!r.response.ok) {
+        restituisci json(res, 400, {
+          ok: falso,
+          errore: {
+            codice: 'DATABASE_ERROR',
+            messaggio:
+              'Impossibile eliminare la pratica.'
+          }
+        });
+      }
+
+      restituisci json(res, 200, { ok: true });
     }
 
-    return json(res, 404, { ok: false, error: { code: 'NOT_FOUND', message: 'Endpoint non trovato.' } });
-  } catch (error) {
-    console.error('CM Admin API error:', error);
-    return json(res, 503, { ok: false, error: { code: 'SERVICE_NOT_CONFIGURED', message: 'Area amministrativa non configurata o temporaneamente non disponibile.' } });
+    restituisci json(res, 404, {
+      ok: falso,
+      errore: {
+        codice: 'NON_TROVATO',
+        messaggio: "Endpoint non trovato."
+      }
+    });
+  } catch (errore) {
+    console.error('Errore API di amministrazione CM:', error);
+
+    restituisci json(res, 503, {
+      ok: falso,
+      errore: {
+        codice: 'SERVICE_NOT_CONFIGURED',
+        messaggio:
+          'Area amministrativa non configurata o temporaneamente non disponibile.'
+      }
+    });
   }
 }
