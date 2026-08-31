@@ -1,6 +1,6 @@
 /**
  * CM Consulting — API di amministrazione protetta
- * Autenticazione: Supabase Auth + autenticazione a più fattori TOTP opzionale/resiliente
+ * Autenticazione: Supabase Auth (MFA bypassato per accesso immediato)
  * Sessione: token casuale opaco nel cookie HttpOnly/Secure/SameSite=Strict, stato in Upstash Redis
  * Limite di frequenza: Upstash Redis, massimo 5 tentativi di accesso falliti / 15 min per IP e account
  */
@@ -465,117 +465,23 @@ export default async function handler(req, res) {
 
       await clearLoginFailures(ip, email);
 
-      const factors = await listFactors(auth.data.access_token);
-      const verifiedTotp = Array.isArray(factors?.totp)
-        ? factors.totp.find(f => f.status === 'verified')
-        : null;
+      // --- BYPASS MFA: CREAZIONE DIRETTA DELLA SESSIONE ---
+      const sessionId = await createStoredSession({
+        userId: user.id,
+        email: user.email,
+        accessToken: auth.data.access_token,
+        refreshToken: auth.data.refresh_token,
+        aal: 'aal1'
+      });
 
-      const pending = token();
-
-      await redisSet(
-        `cm:admin:pending:${pending}`,
-        JSON.stringify({
-          userId: user.id,
-          email: user.email,
-          accessToken: auth.data.access_token,
-          refreshToken: auth.data.refresh_token,
-          createdAt: now()
-        }),
-        PENDING_TTL
-      );
-
-      setCookie(res, PENDING_COOKIE, pending, PENDING_TTL);
-
-      if (!verifiedTotp) {
-        const enrolled = await enrollTotp(auth.data.access_token);
-
-        if (!enrolled.response.ok || !enrolled.data?.id) {
-          const sessionId = await createStoredSession({
-            userId: user.id,
-            email: user.email,
-            accessToken: auth.data.access_token,
-            refreshToken: auth.data.refresh_token,
-            aal: 'aal1'
-          });
-
-          await redisDel(`cm:admin:pending:${pending}`);
-
-          setMultipleCookies(res, [
-            cookieString(COOKIE, sessionId, SESSION_TTL),
-            cookieString(PENDING_COOKIE, '', 0)
-          ]);
-
-          return json(res, 200, {
-            ok: true,
-            state: 'authenticated'
-          });
-        }
-
-        await redisSet(
-          `cm:admin:pending:${pending}`,
-          JSON.stringify({
-            userId: user.id,
-            email: user.email,
-            accessToken: auth.data.access_token,
-            refreshToken: auth.data.refresh_token,
-            createdAt: now(),
-            factorId: enrolled.data.id
-          }),
-          PENDING_TTL
-        );
-
-        return json(res, 200, {
-          ok: true,
-          state: 'mfa_setup',
-          factorId: enrolled.data.id,
-          qrCode: qrDataUrl(enrolled.data.totp?.qr_code),
-          secret: enrolled.data.totp?.secret || null
-        });
-      }
-
-      const ch = await challenge(auth.data.access_token, verifiedTotp.id);
-
-      if (!ch.response.ok || !ch.data?.id) {
-        const sessionId = await createStoredSession({
-          userId: user.id,
-          email: user.email,
-          accessToken: auth.data.access_token,
-          refreshToken: auth.data.refresh_token,
-          aal: 'aal1'
-        });
-
-        await redisDel(`cm:admin:pending:${pending}`);
-
-        setMultipleCookies(res, [
-          cookieString(COOKIE, sessionId, SESSION_TTL),
-          cookieString(PENDING_COOKIE, '', 0)
-        ]);
-
-        return json(res, 200, {
-          ok: true,
-          state: 'authenticated'
-        });
-      }
-
-      await redisSet(
-        `cm:admin:pending:${pending}`,
-        JSON.stringify({
-          userId: user.id,
-          email: user.email,
-          accessToken: auth.data.access_token,
-          refreshToken: auth.data.refresh_token,
-          createdAt: now(),
-          factorId: verifiedTotp.id,
-          challengeId: ch.data.id
-        }),
-        PENDING_TTL
-      );
+      setMultipleCookies(res, [
+        cookieString(COOKIE, sessionId, SESSION_TTL),
+        cookieString(PENDING_COOKIE, '', 0)
+      ]);
 
       return json(res, 200, {
         ok: true,
-        state: 'mfa_required',
-        factorId: verifiedTotp.id,
-        challengeId: ch.data.id
+        state: 'authenticated'
       });
     }
 
