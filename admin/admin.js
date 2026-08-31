@@ -3,16 +3,6 @@ const state = { mode: null, factorId: null, practices: [] };
 
 funzione msg(el, testo, tipo = '') { el.textContent = testo || ''; el.className = `messaggio ${tipo}`; }
 funzione show(view) { ['loginView','mfaView','appView'].forEach(id => $(id).classList.toggle('hidden', id !== view)); }
-funzione normalizeQr(valore) {
-  const qr = String(value ?? '').trim();
-  se (!qr) restituisci '';
-  se (/^data:image\//i.test(qr)) restituisci qr;
-  se (/^<\?xml[\s\S]*<svg[\s>]/i.test(qr) || /^<svg[\s>]/i.test(qr)) {
-    restituisci `data:image/svg+xml;charset=utf-8,${encodeURIComponent(qr)}`;
-  }
-  se (/^https?:\/\//i.test(qr)) restituisci qr;
-  returnqr;
-}
 funzione asincrona api(azione, opzioni = {}) {
   const response = await fetch(`/api/admin?action=${encodeURIComponent(action)}${options.query || ''}`, {
     metodo: options.method || 'GET', credenziali: 'same-origin', intestazioni: { 'Content-Type': 'application/json', ...(options.headers || {}) },
@@ -56,11 +46,8 @@ $('loginForm').addEventListener('submit', async e => {
     se (data.state === 'mfa_setup') {
       $('mfaTitle').textContent = 'Configura il secondo fattore';
       $('mfaIntro').textContent = 'Scansiona il QR con Google Authenticator, Authy o un'app TOTP compatibile, quindi inserisci il codice di 6 cifre.';
-      const qr = normalizeQr(data.qrCode);
-      $('qrImage').removeAttribute('src');
-      se (qr) $('qrImage').src = qr;
-      $('mfaSecret').textContent = data.secret || '';
-      $('qrWrap').classList.remove('hidden'); show('mfaView');
+      $('qrWrap').classList.remove('hidden'); $('qrImage').src = data.qrCode || ''; $('mfaSecret').textContent = data.secret || '';
+      mostra('mfaView');
     } altro {
       $('mfaTitle').textContent = 'Verifica il secondo fattore';
       $('mfaIntro').textContent = 'Inserisci il codice di 6 cifre generato dall'app Authenticator.';
@@ -86,7 +73,7 @@ $('closeModal').onclick = () => $('practiceModal').classList.add('hidden');
 $('practiceBody').addEventListener('click', e => { const btn = e.target.closest('[data-open]'); if (btn) openDetail(btn.dataset.open); });
 $('practiceForm').addEventListener('submit', async e => { e.preventDefault(); const f = new FormData(e.target); try { await api('practices',{method:'POST',body:Object.fromEntries(f.entries())}); e.target.reset(); $('practiceModal').classList.add('hidden'); await loadPractices(); } catch(err) { msg($('practiceMsg'),err.message,'errore'); } });
 $('passwordForm').addEventListener('submit', async e => { e.preventDefault(); msg($('passwordMsg'),''); const p=$('newPassword').value, c=$('confirmPassword').value; if(p!==c){msg($('passwordMsg'),'Le nuove password non coincidono.','error');return;} try{await api('password',{method:'POST',body:{currentPassword:$('currentPassword').value,password:p}});e.target.reset();msg($('passwordMsg'),'Password modificata correttamente.','ok');}catch(err){msg($('passwordMsg'),err.message,'error');} });
-$('addMfaBtn').onclick = async () => { try { const d=await api('mfa-enroll',{method:'POST'}); $('settingsQr').classList.remove('hidden'); $('settingsQrImage').removeAttribute('src'); const qr=normalizeQr(d.qrCode); if(qr) $('settingsQrImage').src=qr; $('settingsSecret').textContent=d.secret||''; $('settingsMfaForm').dataset.factorId=d.factorId; } catch(e){msg($('mfaSettingsMsg'),e.message,'errore');} };
+$('addMfaBtn').onclick = async () => { try { const d=await api('mfa-enroll',{method:'POST'}); $('settingsQr').classList.remove('hidden'); $('settingsQrImage').src=d.qrCode||''; $('settingsSecret').textContent=d.secret||''; $('settingsMfaForm').dataset.factorId=d.factorId; } catch(e){msg($('mfaSettingsMsg'),e.message,'errore');} };
 $('settingsMfaForm').addEventListener('submit',async e=>{e.preventDefault();try{await api('mfa-add-verify',{method:'POST',body:{factorId:e.currentTarget.dataset.factorId,code:$('settingsMfaCode').value.trim()}});e.currentTarget.reset();$('settingsQr').classList.add('hidden');msg($('mfaSettingsMsg'),'Nuovo dispositivo MFA verificato.','ok');}catch(err){msg($('mfaSettingsMsg'),err.message,'errore');}});
 document.querySelectorAll('.nav-btn').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));btn.classList.add('active');$('practicesSection').classList.toggle('hidden',btn.dataset.section!=='practices');$('settingsSection').classList.toggle('hidden',btn.dataset.section!=='settings');}));
 (async()=>{try{const s=await api('session');if(s.authenticated) await enterApp(s.user.email);else show('loginView');}catch{show('loginView');}})();
