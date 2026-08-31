@@ -222,9 +222,30 @@ function cleanPractice(body) {
 
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
-  if (!originAllowed(req)) return json(res, 403, { ok: false, error: { code: 'BAD_ORIGIN', message: 'Origine non consentita.' } });
 
   const action = str(req.query?.action || 'session');
+
+  // --- MITIGAZIONE TEMPORANEA DI SICUREZZA ---
+  // Blocca il login finché il flusso MFA non è ripristinato.
+  // Fail-closed: se la variabile ADMIN_LOGIN_DISABLED non esiste su Vercel,
+  // il login resta BLOCCATO di default. Per riabilitarlo, impostare
+  // ADMIN_LOGIN_DISABLED = false nelle variabili d'ambiente di Vercel.
+  if (
+    action === 'login' &&
+    req.method === 'POST' &&
+    process.env.ADMIN_LOGIN_DISABLED !== 'false'
+  ) {
+    return json(res, 503, {
+      ok: false,
+      error: {
+        code: 'ADMIN_LOGIN_DISABLED',
+        message: 'Accesso amministratore temporaneamente disabilitato.'
+      }
+    });
+  }
+  // --- FINE MITIGAZIONE TEMPORANEA ---
+
+  if (!originAllowed(req)) return json(res, 403, { ok: false, error: { code: 'BAD_ORIGIN', message: 'Origine non consentita.' } });
 
   try {
     if (action === 'public-config' && req.method === 'GET') {
