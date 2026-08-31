@@ -1,0 +1,23 @@
+CM CONSULTING V12.3 - AMBIENTE PHOTO ASSET AUDIT
+
+Replaced legacy Ambiente visual assets with a photographic WebP set:
+- ambiente-retina-768.webp  768x432
+- ambiente-retina-1280.webp 1280x720
+- ambiente-retina-1920.webp 1920x1080
+- ambiente-retina-2560.webp 2560x1440
+- ambiente-retina-3840.webp 3840x2160
+
+Updated:
+- index.html
+- ambiente.html
+- fideiussioni.html
+
+All Ambiente picture blocks use the five responsive WebP sources.
+Legacy environment assets removed from assets/:
+- ambiente.svg
+- ambiente-4k.png
+
+CSS already provides 16:9 + object-fit:cover for service images.
+
+
+V12.4 verification: nessun riferimento ai vecchi SVG Ambiente resta nel codice HTML/CSS/JS pubblicabile.

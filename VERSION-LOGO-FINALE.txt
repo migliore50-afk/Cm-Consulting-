@@ -1,0 +1,9 @@
+CM CONSULTING — LOGO FINALE
+Version: V12.7.1
+Nuovo logo ufficiale HD: assets/images/logo-cm-consulting.webp
+Simbolo favicon/touch: assets/images/logo-cm-symbol.png
+Favicon: favicon.ico
+Touch icon: assets/apple-touch-icon.png
+Sostituzione globale HTML: completata
+Effetto Shine header: CSS @keyframes cmLogoShine
+Assistente CM: simbolo ufficiale integrato nel widget/pannello

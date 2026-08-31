@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /area-cm
+Disallow: /api/
+Disallow: /admin/reset
+
+Sitemap: https://www.cm-consulting.info/sitemap.xml

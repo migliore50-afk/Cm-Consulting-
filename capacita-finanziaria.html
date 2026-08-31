@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+
+<html lang="it"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Capacità finanziaria | CM Consulting</title><meta content="index,follow" name="robots"/><meta content="Percorso per la capacità finanziaria degli operatori dell'autotrasporto: raccolta guidata dei dati dell'impresa, mezzi e documentazione disponibile." name="description"/><link href="https://www.cm-consulting.info/capacita-finanziaria" rel="canonical"/><meta content="Capacità finanziaria | CM Consulting" property="og:title"/><meta content="Percorso per la capacità finanziaria degli operatori dell'autotrasporto: raccolta guidata dei dati dell'impresa, mezzi e documentazione disponibile." property="og:description"/><meta content="https://www.cm-consulting.info/capacita-finanziaria" property="og:url"/><meta content="https://www.cm-consulting.info/assets/images/logo-cm-consulting.webp" property="og:image"/><link href="assets/style.css" rel="stylesheet"/><link href="site.webmanifest" rel="manifest"/>
+<meta content="website" property="og:type"/>
+<meta content="CM Consulting" property="og:site_name"/>
+<meta content="it_IT" property="og:locale"/>
+<link href="assets/v9-final.css" rel="stylesheet"/><style>
+.cm-capacity-photo{display:block;width:100%;aspect-ratio:16/9;overflow:hidden;border-radius:16px;background:#eaf6fa}
+.cm-capacity-photo picture{display:block;width:100%;height:100%}
+.cm-capacity-photo img{display:block;width:100%;height:100%;max-width:none;object-fit:cover;object-position:center center}
+</style><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="512x512" href="assets/images/logo-cm-symbol.png"><link rel="apple-touch-icon" href="assets/apple-touch-icon.png"></head><body>
+<header class="header"><div class="wrap nav"><a class="brand" href="/"><img alt="CM Consulting" decoding="async" height="559" src="assets/images/logo-cm-consulting.webp" width="1494"/></a><button aria-label="Apri menu di navigazione" class="menu" id="menu">☰</button><nav class="links" id="links"><a href="/">HOME</a><a href="/fideiussioni">FIDEIUSSIONI</a><a class="active" href="/capacita-finanziaria">CAPACITÀ FINANZIARIA</a><a href="/#metodo">CHI SIAMO</a><a href="/#servizi">SERVIZI</a><a href="/contatti">CONTATTI</a><a class="nav-generic-cta" href="/richiedi-preventivo?esigenza=generica">NON SAI QUALE GARANZIA?</a></nav><a class="header-cta" href="/richiedi-preventivo?tipo=capacita">RICHIEDI PREVENTIVO</a></div></header>
+<section class="page-hero"><div class="wrap"><div class="crumb"><a href="/">Home</a> / Capacità finanziaria</div><div class="eyebrow">Percorso dedicato all’autotrasporto</div><h1>Capacità finanziaria</h1><p>Un percorso guidato per raccogliere i dati dell’impresa, il numero dei mezzi e la documentazione disponibile. La verifica finale della pratica resta a CM Consulting.</p></div></section>
+<section class="section"><div class="wrap split"><div class="panel"><div class="cm-capacity-photo"><picture>
+<source sizes="(max-width: 900px) 92vw, 50vw" srcset="assets/capacita-retina-768.webp 768w, assets/capacita-retina-1280.webp 1280w, assets/capacita-retina-1920.webp 1920w, assets/capacita-retina-2560.webp 2560w, assets/capacita-retina-3840.webp 3840w" type="image/webp"/>
+<img alt="Autotrasporto e capacità finanziaria — flotta di camion" decoding="async" height="1080" loading="lazy" sizes="(max-width: 900px) 92vw, 50vw" src="assets/capacita-retina-1920.webp" srcset="assets/capacita-retina-768.webp 768w, assets/capacita-retina-1280.webp 1280w, assets/capacita-retina-1920.webp 1920w, assets/capacita-retina-2560.webp 2560w, assets/capacita-retina-3840.webp 3840w" width="1920">
+</img></picture></div><div class="eyebrow">Prima di iniziare</div><h3>Ti chiediamo solo ciò che serve</h3><p>Il percorso è pensato per essere semplice anche da smartphone. In base alle risposte, alcune richieste documentali vengono mostrate solo quando pertinenti.</p><ul class="list"><li>Dati dell’impresa</li><li>Numero e informazioni sui mezzi</li><li>Indicazione se l’impresa redige un bilancio</li><li>Upload della documentazione disponibile</li><li>Riepilogo finale prima dell’invio</li></ul><div class="notice" style="margin-top:18px">La documentazione e le modalità applicabili possono dipendere dalla situazione dell’impresa e dalle istruzioni dell’ufficio competente. Il sito non sostituisce la verifica della pratica.</div></div>
+<div class="form-card"><div class="form-head"><h2>Avvia la richiesta</h2><p>Compila i passaggi. Puoi salvare la pratica sul dispositivo e riprenderla.</p></div><div class="form-body"><form id="capacityForm"><div id="step1"><div class="field-grid"><div class="field"><label>Ragione sociale *</label><input name="company" required=""/></div><div class="field"><label>Partita IVA / Codice fiscale *</label><input name="vat" required=""/></div><div class="field"><label>Comune sede impresa *</label><input name="city" required=""/></div><div class="field"><label>Provincia *</label><input maxlength="2" name="province" required=""/></div><div class="field"><label>Nome e cognome referente *</label><input name="contact" required=""/></div><div class="field"><label>Email *</label><input name="email" required="" type="email"/></div></div><div style="margin-top:18px"><label style="display:block;font-size:12px;font-weight:900;margin-bottom:8px">Numero dei mezzi *</label><div style="display:flex;gap:10px;align-items:center"><button class="small-btn" onclick="changeVehicles(-1)" type="button">−</button><strong id="vehicleCount" style="font-size:24px;min-width:35px;text-align:center">1</strong><button class="small-btn" onclick="changeVehicles(1)" type="button">+</button></div><div id="vehicles" style="display:grid;gap:10px;margin-top:12px"></div></div><div style="display:flex;justify-content:flex-end;margin-top:22px"><button class="btn dark" onclick="nextCapacity(2)" type="button">CONTINUA →</button></div></div>
+<div class="hidden" id="step2"><div class="field"><label>La tua impresa redige un bilancio? *</label><div class="choice-grid" style="margin-top:7px"><div class="choice-radio"><input id="bilY" name="bilancio" type="radio" value="si"/><label for="bilY">Sì</label></div><div class="choice-radio"><input id="bilN" name="bilancio" type="radio" value="no"/><label for="bilN">No</label></div></div></div><div class="upload-zone hidden" id="bilancioUpload" style="margin-top:16px"><b>Bilancio aggiornato</b><div style="font-size:12px;color:var(--muted)">Caricalo se l’impresa lo redige. Il file viene associato alla richiesta.</div><input accept="application/pdf,.pdf,.doc,.docx" id="bilancioFile" type="file"/></div><div class="upload-zone" style="margin-top:16px"><b>Documentazione disponibile</b><div style="font-size:12px;color:var(--muted)">Puoi caricare il modello ufficiale compilato e firmato o altra documentazione utile alla valutazione.</div><input accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" id="docs" multiple="" type="file"/><div class="file-list" id="files"></div></div><div class="notice" style="margin-top:16px">Il modello IDOFIN e gli eventuali altri modelli ufficiali devono essere quelli vigenti e pertinenti alla pratica. Non inseriamo modelli inventati o non verificati.</div><div style="display:flex;justify-content:space-between;margin-top:22px"><button class="small-btn" onclick="nextCapacity(1)" type="button">← INDIETRO</button><button class="btn dark" onclick="nextCapacity(3)" type="button">RIEPILOGO →</button></div></div>
+<div class="hidden" id="step3"><div class="summary" id="capacitySummary"></div><div class="notice" style="margin-top:14px">Dopo l’invio, la richiesta deve essere verificata. Il sito non determina automaticamente l’esito della pratica.</div><label class="privacy-check" style="display:flex;gap:10px;align-items:flex-start;margin:18px 0;font-size:13px"><input id="privacyAccepted" name="privacyAccepted" required="" type="checkbox"/> <span>Ho letto l’<a href="/privacy" rel="noopener" target="_blank">informativa privacy</a> e accetto il trattamento dei dati necessario alla gestione della richiesta.</span></label><div style="display:flex;justify-content:space-between;margin-top:22px"><button class="small-btn" onclick="nextCapacity(2)" type="button">← MODIFICA</button><button class="btn gold" type="submit">INVIA RICHIESTA →</button></div></div>
+<div class="hidden" id="capacityDone"><div class="success"><b>Richiesta registrata sul dispositivo.</b><br/>La richiesta è stata registrata correttamente. Verrai ricontattato per i prossimi passaggi.</div></div></form></div></div></div></section>
+<section class="section alt"><div class="wrap"><div class="section-head"><div class="eyebrow">Riferimento normativo</div><h2>Documentazione ufficiale</h2><p>La circolare MIT n. 4499 del 17 febbraio 2026 riguarda la dimostrazione annuale del requisito di idoneità finanziaria per l’esercizio della professione di trasportatore su strada.</p><a class="btn dark" href="https://www.mit.gov.it/normativa/circolare-protocollo-n-4499-del-17022026" rel="noopener" target="_blank">VEDI LA CIRCOLARE MIT →</a></div></div></section>
+<script src="assets/app.js"></script><script>let vehicles=1;
+let selectedFiles=[];
+
+const f=document.getElementById('capacityForm');
+
+function renderVehicles(){
+  document.getElementById('vehicleCount').textContent=vehicles;
+  const box=document.getElementById('vehicles');
+  box.innerHTML='';
+  for(let i=1;i<=vehicles;i++){
+    box.innerHTML+=`<div class="field-grid" style="padding:12px;border:1px solid var(--line);border-radius:10px">
+      <div class="field"><label>Mezzo ${i} — tipologia</label>
+      <select name="vehicle_type_${i}"><option>Autoveicolo</option><option>Rimorchio</option><option>Semirimorchio</option><option>Altro</option></select></div>
+      <div class="field"><label>Targa (se disponibile)</label><input name="vehicle_plate_${i}"></div>
+    </div>`;
+  }
+}
+
+function changeVehicles(n){
+  vehicles=Math.max(1,Math.min(100,vehicles+n));
+  renderVehicles();
+}
+
+function nextCapacity(n){
+  [1,2,3].forEach(i=>document.getElementById('step'+i).classList.toggle('hidden',i!==n));
+  if(n===3) buildSummary();
+}
+
+document.getElementById('bilY').addEventListener('change',()=>document.getElementById('bilancioUpload').classList.remove('hidden'));
+document.getElementById('bilN').addEventListener('change',()=>document.getElementById('bilancioUpload').classList.add('hidden'));
+
+document.getElementById('docs').addEventListener('change',e=>{
+  selectedFiles=[...(document.getElementById('bilancioFile').files||[]),...e.target.files];
+  renderFiles();
+});
+
+document.getElementById('bilancioFile').addEventListener('change',e=>{
+  selectedFiles=[...(e.target.files||[]),...document.getElementById('docs').files];
+  renderFiles();
+});
+
+function renderFiles(){
+  document.getElementById('files').innerHTML=selectedFiles.map(x=>`<div class="file-item"><span>📎 ${x.name}</span><span>${Math.round(x.size/1024)} KB</span></div>`).join('')
+    ||'<span style="font-size:12px;color:var(--muted)">Nessun file selezionato.</span>';
+}
+
+function formData(){return new FormData(f)}
+
+function buildSummary(){
+  const d=formData();
+  const company=d.get('company'),city=d.get('city'),province=d.get('province'),bil=d.get('bilancio')||'non indicato';
+  const html=`<div><strong>RICHIESTA CAPACITÀ FINANZIARIA</strong><br><br>
+    <b>Impresa:</b> ${company}<br><b>P.IVA/C.F.:</b> ${d.get('vat')}<br>
+    <b>Sede:</b> ${city} (${province})<br><b>Referente:</b> ${d.get('contact')}<br>
+    <b>Email:</b> ${d.get('email')}<br><b>Mezzi:</b> ${vehicles}<br>
+    <b>Bilancio:</b> ${bil}<br><b>Documenti:</b> ${selectedFiles.length}</div>`;
+  document.getElementById('capacitySummary').innerHTML=html;
+}
+
+function fileToBase64(file){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>resolve(String(reader.result).split(',')[1]||'');
+    reader.onerror=reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function submitCapacity(){
+  const privacy=document.getElementById('privacyAccepted');
+  if(!privacy.checked){privacy.focus();return;}
+
+  const d=formData();
+  const attachments=[];
+  let total=0;
+
+  for(const file of selectedFiles){
+    if(file.size>5*1024*1024){alert(`Il file "${file.name}" supera il limite di 5 MB.`);return;}
+    total+=file.size;
+    if(total>10*1024*1024){alert('La dimensione complessiva degli allegati supera 10 MB.');return;}
+    attachments.push({filename:file.name,contentType:file.type,content:await fileToBase64(file)});
+  }
+
+  const text=[
+    'Richiesta capacità finanziaria',
+    `Impresa: ${d.get('company')}`,
+    `P.IVA/C.F.: ${d.get('vat')}`,
+    `Sede: ${d.get('city')} (${d.get('province')})`,
+    `Referente: ${d.get('contact')}`,
+    `Email: ${d.get('email')}`,
+    `Numero mezzi: ${vehicles}`,
+    `Bilancio: ${d.get('bilancio')||'non indicato'}`,
+    ...Array.from({length:vehicles},(_,i)=>`Mezzo ${i+1}: ${d.get(`vehicle_type_${i+1}`)||''} / ${d.get(`vehicle_plate_${i+1}`)||''}`)
+  ].join('\n');
+
+  const button=f.querySelector('button[type="submit"]');
+  button.disabled=true;
+  button.textContent='INVIO IN CORSO…';
+
+  try{
+    const response=await fetch('/api/submit-request',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        subject:'Richiesta capacità finanziaria',
+        text,
+        email:d.get('email'),
+        privacyAccepted:true,
+        attachments
+      })
+    });
+    const result=await response.json().catch(()=>({}));
+    if(!response.ok || !result.ok) throw new Error(result?.error?.message||'Invio non riuscito.');
+    document.getElementById('step3').classList.add('hidden');
+    document.getElementById('capacityDone').classList.remove('hidden');
+  }catch(error){
+    alert(error.message||'Non è stato possibile inviare la richiesta. Riprova.');
+    button.disabled=false;
+    button.textContent='INVIA RICHIESTA →';
+  }
+}
+
+f.addEventListener('submit',e=>{e.preventDefault();submitCapacity()});
+renderVehicles();
+renderFiles();</script><div class="ai-panel" id="aiPanel"><div class="ai-head"><div class="ai-title"><img alt="Assistente CM" decoding="async" height="432" src="assets/assistente-cm-retina-768.webp" width="768"/><b>ASSISTENTE CM · ORIENTAMENTO</b></div><button class="ai-close" onclick="closeAI()">×</button></div><div class="ai-content" id="aiContent"></div><div class="ai-note">Assistente digitale di orientamento. Non sostituisce la valutazione professionale né la documentazione richiesta.</div></div>
+<section class="cm-service-nav" aria-label="Navigazione tra i servizi">
+  <div class="cm-service-nav-inner">
+    <a class="cm-service-nav-link cm-service-nav-prev" href="appalti.html" aria-label="Servizio precedente: Appalti">
+      <span class="cm-service-nav-direction">←</span>
+      <span><small>Servizio precedente</small><strong>Appalti</strong></span>
+    </a>
+    <a class="cm-service-nav-overview" href="fideiussioni.html">Torna a tutte le garanzie</a>
+    <a class="cm-service-nav-link cm-service-nav-next" href="locazioni.html" aria-label="Servizio successivo: Locazioni">
+      <span><small>Servizio successivo</small><strong>Locazioni</strong></span>
+      <span class="cm-service-nav-direction">→</span>
+    </a>
+  </div>
+</section>
+
+<footer class="cm-footer">
+<div class="cm-footer-main">
+<div class="cm-footer-brand">
+<img alt="CM Consulting di Carmelo Migliore" decoding="async" height="559" loading="lazy" src="assets/images/logo-cm-consulting.webp" width="1494"/>
+<p><strong>Intermediazione assicurativa</strong></p>
+<p class="cm-footer-description">Fideiussioni, garanzie e soluzioni per imprese, professionisti e operatori del settore.</p>
+</div>
+<div class="cm-footer-column"><h3>CM Consulting</h3><ul>
+<li><a href="/">Home</a></li><li><a href="/fideiussioni">Fideiussioni</a></li>
+<li><a href="/capacita-finanziaria">Capacità finanziaria</a></li><li><a href="/appalti-pubblici">Appalti pubblici</a></li>
+<li><a href="/locazioni">Locazioni</a></li><li><a href="/dogane">Dogane</a></li><li><a href="/ambiente">Ambiente</a></li>
+</ul></div>
+<div class="cm-footer-column"><h3>Informazioni</h3><ul>
+<li><a href="/trasparenza">Trasparenza</a></li><li><a href="/privacy">Privacy</a></li>
+<li><a href="/cookie">Cookie</a></li><li><a href="/reclami-e-arbitro-assicurativo">Reclami e Arbitro Assicurativo</a></li><li><a href="/contatti">Contatti</a></li>
+</ul></div>
+<div class="cm-footer-column cm-footer-legal"><h3>Dati societari e iscrizione</h3>
+      <p><strong>CM Consulting di Carmelo Migliore</strong></p>
+      <p><strong>Intermediazione assicurativa</strong></p>
+      <p>P. IVA: <strong>14416401009</strong></p>
+      <p>Codice Fiscale: <strong>MGLCML71M25L219S</strong></p>
+      <p>REA: <strong>RM – 1519347</strong></p>
+      <p>Codice Univoco: <strong>KRRH6B9</strong></p>
+      <p>Sede legale: <strong>Via Giacomo Puccini 4, 10092 Beinasco (TO)</strong></p>
+      <p>RUI: <strong>Sezione E</strong> — n. <strong>E000437237</strong></p>
+      <p>Data di iscrizione RUI: <strong>24/01/2013</strong></p>
+      <p>Telefono: <a href="tel:+393286382612"><strong>328 6382612</strong></a></p>
+      <p>Email: <a href="mailto:info@cm-consulting.info">info@cm-consulting.info</a></p>
+      <p>PEC: <a href="mailto:carmelo.migliore@legalmail.it">carmelo.migliore@legalmail.it</a></p>
+      <p>Sito: <a href="https://www.cm-consulting.info/" target="_blank" rel="noopener noreferrer">www.cm-consulting.info</a></p>
+      <p><strong>Soggetto alla vigilanza dell’IVASS.</strong></p>
+      <a class="cm-rui-link" href="https://www.ivass.it/consumatori/rui/index.html" target="_blank" rel="noopener noreferrer">Verifica iscrizione nel Registro IVASS →</a>
+      <a class="cm-rui-link" href="/reclami-e-arbitro-assicurativo">Presentazione reclami e Arbitro Assicurativo →</a>
+    </div>
+  </div>
+  <div class="cm-footer-bottom"><p>© <span class="cm-footer-year"></span> CM Consulting di Carmelo Migliore. Tutti i diritti riservati.</p><p>Registro Unico degli Intermediari — IVASS</p></div>
+</footer>
+<script>document.querySelectorAll(".cm-footer-year").forEach(e=>e.textContent=new Date().getFullYear());</script>
+</body></html>

@@ -1,0 +1,16 @@
+CM Consulting — V12.7 FINAL
+
+Aggiornamenti principali:
+- Assistente CM con mappatura verso le pagine verticali specifiche;
+- opzione generica verso richiedi-preventivo?esigenza=generica;
+- badge visivo Assistente CM;
+- lettura vocale Speech Synthesis;
+- input vocale Speech Recognition con passaggio della trascrizione al form generico;
+- form generico con descrizione obbligatoria e upload multiplo;
+- feedback visuale acquisizione/preparazione valutazione documentale;
+- navigazione sequenziale Appalti → Capacità Finanziaria → Locazioni → Dogane → Ambiente → Appalti;
+- email completa a info@cm-consulting.info;
+- email automatica di conferma al cliente;
+- avviso specifico in assenza di allegati;
+- hook webhook opzionale per WhatsApp (Make/Zapier/Twilio o endpoint compatibile);
+- pulsante WhatsApp prioritario nella schermata di successo.

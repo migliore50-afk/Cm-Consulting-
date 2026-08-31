@@ -1,0 +1,153 @@
+/* V9 final technical pass */
+html,body{width:100%;max-width:100%;overflow-x:hidden}
+img{display:block;max-width:100%;height:auto}
+.hero-stage,.product-card picture,.ai-portrait{overflow:hidden}
+.hero-stage picture{width:100%;height:100%}
+.hero-stage picture img{width:100%;height:100%;object-fit:cover}
+.product-card picture{width:100%;aspect-ratio:12/7}
+.product-card picture img{width:100%;height:100%;object-fit:cover}
+.hero-grid{grid-template-columns:minmax(0,44%) minmax(0,56%);height:clamp(430px,40.625vw,520px)}
+.hero-copy{min-width:0;padding:clamp(28px,3.2vw,48px) clamp(18px,3.3vw,42px) clamp(28px,3.2vw,48px) 0}
+.hero h1{font-size:clamp(36px,4.6vw,68px);line-height:.98}
+.hero-copy p{font-size:clamp(13px,1.22vw,18px);line-height:1.58}
+.stage-copy{left:clamp(16px,3vw,38px);right:clamp(16px,3vw,38px);bottom:clamp(16px,2.4vw,30px)}
+.stage-copy h2{font-size:clamp(22px,2.4vw,34px)}
+.stage-copy p{font-size:clamp(11px,1vw,16px)}
+.stage-controls{right:clamp(14px,2.2vw,28px);top:clamp(14px,2.2vw,28px)}
+.stage-controls button{width:clamp(38px,3.2vw,44px);height:clamp(38px,3.2vw,44px)}
+.product-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,1.5vw,18px)}
+.product-body h3{font-size:clamp(18px,1.75vw,22px)}
+.product-body p{font-size:clamp(12px,1.1vw,14px)}
+.ai-panel{width:min(440px,calc(100vw - 24px));right:clamp(12px,2vw,22px);bottom:clamp(12px,2vw,22px)}
+.ai-portrait{height:auto;aspect-ratio:16/10}
+.ai-portrait img{width:100%;height:100%;object-fit:cover;object-position:center 19%}
+@media(max-width:1100px) and (min-width:761px){
+ .header{height:clamp(68px,6.2vw,76px)}
+ .brand{width:clamp(180px,20vw,220px)}
+ .links,.header-cta{display:none}.menu{display:block}
+ .hero-grid{grid-template-columns:minmax(0,44%) minmax(0,56%);height:clamp(430px,50vw,500px)}
+ .hero h1{font-size:clamp(36px,4.5vw,52px)}
+ .hero-copy p{font-size:clamp(13px,1.25vw,15px)}
+ .product-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:760px){
+ .wrap{width:calc(100% - 32px)}
+ .header{height:74px}.brand{width:220px;max-width:72vw}
+ .hero-grid{grid-template-columns:1fr;height:auto}
+ .hero-copy{padding:clamp(34px,8vw,54px) 0 clamp(24px,5vw,34px)}
+ .hero h1{font-size:clamp(38px,11vw,52px)}
+ .hero-stage{height:auto;aspect-ratio:16/10}
+ .product-grid{grid-template-columns:1fr}
+ .product-card picture{aspect-ratio:16/9}
+ .actions .btn{width:100%}
+ .ai-panel{width:calc(100vw - 20px);right:10px;bottom:10px}
+}
+
+/* V11 — full-card CTA interaction + responsive illustration assets */
+.product-card.card-clickable{cursor:pointer}
+.product-card.card-clickable:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.product-card.card-clickable:hover .product-body span,.product-card.card-clickable:hover .product-body a{color:var(--gold);transform:translateX(2px)}
+.product-body a,.product-body span{font-size:clamp(13px,1vw,15px);font-weight:950;letter-spacing:.1px;transition:.2s}
+.product-card picture{display:block}
+.product-card picture img{display:block;width:100%;height:100%;object-fit:cover}
+
+/* CM CONSULTING — OFFICIAL LOGO HD / SHINE */
+.brand{
+  position:relative;
+  display:flex;
+  align-items:center;
+  width:320px;
+  height:74px;
+  overflow:hidden;
+  isolation:isolate;
+  border-radius:8px;
+}
+.brand img{
+  display:block;
+  width:100%;
+  height:100%;
+  aspect-ratio:1494 / 559;
+  object-fit:contain;
+  object-position:left center;
+  flex:0 0 100%;
+  position:relative;
+  z-index:1;
+}
+.brand::after{
+  content:"";
+  position:absolute;
+  z-index:2;
+  top:-25%;
+  bottom:-25%;
+  left:-34%;
+  width:24%;
+  pointer-events:none;
+  transform:skewX(-18deg);
+  background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0) 20%,rgba(255,248,220,.20) 38%,rgba(255,255,255,.92) 50%,rgba(225,183,78,.32) 62%,rgba(255,255,255,0) 82%,transparent 100%);
+  filter:blur(1.4px);
+  mix-blend-mode:screen;
+  opacity:0;
+  animation:cmLogoShine 4.8s cubic-bezier(.42,0,.22,1) infinite;
+}
+.brand:hover img,.brand:focus-visible img{
+  filter:drop-shadow(0 0 4px rgba(213,168,63,.42)) drop-shadow(0 2px 7px rgba(9,37,66,.13));
+  transform:translateY(-.5px);
+  transition:filter .35s ease,transform .35s ease;
+}
+@keyframes cmLogoShine{
+  0%,64%{left:-34%;opacity:0}
+  70%{opacity:.72}
+  88%{left:116%;opacity:.86}
+  100%{left:116%;opacity:0}
+}
+.cm-footer-brand img{
+  width:290px;
+  max-width:100%;
+  height:auto;
+  aspect-ratio:1494 / 559;
+  object-fit:contain;
+  object-position:left center;
+  background:#fff;
+  border-radius:8px;
+  padding:7px;
+  box-sizing:border-box;
+}
+.ai-brand-mark{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:44px;
+  height:44px;
+  flex:0 0 44px;
+  border-radius:50%;
+  overflow:hidden;
+  background:#fff;
+  border:1px solid rgba(213,168,63,.45);
+  box-shadow:0 5px 16px rgba(6,30,56,.14);
+}
+.ai-brand-mark img{width:100%;height:100%;object-fit:cover;display:block}
+.cm-ai-fab-logo{
+  width:28px;
+  height:28px;
+  flex:0 0 28px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  border-radius:50%;
+  background:#fff;
+  border:1px solid rgba(213,168,63,.42);
+}
+.cm-ai-fab-logo img{width:100%;height:100%;object-fit:cover;display:block}
+.cm-ai-fab .cm-ai-fab-icon{display:none}
+@media(max-width:760px){
+  .brand{width:220px;max-width:72vw;height:64px}
+  .brand::after{animation-duration:5.6s}
+  .cm-footer-brand img{width:min(240px,100%)}
+  .ai-brand-mark{width:38px;height:38px;flex-basis:38px}
+  .cm-ai-fab-logo{width:24px;height:24px;flex-basis:24px}
+}
+@media(prefers-reduced-motion:reduce){
+  .brand::after{animation:none;display:none}
+  .brand:hover img,.brand:focus-visible img{transform:none}
+}

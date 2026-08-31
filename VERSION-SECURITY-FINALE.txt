@@ -1,0 +1,13 @@
+CM Consulting — V12.8 Security Finale
+
+Area amministratore: /admin
+Identity: Supabase Auth
+MFA: TOTP obbligatoria
+Sessione: HttpOnly + Secure + SameSite=Strict, opaque server-side token in Upstash Redis
+Idle timeout: 15 minuti
+Absolute session timeout: 8 ore
+Login brute-force: 5 errori / 15 minuti per IP + account
+Database: Supabase Postgres + RLS + service role server-side
+Upload: MIME allowlist + magic bytes + active-content heuristics + optional private antivirus webhook
+Headers: HSTS, CSP, X-Frame-Options DENY, X-Content-Type-Options nosniff, Referrer-Policy, Permissions-Policy
+Legacy /area-cm: redirect 301 -> /admin

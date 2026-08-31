@@ -1,0 +1,22 @@
+{
+  "name": "CM Consulting",
+  "short_name": "CM Consulting",
+  "lang": "it-IT",
+  "display": "standalone",
+  "theme_color": "#061e38",
+  "background_color": "#f6f8fa",
+  "icons": [
+    {
+      "src": "assets/images/logo-cm-symbol.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

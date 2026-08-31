@@ -1,0 +1,227 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/index.html",
+      "destination": "/",
+      "statusCode": 301
+    },
+    {
+      "source": "/fideiussioni.html",
+      "destination": "/fideiussioni",
+      "statusCode": 301
+    },
+    {
+      "source": "/capacita-finanziaria.html",
+      "destination": "/capacita-finanziaria",
+      "statusCode": 301
+    },
+    {
+      "source": "/dogane.html",
+      "destination": "/dogane",
+      "statusCode": 301
+    },
+    {
+      "source": "/locazioni.html",
+      "destination": "/locazioni",
+      "statusCode": 301
+    },
+    {
+      "source": "/appalti.html",
+      "destination": "/appalti-pubblici",
+      "statusCode": 301
+    },
+    {
+      "source": "/appalti-pubblici.html",
+      "destination": "/appalti-pubblici",
+      "statusCode": 301
+    },
+    {
+      "source": "/ambiente.html",
+      "destination": "/ambiente",
+      "statusCode": 301
+    },
+    {
+      "source": "/altre-esigenze.html",
+      "destination": "/altre-esigenze",
+      "statusCode": 301
+    },
+    {
+      "source": "/contatti.html",
+      "destination": "/contatti",
+      "statusCode": 301
+    },
+    {
+      "source": "/richiedi-preventivo.html",
+      "destination": "/richiedi-preventivo",
+      "statusCode": 301
+    },
+    {
+      "source": "/trasparenza.html",
+      "destination": "/trasparenza",
+      "statusCode": 301
+    },
+    {
+      "source": "/privacy.html",
+      "destination": "/privacy",
+      "statusCode": 301
+    },
+    {
+      "source": "/cookie.html",
+      "destination": "/cookie",
+      "statusCode": 301
+    },
+    {
+      "source": "/area-cm.html",
+      "destination": "/admin",
+      "statusCode": 301
+    },
+    {
+      "source": "/reclami-e-arbitro-assicurativo.html",
+      "destination": "/reclami-e-arbitro-assicurativo",
+      "statusCode": 301
+    },
+    {
+      "source": "/admin/index.html",
+      "destination": "/admin",
+      "statusCode": 301
+    },
+    {
+      "source": "/admin/reset.html",
+      "destination": "/admin/reset",
+      "statusCode": 301
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=63072000; includeSubDomains; preload"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(self), geolocation=(), payment=()"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self' https://wa.me; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https:; media-src 'self' data:; upgrade-insecure-requests"
+        }
+      ]
+    },
+    {
+      "source": "/admin/(.*)",
+      "headers": [
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=63072000; includeSubDomains; preload"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(self), geolocation=(), payment=()"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self'; font-src 'self'; media-src 'none'; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
+    },
+    {
+      "source": "/api/admin(.*)",
+      "headers": [
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=63072000; includeSubDomains; preload"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(self), geolocation=(), payment=()"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'none'; frame-ancestors 'none'; base-uri 'none'"
+        }
+      ]
+    },
+    {
+      "source": "/admin/reset(.*)",
+      "headers": [
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=63072000; includeSubDomains; preload"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(self), geolocation=(), payment=()"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; img-src 'self' data:; style-src 'self'; script-src 'self' https://cdn.jsdelivr.net; connect-src 'self' https://*.supabase.co; font-src 'self'; upgrade-insecure-requests"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+CM CONSULTING — V9 CHECKLIST TECNICA
+
+VERIFICATO NEL BUILD:
+- pagine HTML presenti e link interni risolti
+- navigazione Home / Fideiussioni / Capacità finanziaria / Chi siamo / Servizi / Contatti
+- galleria Home con asset responsive 768/1280/1920/2560/3840
+- Assistente CM presente nelle pagine pubbliche e con immagine responsive
+- moduli guidati presenti e validazione client-side
+- layout fluido per finestre desktop ridotte e mobile
+- overflow orizzontale disabilitato
+
+DA VERIFICARE SU VERCEL:
+- invio email reale con variabili ambiente API
+- eventuale upload reale lato server
+- contenuti normativi/IVASS prima della pubblicazione
+- cookie/consenso secondo configurazione analitica effettiva
+- dominio definitivo e Search Console

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="referrer" content="no-referrer">
+<title>Area Riservata Amministratore | CM Consulting</title>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="/admin/admin.css">
+</head>
+<body>
+<main class="admin-shell">
+  <section id="loginView" class="auth-card">
+    <img class="auth-logo" src="/assets/images/logo-cm-consulting.webp" alt="CM Consulting" width="1494" height="559">
+    <div class="eyebrow">AREA RISERVATA AMMINISTRATORE</div>
+    <h1>Accesso protetto</h1>
+    <p class="muted">Autenticazione con password e secondo fattore TOTP tramite app Authenticator.</p>
+    <form id="loginForm" class="stack">
+      <label>Email amministratore<input id="loginEmail" type="email" autocomplete="username" required></label>
+      <label>Password<input id="loginPassword" type="password" autocomplete="current-password" required></label>
+      <button class="btn primary" type="submit">ACCEDI</button>
+    </form>
+    <button id="forgotBtn" class="link-btn" type="button">Password dimenticata?</button>
+    <div id="loginMsg" class="message" aria-live="polite"></div>
+  </section>
+
+  <section id="mfaView" class="auth-card hidden">
+    <div class="eyebrow">VERIFICA MFA</div>
+    <h1 id="mfaTitle">Secondo fattore richiesto</h1>
+    <p id="mfaIntro" class="muted">Inserisci il codice di 6 cifre generato dalla tua app Authenticator.</p>
+    <div id="qrWrap" class="qr-wrap hidden"><img id="qrImage" alt="QR code per configurare l'autenticazione a due fattori"><p class="small">Se il QR non è leggibile, usa il segreto mostrato sotto.</p><code id="mfaSecret"></code></div>
+    <form id="mfaForm" class="stack">
+      <label>Codice TOTP<input id="mfaCode" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required></label>
+      <button class="btn primary" type="submit">VERIFICA CODICE</button>
+    </form>
+    <button id="backLoginBtn" class="link-btn" type="button">Torna al login</button>
+    <div id="mfaMsg" class="message" aria-live="polite"></div>
+  </section>
+
+  <section id="appView" class="hidden app-view">
+    <header class="app-header">
+      <a href="/" class="brand"><img src="/assets/images/logo-cm-consulting.webp" alt="CM Consulting" width="1494" height="559"></a>
+      <div class="app-user"><span id="userEmail"></span><button id="logoutBtn" class="btn ghost">ESCI</button></div>
+    </header>
+    <div class="app-grid">
+      <aside class="sidebar">
+        <button class="nav-btn active" data-section="practices">Pratiche</button>
+        <button class="nav-btn" data-section="settings">Impostazioni sicurezza</button>
+      </aside>
+      <section class="content">
+        <div id="practicesSection">
+          <div class="section-head"><div><div class="eyebrow">AREA INTERNA</div><h1>Pratiche e scadenze</h1></div><button id="newPracticeBtn" class="btn primary">+ NUOVA PRATICA</button></div>
+          <div class="security-strip"><strong>Sessione protetta:</strong> MFA attiva · timeout inattività 15 minuti · sessione massima 8 ore · dati salvati sul database server-side.</div>
+          <div class="metrics"><div><b id="mTot">0</b><span>Pratiche</span></div><div><b id="mSoon">0</b><span>In scadenza entro 30 giorni</span></div><div><b id="mOpen">0</b><span>Da verificare</span></div></div>
+          <div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Tipologia</th><th>Scadenza</th><th>Stato</th><th></th></tr></thead><tbody id="practiceBody"></tbody></table></div>
+          <div id="detail" class="detail hidden"></div>
+        </div>
+        <div id="settingsSection" class="hidden">
+          <div class="section-head"><div><div class="eyebrow">SICUREZZA</div><h1>Impostazioni</h1></div></div>
+          <div class="settings-grid">
+            <article class="panel"><h2>Password</h2><p class="muted">Modifica la password dell'account amministratore. Supabase Auth la memorizza con hashing bcrypt lato servizio.</p><form id="passwordForm" class="stack"><label>Password attuale<input id="currentPassword" type="password" autocomplete="current-password" required></label><label>Nuova password<input id="newPassword" type="password" autocomplete="new-password" minlength="12" required></label><label>Conferma nuova password<input id="confirmPassword" type="password" autocomplete="new-password" minlength="12" required></label><button class="btn primary" type="submit">CAMBIA PASSWORD</button></form><div id="passwordMsg" class="message"></div></article>
+            <article class="panel"><h2>Autenticazione a due fattori</h2><p class="muted">Il TOTP è obbligatorio per l'accesso. Puoi aggiungere un secondo dispositivo Authenticator senza rimuovere il fattore principale.</p><button id="addMfaBtn" class="btn secondary">AGGIUNGI DISPOSITIVO MFA</button><div id="settingsQr" class="qr-wrap hidden"><img id="settingsQrImage" alt="QR code MFA"><code id="settingsSecret"></code><form id="settingsMfaForm" class="stack"><label>Codice del nuovo dispositivo<input id="settingsMfaCode" inputmode="numeric" maxlength="6" autocomplete="one-time-code" required></label><button class="btn primary" type="submit">CONFERMA DISPOSITIVO</button></form></div><div id="mfaSettingsMsg" class="message"></div></article>
+          </div>
+        </div>
+      </section>
+    </div>
+  </section>
+</main>
+<div id="practiceModal" class="modal hidden"><div class="modal-card"><button id="closeModal" class="modal-close" aria-label="Chiudi">×</button><h2>Nuova pratica</h2><form id="practiceForm" class="form-grid"><label>Cliente / ragione sociale<input name="client" required maxlength="180"></label><label>Tipologia<select name="type"><option>Capacità finanziaria</option><option>Fideiussione</option><option>Appalti pubblici</option><option>Locazioni</option><option>Dogane</option><option>Ambiente</option></select></label><label>Data scadenza<input name="expiry" type="date" required></label><label>Email cliente<input name="email" type="email"></label><label>Prezzo cliente — interno<input name="clientPrice" type="number" step="0.01" min="0"></label><label>Costo revisore — interno<input name="reviewerCost" type="number" step="0.01" min="0"></label><label class="full">Note interne<textarea name="notes" rows="4" maxlength="10000"></textarea></label><div class="full actions"><button type="submit" class="btn primary">SALVA</button></div></form><div id="practiceMsg" class="message"></div></div></div>
+<script src="/admin/admin.js" defer></script>
+</body>
+</html>

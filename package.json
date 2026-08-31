@@ -1,0 +1,8 @@
+{
+  "name": "cm-consulting-v12.8-admin-security",
+  "version": "12.8.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": { "check": "node --check api/admin.js && node --check api/_security.js && node --check api/submit-request.js && node --check admin/admin.js" }
+}

@@ -1,0 +1,29 @@
+{
+  "version": "v12.6",
+  "purpose": "definitive environment photographic WebP replacement + responsive srcset + legacy environment asset cleanup",
+  "legacy_visual_references_removed": 41,
+  "files_scanned": 32,
+  "missing_retina_assets": [],
+  "environment_assets": [
+    "assets/ambiente-retina-768.webp",
+    "assets/ambiente-retina-1280.webp",
+    "assets/ambiente-retina-1920.webp",
+    "assets/ambiente-retina-2560.webp",
+    "assets/ambiente-retina-3840.webp"
+  ],
+  "legal_data": {
+    "company": "CM Consulting di Carmelo Migliore",
+    "qualification": "Intermediazione assicurativa",
+    "vat": "14416401009",
+    "tax_code": "MGLCML71M25L219S",
+    "rea": "RM – 1519347",
+    "sdi": "KRRH6B9",
+    "registered_office": "Via Giacomo Puccini 4, 10092 Beinasco (TO)",
+    "rui": "E000437237",
+    "rui_section": "E",
+    "rui_registration_date": "24/01/2013",
+    "phone": "328 6382612",
+    "email": "info@cm-consulting.info",
+    "pec": "carmelo.migliore@legalmail.it"
+  }
+}

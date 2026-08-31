@@ -1,0 +1,16 @@
+CM CONSULTING — V9 CONTROLLO TECNICO
+
+Controlli statici eseguiti:
+- 14 pagine HTML presenti
+- nessun link interno verso file HTML inesistente
+- 10 pagine pubbliche con Assistente CM tramite app.js
+- galleria Home: 4 slide, immagini responsive 768/1280/1920/2560/3840
+- immagini fotografiche con WebP responsive + JPEG fallback
+- logo responsive ad alta risoluzione
+- Assistente CM con immagini responsive
+- layout fluido desktop/tablet/mobile con breakpoint reale
+- overflow orizzontale limitato
+- moduli guidati presenti e validazione client-side
+
+Nota importante sulla qualità:
+Gli asset fotografici di partenza disponibili nel progetto erano a bassa risoluzione. La V9 non dichiara falsamente che una fotografia sia nativamente 4K: usa il miglior sorgente disponibile, versioni responsive e WebP. Per una vera fotografia nativa 4K occorre il file originale ad alta risoluzione.

@@ -1,0 +1,17 @@
+ASSET UPDATE — V10
+
+Nuovi asset fotografici principali:
+- appalti-retina-* : nuova scena costruzione/appalti
+- autotrasportatori-retina-* : nuova scena autotrasporto
+- locazioni-retina-* : nuova scena immobiliare
+- altre-esigenze-retina-* : nuova scena documentale/altre esigenze
+
+Asset grafici ad alta definizione:
+- ambiente-4k.png : render 3840px da sorgente vettoriale
+- capacita-4k.png : render 3840px da sorgente vettoriale
+
+Responsive:
+Il browser riceve la risoluzione più adatta attraverso srcset/sizes dove previsto. Le immagini hero grandi usano il file 3840px sui viewport ampi.
+
+
+V12.4 cleanup: capacita-4k.png e vecchi JPG/SVG di servizio rimossi dal pacchetto; le pagine usano i set WebP responsive.

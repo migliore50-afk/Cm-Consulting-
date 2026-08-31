@@ -1,0 +1,17 @@
+{
+  "version": "v12.6-final",
+  "service_slider": true,
+  "responsive_assets": true,
+  "legal_data": {
+    "vat": "14416401009",
+    "registered_office": "Via Giacomo Puccini 4, 10092 Beinasco (TO)",
+    "rui": "E000437237",
+    "rui_section": "E",
+    "tax_code": "MGLCML71M25L219S",
+    "rea": "RM – 1519347",
+    "sdi": "KRRH6B9",
+    "rui_registration_date": "24/01/2013",
+    "pec": "carmelo.migliore@legalmail.it",
+    "email": "info@cm-consulting.info"
+  }
+}
