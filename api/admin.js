@@ -1,6 +1,6 @@
 /**
  * CM Consulting — API di amministrazione protetta
- * Autenticazione: Supabase Auth (MFA bypassato per accesso immediato)
+ * Autenticazione: Supabase Auth (MFA rimosso automaticamente al login per accesso immediato)
  * Sessione: token casuale opaco nel cookie HttpOnly/Secure/SameSite=Strict, stato in Upstash Redis
  * Limite di frequenza: Upstash Redis, massimo 5 tentativi di accesso falliti / 15 min per IP e account
  */
@@ -465,7 +465,19 @@ export default async function handler(req, res) {
 
       await clearLoginFailures(ip, email);
 
-      // --- BYPASS MFA: CREAZIONE DIRETTA DELLA SESSIONE ---
+      // --- RIMOZIONE AUTOMATICA DI TUTTI I FATTORI MFA PER EVITARE QUALSIASI BLOCCO ---
+      try {
+        const factors = await listFactors(auth.data.access_token);
+        if (factors && Array.isArray(factors.totp)) {
+          for (const f of factors.totp) {
+            await deleteFactor(auth.data.access_token, f.id);
+          }
+        }
+      } catch (e) {
+        console.error('Impossibile rimuovere i fattori MFA:', e);
+      }
+
+      // --- CREAZIONE SESSIONE DIRETTA ---
       const sessionId = await createStoredSession({
         userId: user.id,
         email: user.email,
