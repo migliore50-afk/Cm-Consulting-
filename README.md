@@ -25,3 +25,4 @@ Dati societari forniti dal titolare:
 - www.cm-consulting.info
 
 Nota: il pacchetto è tecnicamente predisposto per il deployment. La conformità normativa finale deve essere verificata sulla posizione concreta dell'intermediario e sulla documentazione precontrattuale effettivamente applicabile prima della pubblicazione definitiva.
+<!-- Vercel Git connection -->
