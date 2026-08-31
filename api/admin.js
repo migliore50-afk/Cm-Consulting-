@@ -97,7 +97,7 @@ async function redis(path, { method = 'GET', body } = {}) {
       Authorization: `Bearer ${tokenValue}`,
       ...(body !== undefined ? { 'Content-Type': 'application/json' } : {})
     },
-    body: body !== undefined ? (typeof body === 'string' ? body : JSON.stringify(body)) : undefined
+    body: body !== undefined ? JSON.stringify(body) : undefined
   });
 
   const data = await response.json().catch(() => ({}));
