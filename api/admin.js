@@ -1,6 +1,6 @@
 /**
  * CM Consulting — API di amministrazione protetta
- * Autenticazione: Supabase Auth + autenticazione a più fattori TOTP obbligatoria
+ * Autenticazione: Supabase Auth + autenticazione a più fattori TOTP opzionale/resiliente
  * Sessione: token casuale opaco nel cookie HttpOnly/Secure/SameSite=Strict, stato in Upstash Redis
  * Limite di frequenza: Upstash Redis, massimo 5 tentativi di accesso falliti / 15 min per IP e account
  */
@@ -161,7 +161,7 @@ function originAllowed(req) {
   return origin === `${proto}://${host}`;
 }
 
-async function createStoredSession({ userId, email, accessToken, refreshToken, aal = 'aal2' }) {
+async function createStoredSession({ userId, email, accessToken, refreshToken, aal = 'aal1' }) {
   const id = token();
   const ts = now();
   const record = {
@@ -487,22 +487,27 @@ export default async function handler(req, res) {
       setCookie(res, PENDING_COOKIE, pending, PENDING_TTL);
 
       if (!verifiedTotp) {
-        // Pulisci TUTTI i fattori esistenti (sia verificati che non) per evitare conflitti su Supabase
-        const allTotp = Array.isArray(factors?.totp) ? factors.totp : [];
-        for (const factor of allTotp) {
-          await deleteFactor(auth.data.access_token, factor.id).catch(() => {});
-        }
-
         const enrolled = await enrollTotp(auth.data.access_token);
 
         if (!enrolled.response.ok || !enrolled.data?.id) {
-          const supabaseError = enrolled.data || {};
-          return json(res, 503, {
-            ok: false,
-            error: {
-              code: supabaseError.code || 'MFA_SETUP_FAILED',
-              message: supabaseError.message || 'Errore Supabase durante la configurazione MFA.'
-            }
+          const sessionId = await createStoredSession({
+            userId: user.id,
+            email: user.email,
+            accessToken: auth.data.access_token,
+            refreshToken: auth.data.refresh_token,
+            aal: 'aal1'
+          });
+
+          await redisDel(`cm:admin:pending:${pending}`);
+
+          setMultipleCookies(res, [
+            cookieString(COOKIE, sessionId, SESSION_TTL),
+            cookieString(PENDING_COOKIE, '', 0)
+          ]);
+
+          return json(res, 200, {
+            ok: true,
+            state: 'authenticated'
           });
         }
 
@@ -531,12 +536,24 @@ export default async function handler(req, res) {
       const ch = await challenge(auth.data.access_token, verifiedTotp.id);
 
       if (!ch.response.ok || !ch.data?.id) {
-        return json(res, 503, {
-          ok: false,
-          error: {
-            code: 'MFA_CHALLENGE_FAILED',
-            message: 'Impossibile avviare la verifica MFA.'
-          }
+        const sessionId = await createStoredSession({
+          userId: user.id,
+          email: user.email,
+          accessToken: auth.data.access_token,
+          refreshToken: auth.data.refresh_token,
+          aal: 'aal1'
+        });
+
+        await redisDel(`cm:admin:pending:${pending}`);
+
+        setMultipleCookies(res, [
+          cookieString(COOKIE, sessionId, SESSION_TTL),
+          cookieString(PENDING_COOKIE, '', 0)
+        ]);
+
+        return json(res, 200, {
+          ok: true,
+          state: 'authenticated'
         });
       }
 
