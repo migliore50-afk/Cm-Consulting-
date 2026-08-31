@@ -68,7 +68,67 @@
     </div>
   </section>
 </main>
-<div id="practiceModal" class="modal hidden"><div class="modal-card"><button id="closeModal" class="modal-close" aria-label="Chiudi">×</button><h2>Nuova pratica</h2><form id="practiceForm" class="form-grid"><label>Cliente / ragione sociale<input name="client" required maxlength="180"></label><label>Tipologia<select name="type"><option>Capacità finanziaria</option><option>Fideiussione</option><option>Appalti pubblici</option><option>Locazioni</option><option>Dogane</option><option>Ambiente</option></select></label><label>Data scadenza<input name="expiry" type="date" required></label><label>Email cliente<input name="email" type="email"></label><label>Prezzo cliente — interno<input name="clientPrice" type="number" step="0.01" min="0"></label><label>Costo revisore — interno<input name="reviewerCost" type="number" step="0.01" min="0"></label><label class="full">Note interne<textarea name="notes" rows="4" maxlength="10000"></textarea></label><div class="full actions"><button type="submit" class="btn primary">SALVA</button></div></form><div id="practiceMsg" class="message"></div></div></div>
+<div id="practiceModal" class="modal hidden"><div class="modal-card"><button id="closeModal" class="modal-close" aria-label="Chiudi">×</button><h2>Nuova pratica</h2><form id="practiceForm" class="form-grid"><label>Cliente / ragione sociale<input name="client" required maxlength="180"></label><label>Tipologia<select name="type"><option>Capacità finanziaria</option><option>Fideiussione</option><option>Appalti pubblici</option><option>Locazioni</option><option>Dogane</option><option>Ambiente</option></select></label><label>Data scadenza<input name="expiry" type="date" required></label><label>Email cliente<input name="email" type="email"></label><label>Prezzo cliente — interno<input name="clientPrice" type="number" step="0.01" min="0"></label><label>Costo revisore — interno<input name="reviewerCost" type="number" step="0.01" min="0"></label><label class="full">Note interne<textarea name="notes" rows="4" maxlength="10000"></textarea></label><div class="full actions"><button type="submit" class="btn primary">SALVA</button></div></form><div id="practiceMsg" class="message"></div></div></div><script>
+(() => {
+  const nativeFetch = window.fetch.bind(window);
+
+  window.fetch = async (...args) => {
+    const response = await nativeFetch(...args);
+    const requestUrl =
+      typeof args[0] === "string"
+        ? args[0]
+        : args[0]?.url || "";
+
+    const contentType =
+      response.headers.get("content-type") || "";
+
+    if (
+      !requestUrl.includes("/api/admin") ||
+      !contentType.includes("application/json")
+    ) {
+      return response;
+    }
+
+    try {
+      const payload = await response.clone().json();
+
+      if (
+        payload &&
+        typeof payload.qrCode === "string" &&
+        payload.qrCode.trim()
+      ) {
+        const qr = payload.qrCode.trim();
+
+        if (
+          /^<\?xml[\s\S]*<svg[\s>]/i.test(qr) ||
+          /^<svg[\s>]/i.test(qr)
+        ) {
+          payload.qrCode =
+            "data:image/svg+xml;charset=utf-8," +
+            encodeURIComponent(qr);
+
+          const headers = new Headers(response.headers);
+          headers.set(
+            "content-type",
+            "application/json; charset=utf-8"
+          );
+
+          return new Response(
+            JSON.stringify(payload),
+            {
+              status: response.status,
+              statusText: response.statusText,
+              headers
+            }
+          );
+        }
+      }
+    } catch (_) {}
+
+    return response;
+  };
+})();
+</script>
 <script src="/admin/admin.js" defer></script>
 </body>
 </html>
