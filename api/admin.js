@@ -864,15 +864,16 @@ export default async function handler(req, res) {
         code
       );
 
-      if (!verified.response.ok) {
-        return json(res, 401, {
-          ok: false,
-          error: {
-            code: 'INVALID_MFA_CODE',
-            message: 'Codice MFA non valido.'
-          }
-        });
-      }
+      if (!verified.response.ok || !verified.data?.access_token) {
+  const supabaseError = verified.data || {};
+  return json(res, 401, {
+    ok: false,
+    error: {
+      code: supabaseError.code || 'MFA_VERIFY_FAILED',
+      message: supabaseError.message || 'Verifica MFA rifiutata da Supabase.'
+    }
+  });
+}
 
       if (verified.data?.access_token) {
         auth.session.accessToken = verified.data.access_token;
