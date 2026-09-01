@@ -113,7 +113,7 @@ async function supabaseMfaFetch(path, { method = 'GET', accessToken, body } = {}
 
 async function supabaseFactors(accessToken) {
   const { url, key } = supabaseConfig();
-  const response = await fetch(`${url}/rest/v1/auth/factors`, {
+  const response = await fetch(`${url}/auth/v1/user`, {
     method: 'GET',
     headers: {
       apikey: key,
@@ -122,13 +122,6 @@ async function supabaseFactors(accessToken) {
   });
   let data = null;
   try { data = await response.json(); } catch {}
-
-  if (!response.ok) {
-    console.error(
-      `[CM MFA] supabaseFactors failed: status=${response.status} body=${JSON.stringify(data)}`
-    );
-  }
-
   return { response, data };
 }
 
@@ -389,7 +382,7 @@ async function getTotpFactors(accessToken) {
   if (!result.response.ok) {
     return { ok: false, verified: [], unverified: [] };
   }
-  const factors = Array.isArray(result.data) ? result.data : [];
+  const factors = Array.isArray(result.data?.factors) ? result.data.factors : [];
   const totp = factors.filter(factor => factor?.factor_type === 'totp');
   return {
     ok: true,
