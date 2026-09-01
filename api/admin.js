@@ -122,6 +122,13 @@ async function supabaseFactors(accessToken) {
   });
   let data = null;
   try { data = await response.json(); } catch {}
+
+  if (!response.ok) {
+    console.error(
+      `[CM MFA] supabaseFactors failed: status=${response.status} body=${JSON.stringify(data)}`
+    );
+  }
+
   return { response, data };
 }
 
