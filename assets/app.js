@@ -249,7 +249,7 @@ function startAssistantRecognition() {
     if (status) status.textContent = 'Richiesta acquisita. Apro la valutazione generica…';
     speakAI(`Ho acquisito la tua richiesta: ${transcript}. Apro la valutazione generica.`);
     window.setTimeout(() => {
-      window.location.href = 'richiedi-preventivo.html?esigenza=generica';
+      window.location.href = '/richiedi-preventivo?esigenza=generica';
     }, isVoiceEnabled() ? 700 : 0);
   };
   assistantRecognition.onerror = event => {
@@ -277,21 +277,21 @@ function aiChoose(type) {
   if (!content) return;
 
   const map = {
-    appalto: ['Per un appalto posso indirizzarti alle garanzie collegate alla gara e agli obblighi contrattuali.', 'appalti.html'],
-    trasporto: ['Per l’autotrasporto possiamo distinguere tra capacità finanziaria e altre esigenze di garanzia.', 'capacita-finanziaria.html'],
-    locazione: ['Per la locazione partiamo dalle condizioni richieste dal contratto o dal locatore.', 'locazioni.html'],
-    dogana: ['Per una pratica doganale partiamo dal tipo di obbligo e dalla documentazione ricevuta.', 'dogane.html'],
-    ambiente: ['Per l’ambiente partiamo dall’obbligo specifico e dal soggetto che richiede la garanzia.', 'ambiente.html'],
-    altro: ['Va bene. Raccontami il caso concreto e allega la documentazione che hai: apriamo direttamente la valutazione generica.', 'richiedi-preventivo.html?esigenza=generica']
+    appalto: ['Per un appalto posso indirizzarti alle garanzie collegate alla gara e agli obblighi contrattuali.', '/appalti-pubblici'],
+    trasporto: ['Per l’autotrasporto possiamo distinguere tra capacità finanziaria e altre esigenze di garanzia.', '/capacita-finanziaria'],
+    locazione: ['Per la locazione partiamo dalle condizioni richieste dal contratto o dal locatore.', '/locazioni'],
+    dogana: ['Per una pratica doganale partiamo dal tipo di obbligo e dalla documentazione ricevuta.', '/dogane'],
+    ambiente: ['Per l’ambiente partiamo dall’obbligo specifico e dal soggetto che richiede la garanzia.', '/ambiente'],
+    altro: ['Va bene. Raccontami il caso concreto e allega la documentazione che hai: apriamo direttamente la valutazione generica.', '/richiedi-preventivo?esigenza=generica']
   };
 
   const [message, destination] = map[type] || map.altro;
-  const directGeneric = destination === 'richiedi-preventivo.html?esigenza=generica';
+  const directGeneric = destination === '/richiedi-preventivo?esigenza=generica';
   content.innerHTML = `
     <div class="bubble ai"><b>Perfetto.</b><br>${message}</div>
     <div class="ai-choices">
       <a class="ai-choice" href="${destination}">Vai al percorso <span>›</span></a>
-      <a class="ai-choice" href="richiedi-preventivo.html?esigenza=generica">Racconta direttamente la tua esigenza <span>›</span></a>
+      <a class="ai-choice" href="/richiedi-preventivo?esigenza=generica">Racconta direttamente la tua esigenza <span>›</span></a>
       <button class="ai-choice" type="button" id="aiRestart">← Cambia esigenza</button>
     </div>`;
   document.getElementById('aiRestart')?.addEventListener('click', startAI);
