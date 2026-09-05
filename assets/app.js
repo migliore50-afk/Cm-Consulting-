@@ -147,41 +147,16 @@ function setVoiceState(enabled, button) {
   if (!enabled && 'speechSynthesis' in window) window.speechSynthesis.cancel();
 }
 
-function getPreferredItalianMaleVoice() {
-  if (!('speechSynthesis' in window)) return null;
-  const voices = window.speechSynthesis.getVoices();
-  if (!voices.length) return null;
-  const italian = voices.filter(v => /^it(?:-|_)/i.test(v.lang || ''));
-  const pool = italian.length ? italian : voices;
-  const preferred = /\b(luca|cosimo|giorgio|paolo|matteo|federico|marco|carlo|antonio|massimo|davide|simone|riccardo|fabio|stefano)\b/i;
-  return pool.find(v => preferred.test(v.name || '')) || pool.find(v => /^it-IT$/i.test(v.lang || '')) || pool[0] || null;
-}
-
-function setAssistantSpeaking(speaking) {
-  document.querySelector('.ai-portrait')?.classList.toggle('speaking', speaking);
-  document.querySelector('.cm-ai-fab')?.classList.toggle('speaking', speaking);
-}
-
 function speakAI(text) {
   if (!isVoiceEnabled() || !('speechSynthesis' in window)) return;
   const clean = String(text || '').replace(/\s+/g, ' ').trim();
   if (!clean) return;
   window.speechSynthesis.cancel();
-  setAssistantSpeaking(false);
   const utterance = new SpeechSynthesisUtterance(clean);
   utterance.lang = 'it-IT';
-  utterance.rate = 0.96;
-  utterance.pitch = 0.84;
-  const voice = getPreferredItalianMaleVoice();
-  if (voice) utterance.voice = voice;
-  utterance.onstart = () => setAssistantSpeaking(true);
-  utterance.onend = () => setAssistantSpeaking(false);
-  utterance.onerror = () => setAssistantSpeaking(false);
+  utterance.rate = 0.98;
+  utterance.pitch = 1;
   window.speechSynthesis.speak(utterance);
-}
-
-if ('speechSynthesis' in window) {
-  window.speechSynthesis.addEventListener('voiceschanged', () => {});
 }
 
 function openAI() {
@@ -249,7 +224,7 @@ function startAssistantRecognition() {
     if (status) status.textContent = 'Richiesta acquisita. Apro la valutazione generica…';
     speakAI(`Ho acquisito la tua richiesta: ${transcript}. Apro la valutazione generica.`);
     window.setTimeout(() => {
-      window.location.href = '/richiedi-preventivo?esigenza=generica';
+      window.location.href = 'richiedi-preventivo.html?esigenza=generica';
     }, isVoiceEnabled() ? 700 : 0);
   };
   assistantRecognition.onerror = event => {
@@ -277,21 +252,21 @@ function aiChoose(type) {
   if (!content) return;
 
   const map = {
-    appalto: ['Per un appalto posso indirizzarti alle garanzie collegate alla gara e agli obblighi contrattuali.', '/appalti-pubblici'],
-    trasporto: ['Per l’autotrasporto possiamo distinguere tra capacità finanziaria e altre esigenze di garanzia.', '/capacita-finanziaria'],
-    locazione: ['Per la locazione partiamo dalle condizioni richieste dal contratto o dal locatore.', '/locazioni'],
-    dogana: ['Per una pratica doganale partiamo dal tipo di obbligo e dalla documentazione ricevuta.', '/dogane'],
-    ambiente: ['Per l’ambiente partiamo dall’obbligo specifico e dal soggetto che richiede la garanzia.', '/ambiente'],
-    altro: ['Va bene. Raccontami il caso concreto e allega la documentazione che hai: apriamo direttamente la valutazione generica.', '/richiedi-preventivo?esigenza=generica']
+    appalto: ['Per un appalto posso indirizzarti alle garanzie collegate alla gara e agli obblighi contrattuali.', 'appalti.html'],
+    trasporto: ['Per l’autotrasporto possiamo distinguere tra capacità finanziaria e altre esigenze di garanzia.', 'capacita-finanziaria.html'],
+    locazione: ['Per la locazione partiamo dalle condizioni richieste dal contratto o dal locatore.', 'locazioni.html'],
+    dogana: ['Per una pratica doganale partiamo dal tipo di obbligo e dalla documentazione ricevuta.', 'dogane.html'],
+    ambiente: ['Per l’ambiente partiamo dall’obbligo specifico e dal soggetto che richiede la garanzia.', 'ambiente.html'],
+    altro: ['Va bene. Raccontami il caso concreto e allega la documentazione che hai: apriamo direttamente la valutazione generica.', 'richiedi-preventivo.html?esigenza=generica']
   };
 
   const [message, destination] = map[type] || map.altro;
-  const directGeneric = destination === '/richiedi-preventivo?esigenza=generica';
+  const directGeneric = destination === 'richiedi-preventivo.html?esigenza=generica';
   content.innerHTML = `
     <div class="bubble ai"><b>Perfetto.</b><br>${message}</div>
     <div class="ai-choices">
       <a class="ai-choice" href="${destination}">Vai al percorso <span>›</span></a>
-      <a class="ai-choice" href="/richiedi-preventivo?esigenza=generica">Racconta direttamente la tua esigenza <span>›</span></a>
+      <a class="ai-choice" href="richiedi-preventivo.html?esigenza=generica">Racconta direttamente la tua esigenza <span>›</span></a>
       <button class="ai-choice" type="button" id="aiRestart">← Cambia esigenza</button>
     </div>`;
   document.getElementById('aiRestart')?.addEventListener('click', startAI);
@@ -354,3 +329,37 @@ document.addEventListener('DOMContentLoaded', () => {
   initClickableCards();
   initBasicFormValidation();
 });
+
+
+/* UX BATCH — FIDEIUSSIONI dropdown */
+(function initFideiussioniDropdown(){
+  function init(){
+    const links=document.querySelectorAll('.links a');
+    const anchor=[...links].find(a=>a.textContent.trim().toUpperCase()==='FIDEIUSSIONI');
+    if(!anchor || anchor.closest('.nav-fideiussioni')) return;
+    const wrap=document.createElement('div');
+    wrap.className='nav-fideiussioni';
+    const trigger=document.createElement('button');
+    trigger.type='button';
+    trigger.className='nav-fideiussioni-trigger';
+    trigger.setAttribute('aria-haspopup','true');
+    trigger.setAttribute('aria-expanded','false');
+    trigger.textContent='FIDEIUSSIONI';
+    const menu=document.createElement('div');
+    menu.className='nav-fideiussioni-menu';
+    menu.setAttribute('role','menu');
+    const items=[
+      ['Appalti pubblici','/appalti-pubblici'],['Locazioni','/locazioni'],['Trasporti','/richiedi-preventivo?tipo=trasporti'],['Dogane','/dogane'],['Ambiente','/ambiente'],['Contributi e agevolazioni','/richiedi-preventivo?tipo=contributi'],['Urbanistica ed edilizia','/richiedi-preventivo?tipo=urbanistica'],['Garanzie fiscali','/richiedi-preventivo?tipo=fiscali'],['Altra fideiussione','/richiedi-preventivo?tipo=altra']
+    ];
+    items.forEach(([label,href])=>{const a=document.createElement('a');a.href=href;a.textContent=label;a.setAttribute('role','menuitem');menu.appendChild(a);});
+    wrap.append(trigger,menu);
+    anchor.replaceWith(wrap);
+    const close=()=>{wrap.classList.remove('open');trigger.setAttribute('aria-expanded','false');};
+    trigger.addEventListener('click',e=>{e.stopPropagation();const open=!wrap.classList.contains('open');document.querySelectorAll('.nav-fideiussioni.open').forEach(x=>x.classList.remove('open'));wrap.classList.toggle('open',open);trigger.setAttribute('aria-expanded',String(open));});
+    wrap.addEventListener('mouseenter',()=>wrap.classList.add('open'));
+    wrap.addEventListener('mouseleave',close);
+    document.addEventListener('click',e=>{if(!wrap.contains(e.target))close();});
+    document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
+})();
