@@ -47,6 +47,7 @@
     <div class="app-grid">
       <aside class="sidebar">
         <button class="nav-btn active" data-section="practices">Pratiche</button>
+        <button class="nav-btn" data-section="requests">Richieste ricevute</button>
         <button class="nav-btn" data-section="settings">Impostazioni sicurezza</button>
       </aside>
       <section class="content">
@@ -57,6 +58,33 @@
           <div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Tipologia</th><th>Scadenza</th><th>Stato</th><th></th></tr></thead><tbody id="practiceBody"></tbody></table></div>
           <div id="detail" class="detail hidden"></div>
         </div>
+
+        <div id="requestsSection" class="hidden">
+          <div class="section-head">
+            <div><div class="eyebrow">AREA INTERNA</div><h1>Richieste ricevute</h1></div>
+          </div>
+          <div class="security-strip"><strong>Richieste dal sito:</strong> archiviate sul database server-side e accessibili solo dopo autenticazione amministratore.</div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Cliente</th>
+                  <th>Tipologia</th>
+                  <th>Email</th>
+                  <th>Allegati</th>
+                  <th>Stato</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="requestBody">
+                <tr><td colspan="7" style="text-align:center;padding:36px;color:#65717d">Nessuna richiesta visualizzata.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div id="requestDetail" class="detail hidden"></div>
+        </div>
+
         <div id="settingsSection" class="hidden">
           <div class="section-head"><div><div class="eyebrow">SICUREZZA</div><h1>Impostazioni</h1></div></div>
           <div class="settings-grid">
