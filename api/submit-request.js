@@ -318,6 +318,42 @@ export default async function handler(req, res) {
       safeAttachments.push({ filename, content });
     }
 
+        const requestSave = await fetch(
+      `${str(process.env.SUPABASE_URL).replace(/\/$/, '')}/rest/v1/admin_requests`,
+      {
+        method: "POST",
+        headers: {
+          apikey: str(process.env.SUPABASE_SERVICE_ROLE_KEY),
+          Authorization: `Bearer ${str(process.env.SUPABASE_SERVICE_ROLE_KEY)}`,
+          "Content-Type": "application/json",
+          Prefer: "return=minimal"
+        },
+        body: JSON.stringify({
+          customer_name: customerName || null,
+          company: str(body.company) || null,
+          email: email || null,
+          phone: phone || null,
+          request_type: requestTypeName || subject,
+          subject,
+          request_text: text,
+          attachments_count: safeAttachments.length,
+          attachment_names: safeAttachments.map(item => item.filename),
+          status: "Nuova"
+        })
+      }
+    );
+
+    if (!requestSave.ok) {
+      console.error("CM Consulting API - request database save failed:", requestSave.status);
+      return json(res, 503, {
+        ok: false,
+        error: {
+          code: "REQUEST_SAVE_FAILED",
+          message: "La richiesta non è stata registrata. Riprova tra poco."
+        }
+      });
+    }
+
     const from = process.env.CM_FROM_EMAIL;
     const internalText = [
       `Nome e cognome: ${customerName || '—'}`,
