@@ -151,3 +151,6 @@ img{display:block;max-width:100%;height:auto}
   .brand::after{animation:none;display:none}
   .brand:hover img,.brand:focus-visible img{transform:none}
 }
+/* REQUEST SUMMARY — improve contrast before submission */
+.summary div{color:var(--ink)}
+.summary div *{color:inherit}
