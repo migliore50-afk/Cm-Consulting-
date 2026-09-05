@@ -1018,6 +1018,38 @@ export default async function handler(req, res) {
 
     /*
      * ============================================================
+     * REQUESTS — GET
+     * ============================================================
+     */
+    if (action === 'requests' && req.method === 'GET') {
+      const auth = await requireAdmin(req, res);
+
+      if (!auth) {
+        return json(res, 401, {
+          ok: false,
+          error: { code: 'UNAUTHORIZED', message: 'Autenticazione richiesta.' }
+        });
+      }
+
+      const r = await dbRequest(
+        'admin_requests?select=*&order=created_at.desc'
+      );
+
+      if (!r.response.ok) {
+        return json(res, 503, {
+          ok: false,
+          error: { code: 'DATABASE_ERROR', message: 'Errore archivio richieste.' }
+        });
+      }
+
+      return json(res, 200, {
+        ok: true,
+        requests: r.data || []
+      });
+    }
+
+    /*
+     * ============================================================
      * PRACTICES — GET
      * ============================================================
      */
