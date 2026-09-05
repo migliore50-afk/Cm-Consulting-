@@ -151,6 +151,34 @@ img{display:block;max-width:100%;height:auto}
   .brand::after{animation:none;display:none}
   .brand:hover img,.brand:focus-visible img{transform:none}
 }
-/* REQUEST SUMMARY — improve contrast before submission */
-.summary div{color:var(--ink)}
-.summary div *{color:inherit}
+
+
+/* UX BATCH — beneficiary document upload */
+.beneficiary-doc-panel{border:1px solid rgba(212,168,70,.55);padding:16px 18px;border-radius:14px;background:#fffdf7}
+.beneficiary-doc-title{font-weight:800;letter-spacing:.04em;font-size:13px;color:var(--ink,#102a43);margin-bottom:6px}
+.beneficiary-doc-copy{font-size:13px;line-height:1.5;color:var(--ink,#102a43);margin-bottom:12px}
+.beneficiary-upload-btn{display:inline-flex!important;align-items:center;justify-content:center;min-height:42px;padding:10px 16px;border-radius:10px;background:var(--gold,#d4a846);color:#102a43!important;font-weight:800;cursor:pointer;text-decoration:none}
+#beneficiaryDoc{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important}
+.beneficiary-doc-panel small{display:block;margin-top:9px;color:#526778}
+
+/* UX BATCH — same-page privacy modal */
+body.privacy-modal-open{overflow:hidden}
+.privacy-modal{display:none;position:fixed;inset:0;z-index:9999}
+.privacy-modal.is-open{display:block}
+.privacy-modal-backdrop{position:absolute;inset:0;background:rgba(5,20,34,.68)}
+.privacy-modal-card{position:relative;width:min(720px,calc(100% - 32px));max-height:calc(100vh - 32px);margin:16px auto;overflow:auto;background:#fff;border-radius:16px;box-shadow:0 18px 60px rgba(0,0,0,.28);color:var(--ink,#102a43)}
+.privacy-modal-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 20px;border-bottom:1px solid #dce5ea}
+.privacy-modal-head h3{margin:0;font-size:20px}
+.privacy-modal-close{border:1px solid #b9c7d0;background:#fff;border-radius:9px;padding:9px 13px;font-weight:800;color:#102a43;cursor:pointer}
+.privacy-modal-body{padding:20px;font-size:14px;line-height:1.6}
+.privacy-modal-body a{color:#0b5b8e;font-weight:700}
+
+
+/* UX BATCH — FIDEIUSSIONI navigation dropdown */
+.nav-fideiussioni{position:relative;display:inline-flex;align-items:center}
+.nav-fideiussioni-trigger{appearance:none;border:0;background:transparent;color:inherit;font:inherit;font-weight:inherit;letter-spacing:inherit;cursor:pointer;padding:0}
+.nav-fideiussioni-menu{display:none;position:absolute;top:calc(100% + 10px);left:50%;transform:translateX(-50%);min-width:250px;padding:8px;border:1px solid rgba(16,42,67,.12);border-radius:12px;background:#fff;box-shadow:0 16px 40px rgba(16,42,67,.16);z-index:1000}
+.nav-fideiussioni.open .nav-fideiussioni-menu{display:block}
+.nav-fideiussioni-menu a{display:block;padding:9px 12px;border-radius:8px;color:#102a43!important;text-decoration:none;white-space:nowrap}
+.nav-fideiussioni-menu a:hover,.nav-fideiussioni-menu a:focus{background:#f1f5f7}
+@media (max-width:800px){.nav-fideiussioni{display:block;width:100%}.nav-fideiussioni-trigger{width:100%;text-align:left}.nav-fideiussioni-menu{position:static;transform:none;min-width:0;margin-top:8px;box-shadow:none;border-radius:10px}.nav-fideiussioni.open .nav-fideiussioni-menu{display:block}}
