@@ -127,6 +127,8 @@ async function submitCapacity(){
         subject:'Richiesta capacità finanziaria',
         text,
         email:d.get('email'),
+        customerName:d.get('contact'),
+        requestTypeName:'Capacità finanziaria',
         privacyAccepted:true,
         attachments
       })
