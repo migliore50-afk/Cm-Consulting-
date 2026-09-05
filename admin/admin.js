@@ -1,5 +1,5 @@
  const $ = (id) => document.getElementById(id);
-const state = { mode: null, factorId: null, practices: [] };
+const state = { mode: null, factorId: null, practices: [], requests: [] };
 
 function msg(el, text, type = '') { el.textContent = text || ''; el.className = `message ${type}`; }
 function show(view) { ['loginView','mfaView','appView'].forEach(id => $(id).classList.toggle('hidden', id !== view)); }
@@ -26,16 +26,83 @@ function renderPractices() {
   $('mSoon').textContent = rows.filter(p => daysUntil(p.expiry) >= 0 && daysUntil(p.expiry) <= 30).length;
   $('mOpen').textContent = rows.filter(p => !p.checked).length;
 }
-function openDetail(id) {
-  const p = state.practices.find(x => x.id === id); if (!p) return;
-  const s = status(p.expiry); const d = $('detail'); d.classList.remove('hidden');
-  d.innerHTML = `<div class="section-head"><div><div class="eyebrow">PRATICA</div><h2>${escapeHtml(p.client)}</h2><p class="muted">${escapeHtml(p.type)} · scadenza ${new Date(`${p.expiry}T00:00:00`).toLocaleDateString('it-IT')}</p></div><button class="small-btn" id="closeDetail">CHIUDI</button></div><div class="metrics"><div><b>€ ${Number(p.client_price || 0).toFixed(2)}</b><span>Prezzo cliente</span></div><div><b>€ ${Number(p.reviewer_cost || 0).toFixed(2)}</b><span>Costo revisore</span></div><div><b><span class="status ${s[1]}">${s[0]}</span></b><span>Stato</span></div></div><p><strong>Email:</strong> ${escapeHtml(p.email || '—')}</p><p><strong>Note:</strong> ${escapeHtml(p.notes || '—')}</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="small-btn" id="toggleChecked">${p.checked ? 'SEGNA DA VERIFICARE' : 'SEGNA VERIFICATA'}</button><button class="small-btn" id="deletePractice">ELIMINA</button></div>`;
-  $('closeDetail').onclick = () => d.classList.add('hidden');
-  $('toggleChecked').onclick = async () => { try { await api('practice', { method:'PATCH', query:`&id=${encodeURIComponent(p.id)}`, body:{ checked: !p.checked } }); await loadPractices(); openDetail(id); } catch(e) { alert(e.message); } };
-  $('deletePractice').onclick = async () => { if (!confirm('Eliminare definitivamente la pratica?')) return; try { await api('practice', { method:'DELETE', query:`&id=${encodeURIComponent(p.id)}` }); d.classList.add('hidden'); await loadPractices(); } catch(e) { alert(e.message); } };
+
+function formatRequestDate(value) {
+  if (!value) return '—';
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? escapeHtml(value) : d.toLocaleString('it-IT');
 }
+
+function requestValue(r, ...keys) {
+  for (const key of keys) {
+    const value = r?.[key];
+    if (value !== null && value !== undefined && String(value).trim() !== '') return value;
+  }
+  return '';
+}
+
+function renderRequests() {
+  const rows = state.requests;
+  $('requestBody').innerHTML = rows.length ? rows.map(r => {
+    const customer = requestValue(r, 'customer_name', 'customerName', 'contact', 'name');
+    const type = requestValue(r, 'request_type', 'requestTypeName', 'type_name');
+    const email = requestValue(r, 'email', 'customer_email', 'emailAddress');
+    const attachments = Number(r?.attachments_count ?? 0);
+    const requestStatus = requestValue(r, 'status') || 'Nuova';
+    return `<tr>
+      <td>${formatRequestDate(r?.created_at)}</td>
+      <td><strong>${escapeHtml(customer || '—')}</strong></td>
+      <td>${escapeHtml(type || '—')}</td>
+      <td>${escapeHtml(email || '—')}</td>
+      <td>${attachments}</td>
+      <td><span class="status ${requestStatus.toLowerCase() === 'nuova' ? 'warn' : 'ok'}">${escapeHtml(requestStatus)}</span></td>
+      <td><button class="small-btn" data-request-open="${escapeHtml(r?.id || '')}">APRI</button></td>
+    </tr>`;
+  }).join('') : '<tr><td colspan="7" style="text-align:center;padding:36px;color:#65717d">Nessuna richiesta ricevuta.</td></tr>';
+}
+
+function openRequestDetail(id) {
+  const r = state.requests.find(x => String(x?.id) === String(id));
+  if (!r) return;
+  const customer = requestValue(r, 'customer_name', 'customerName', 'contact', 'name');
+  const company = requestValue(r, 'company', 'company_name');
+  const type = requestValue(r, 'request_type', 'requestTypeName', 'type_name');
+  const email = requestValue(r, 'email', 'customer_email', 'emailAddress');
+  const phone = requestValue(r, 'phone', 'customer_phone', 'contactPhone');
+  const subject = requestValue(r, 'subject');
+  const statusText = requestValue(r, 'status') || 'Nuova';
+  const text = requestValue(r, 'text', 'message', 'request_text', 'body');
+  const attachments = Array.isArray(r?.attachments) ? r.attachments : [];
+  const attachmentsCount = Number(r?.attachments_count ?? attachments.length ?? 0);
+
+  const d = $('requestDetail');
+  d.classList.remove('hidden');
+  d.innerHTML = `
+    <div class="section-head">
+      <div>
+        <div class="eyebrow">RICHIESTA</div>
+        <h2>${escapeHtml(customer || company || 'Richiesta ricevuta')}</h2>
+        <p class="muted">${escapeHtml(type || '—')} · ricevuta ${formatRequestDate(r?.created_at)}</p>
+      </div>
+      <button class="small-btn" id="closeRequestDetail">CHIUDI</button>
+    </div>
+    <p><strong>Stato:</strong> ${escapeHtml(statusText)}</p>
+    <p><strong>Nome e cognome:</strong> ${escapeHtml(customer || '—')}</p>
+    <p><strong>Impresa:</strong> ${escapeHtml(company || '—')}</p>
+    <p><strong>Email:</strong> ${escapeHtml(email || '—')}</p>
+    <p><strong>Telefono:</strong> ${escapeHtml(phone || '—')}</p>
+    <p><strong>Tipologia:</strong> ${escapeHtml(type || '—')}</p>
+    <p><strong>Oggetto:</strong> ${escapeHtml(subject || '—')}</p>
+    <p><strong>Allegati ricevuti:</strong> ${attachmentsCount}</p>
+    ${text ? `<div class="panel"><h3>Richiesta</h3><pre style="white-space:pre-wrap;font:inherit;margin:0">${escapeHtml(text)}</pre></div>` : ''}
+    ${attachments.length ? `<div class="panel"><h3>Allegati</h3><ul>${attachments.map(a => `<li>${escapeHtml(a?.name || a?.filename || 'Allegato')}</li>`).join('')}</ul></div>` : ''}
+  `;
+  $('closeRequestDetail').onclick = () => d.classList.add('hidden');
+}
+
 async function loadPractices() { const data = await api('practices'); state.practices = data.practices || []; renderPractices(); }
-async function enterApp(email) { $('userEmail').textContent = email || ''; show('appView'); await loadPractices(); }
+async function loadRequests() { const data = await api('requests'); state.requests = data.requests || []; renderRequests(); }
+async function enterApp(email) { $('userEmail').textContent = email || ''; show('appView'); await loadPractices(); await loadRequests(); }
 
 $('loginForm').addEventListener('submit', async e => {
   e.preventDefault(); msg($('loginMsg'), '');
@@ -71,11 +138,18 @@ $('logoutBtn').onclick = async () => { await api('logout',{method:'POST'}).catch
 $('newPracticeBtn').onclick = () => { $('practiceModal').classList.remove('hidden'); $('practiceMsg').textContent=''; };
 $('closeModal').onclick = () => $('practiceModal').classList.add('hidden');
 $('practiceBody').addEventListener('click', e => { const btn = e.target.closest('[data-open]'); if (btn) openDetail(btn.dataset.open); });
+$('requestBody').addEventListener('click', e => { const btn = e.target.closest('[data-request-open]'); if (btn) openRequestDetail(btn.dataset.requestOpen); });
 $('practiceForm').addEventListener('submit', async e => { e.preventDefault(); const f = new FormData(e.target); try { await api('practices',{method:'POST',body:Object.fromEntries(f.entries())}); e.target.reset(); $('practiceModal').classList.add('hidden'); await loadPractices(); } catch(err) { msg($('practiceMsg'),err.message,'error'); } });
 $('passwordForm').addEventListener('submit', async e => { e.preventDefault(); msg($('passwordMsg'),''); const p=$('newPassword').value, c=$('confirmPassword').value; if(p!==c){msg($('passwordMsg'),'Le nuove password non coincidono.','error');return;} try{await api('password',{method:'POST',body:{currentPassword:$('currentPassword').value,password:p}});e.target.reset();msg($('passwordMsg'),'Password modificata correttamente.','ok');}catch(err){msg($('passwordMsg'),err.message,'error');} });
 $('addMfaBtn').onclick = async () => { try { const d=await api('mfa-enroll',{method:'POST'}); $('settingsQr').classList.remove('hidden'); $('settingsQrImage').src=d.qrCode||''; $('settingsSecret').textContent=d.secret||''; $('settingsMfaForm').dataset.factorId=d.factorId; } catch(e){msg($('mfaSettingsMsg'),e.message,'error');} };
 $('settingsMfaForm').addEventListener('submit',async e=>{e.preventDefault();try{await api('mfa-add-verify',{method:'POST',body:{factorId:e.currentTarget.dataset.factorId,code:$('settingsMfaCode').value.trim()}});e.currentTarget.reset();$('settingsQr').classList.add('hidden');msg($('mfaSettingsMsg'),'Nuovo dispositivo MFA verificato.','ok');}catch(err){msg($('mfaSettingsMsg'),err.message,'error');}});
-document.querySelectorAll('.nav-btn').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));btn.classList.add('active');$('practicesSection').classList.toggle('hidden',btn.dataset.section!=='practices');$('settingsSection').classList.toggle('hidden',btn.dataset.section!=='settings');}));
+document.querySelectorAll('.nav-btn').forEach(btn=>btn.addEventListener('click',()=>{
+  document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));
+  btn.classList.add('active');
+  $('practicesSection').classList.toggle('hidden',btn.dataset.section!=='practices');
+  $('requestsSection').classList.toggle('hidden',btn.dataset.section!=='requests');
+  $('settingsSection').classList.toggle('hidden',btn.dataset.section!=='settings');
+}));
 (async()=>{try{const s=await api('session');if(s.authenticated) await enterApp(s.user.email);else show('loginView');}catch{show('loginView');}})();
 
 let idleTimer;
