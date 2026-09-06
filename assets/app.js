@@ -348,6 +348,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const menu=document.createElement('div');
     menu.className='nav-fideiussioni-menu';
     menu.setAttribute('role','menu');
+    const heading=document.createElement('div');
+    heading.className='nav-fideiussioni-heading';
+    heading.textContent='Soluzioni di garanzia';
+    const subheading=document.createElement('div');
+    subheading.className='nav-fideiussioni-subheading';
+    subheading.textContent='Scegli la tipologia di fideiussione che ti interessa.';
+    menu.append(heading,subheading);
     const items=[
       ['Appalti pubblici','/appalti-pubblici'],['Locazioni','/locazioni'],['Trasporti','/richiedi-preventivo?tipo=trasporti'],['Dogane','/dogane'],['Ambiente','/ambiente'],['Contributi e agevolazioni','/richiedi-preventivo?tipo=contributi'],['Urbanistica ed edilizia','/richiedi-preventivo?tipo=urbanistica'],['Garanzie fiscali','/richiedi-preventivo?tipo=fiscali'],['Altra fideiussione','/richiedi-preventivo?tipo=altra']
     ];
