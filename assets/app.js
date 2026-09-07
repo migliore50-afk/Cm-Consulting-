@@ -37,11 +37,15 @@ function initSlider() {
     slideIndex = (index + SLIDES.length) % SLIDES.length;
     const [stem, label, heading, description] = SLIDES[slideIndex];
 
+    const srcset = imageSet(stem);
+    const nextSrc = `assets/${stem}-retina-1920.webp`;
+    const preload = new Image();
+    preload.src = nextSrc;
+
     img.classList.add('fade');
 
-    window.setTimeout(() => {
-      const srcset = imageSet(stem);
-      img.src = `assets/${stem}-retina-1920.webp`;
+    const swap = () => {
+      img.src = nextSrc;
       img.srcset = srcset;
       img.sizes = imageSizes;
       img.alt = `${label} — ${heading}`;
@@ -54,8 +58,15 @@ function initSlider() {
       if (kicker) kicker.textContent = label;
       if (title) title.textContent = heading;
       if (text) text.textContent = description;
-      img.classList.remove('fade');
-    }, 120);
+      requestAnimationFrame(() => img.classList.remove('fade'));
+    };
+
+    if (preload.complete) {
+      swap();
+    } else {
+      preload.addEventListener('load', swap, {once:true});
+      preload.addEventListener('error', swap, {once:true});
+    }
 
     if (progress) {
       progress.style.width = `${((slideIndex + 1) / SLIDES.length) * 100}%`;
