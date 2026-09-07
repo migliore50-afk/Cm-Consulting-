@@ -287,7 +287,7 @@ function initAssistantFab() {
   button.type = 'button';
   button.setAttribute('aria-label', 'Apri Assistente CM');
   button.setAttribute('title', 'Apri Assistente CM');
-  button.innerHTML = '<span class="cm-ai-fab-logo" aria-hidden="true"><img src="assets/images/logo-cm-symbol.png" alt=""></span><span class="cm-ai-fab-icon" aria-hidden="true">•••</span><span class="cm-ai-fab-label">Assistente CM</span>';
+  button.innerHTML = '<span class="cm-ai-fab-logo" aria-hidden="true"><img src="assets/assistente-cm-retina-768.webp" alt=""></span><span class="cm-ai-fab-copy"><strong>Assistente CM</strong><small>Posso aiutarti?</small></span><span class="cm-ai-fab-arrow" aria-hidden="true">→</span>';
   button.addEventListener('click', openAI);
   document.body.appendChild(button);
 }
