@@ -256,9 +256,9 @@ body.privacy-modal-open{overflow:hidden}
 /* Header: FIDEIUSSIONI matches the other primary navigation labels */
 .nav-fideiussioni-trigger{
   font-family:inherit!important;
-  font-size:13px!important;
-  font-weight:800!important;
-  letter-spacing:.08em!important;
+  font-size:12px!important;
+  font-weight:900!important;
+  letter-spacing:.35px!important;
   line-height:1!important;
   text-transform:uppercase!important;
   color:inherit!important;
@@ -289,29 +289,29 @@ body.privacy-modal-open{overflow:hidden}
   object-position:center;
 }
 
-/* Footer: same premium gold-outline treatment for navigation links */
-.cm-footer-main .cm-footer-column ul{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+/* Footer: navigation links as clean text; RUI/Reclami CTA buttons remain unchanged */
+.cm-footer-main .cm-footer-column ul{display:grid;gap:5px;margin:0;padding:0;list-style:none}
 .cm-footer-main .cm-footer-column ul li{margin:0;padding:0}
 .cm-footer-main .cm-footer-column ul li a{
-  display:flex!important;
-  align-items:center;
-  min-height:38px;
+  display:inline-block!important;
+  min-height:0;
   box-sizing:border-box;
-  padding:8px 12px!important;
-  border:1px solid rgba(212,168,70,.82)!important;
-  border-radius:8px;
+  padding:2px 0!important;
+  border:0!important;
+  border-radius:0!important;
   color:#fff!important;
   text-decoration:none!important;
   background:transparent!important;
-  transition:background .18s ease,color .18s ease,transform .18s ease,border-color .18s ease;
+  transition:color .18s ease,text-decoration-color .18s ease;
 }
 .cm-footer-main .cm-footer-column ul li a:hover,
 .cm-footer-main .cm-footer-column ul li a:focus-visible{
-  background:#d4a846!important;
-  border-color:#d4a846!important;
-  color:#102a43!important;
-  transform:translateY(-1px);
+  background:transparent!important;
+  border:0!important;
+  color:#d4a846!important;
+  transform:none;
   outline:none;
+  text-decoration:underline!important;
 }
 
 /* Assistant: permanently anchored to the viewport during scroll */
