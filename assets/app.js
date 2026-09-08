@@ -273,7 +273,7 @@ function aiChoose(type) {
   if (!content) return;
 
   const map = {
-    appalto: ['Per un appalto posso indirizzarti alle garanzie collegate alla gara e agli obblighi contrattuali.', 'appalti.html'],
+    appalto: ['Per un appalto posso indirizzarti alle garanzie collegate alla gara e agli obblighi contrattuali.', 'appalti-pubblici.html'],
     trasporto: ['Per l’autotrasporto possiamo distinguere tra capacità finanziaria e altre esigenze di garanzia.', 'capacita-finanziaria.html'],
     locazione: ['Per la locazione partiamo dalle condizioni richieste dal contratto o dal locatore.', 'locazioni.html'],
     dogana: ['Per una pratica doganale partiamo dal tipo di obbligo e dalla documentazione ricevuta.', 'dogane.html'],
