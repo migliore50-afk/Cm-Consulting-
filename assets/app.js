@@ -39,29 +39,39 @@ function initSlider() {
 
     const srcset = imageSet(stem);
     const nextSrc = `assets/${stem}-retina-1920.webp`;
+
     const preload = new Image();
+    preload.srcset = srcset;
+    preload.sizes = imageSizes;
     preload.src = nextSrc;
 
     img.classList.add('fade');
 
     const swap = () => {
-      img.src = nextSrc;
-      img.srcset = srcset;
-      img.sizes = imageSizes;
-      img.alt = `${label} — ${heading}`;
-
       if (webp) {
         webp.srcset = srcset;
         webp.sizes = imageSizes;
       }
 
+      img.srcset = srcset;
+      img.sizes = imageSizes;
+      img.src = nextSrc;
+      img.alt = `${label} — ${heading}`;
+
       if (kicker) kicker.textContent = label;
       if (title) title.textContent = heading;
       if (text) text.textContent = description;
-      requestAnimationFrame(() => img.classList.remove('fade'));
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => img.classList.remove('fade'));
+      });
     };
 
-    if (preload.complete) {
+    if (preload.decode) {
+      preload.decode()
+        .catch(() => {})
+        .then(swap);
+    } else if (preload.complete) {
       swap();
     } else {
       preload.addEventListener('load', swap, {once:true});
