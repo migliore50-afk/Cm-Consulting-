@@ -350,9 +350,9 @@ picture{display:block;max-width:100%}
 
 /* CM CONSULTING — SEQUENTIAL SERVICE NAVIGATION */
 .cm-service-nav{width:min(1200px,calc(100% - 48px));margin:64px auto 0;padding:0 0 8px}
-.cm-service-nav-inner{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:stretch;gap:20px;padding:18px;background:#F7FAFC;border:1px solid rgba(9,43,67,.10);border-radius:18px;box-shadow:0 10px 30px rgba(9,43,67,.06)}
-.cm-service-nav-link{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:72px;padding:14px 18px;border:1px solid rgba(9,43,67,.10);border-radius:12px;background:#fff;color:#092B43;text-decoration:none;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease,background .2s ease}
-.cm-service-nav-link:hover{transform:translateY(-2px);border-color:rgba(221,178,63,.75);box-shadow:0 8px 22px rgba(9,43,67,.10)}
+.cm-service-nav-inner{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:stretch;gap:20px;padding:18px;background:transparent;border:0;border-radius:0;box-shadow:none}
+.cm-service-nav-link{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:72px;padding:14px 18px;border:0;border-radius:0;background:transparent;color:#092B43;text-decoration:none;transition:transform .2s ease,color .2s ease}
+.cm-service-nav-link:hover{transform:translateY(-2px);color:#168FBD}
 .cm-service-nav-link small{display:block;margin-bottom:5px;color:#168FBD;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
 .cm-service-nav-link strong{display:block;font-size:15px;line-height:1.2;font-weight:800}
 .cm-service-nav-direction{flex:0 0 auto;color:#DDB23F;font-size:24px;line-height:1}
