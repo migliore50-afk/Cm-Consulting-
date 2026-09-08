@@ -277,7 +277,6 @@ body.privacy-modal-open{overflow:hidden}
   min-width:0;
   overflow:hidden;
   border-radius:18px;
-  border:1px solid rgba(255,255,255,.14);
   box-shadow:0 18px 42px rgba(0,0,0,.22);
   background:#0d3652;
 }
@@ -289,31 +288,7 @@ body.privacy-modal-open{overflow:hidden}
   object-position:center;
 }
 
-/* Footer: same premium gold-outline treatment for navigation links */
-.cm-footer-main .cm-footer-column ul{display:grid;gap:8px;margin:0;padding:0;list-style:none}
-.cm-footer-main .cm-footer-column ul li{margin:0;padding:0}
-.cm-footer-main .cm-footer-column ul li a{
-  display:flex!important;
-  align-items:center;
-  min-height:38px;
-  box-sizing:border-box;
-  padding:8px 12px!important;
-  border:1px solid rgba(212,168,70,.82)!important;
-  border-radius:8px;
-  color:#fff!important;
-  text-decoration:none!important;
-  background:transparent!important;
-  transition:background .18s ease,color .18s ease,transform .18s ease,border-color .18s ease;
-}
-.cm-footer-main .cm-footer-column ul li a:hover,
-.cm-footer-main .cm-footer-column ul li a:focus-visible{
-  background:#d4a846!important;
-  border-color:#d4a846!important;
-  color:#102a43!important;
-  transform:translateY(-1px);
-  outline:none;
-}
-
+/* Footer: keep the base footer navigation styling from assets/style.css */
 /* Assistant: permanently anchored to the viewport during scroll */
 #cm-ai-fab,.cm-ai-fab{
   position:fixed!important;
@@ -329,6 +304,5 @@ body.privacy-modal-open{overflow:hidden}
 @media(max-width:600px){
   .cm-confirmed-hero-grid{grid-template-columns:1fr}
   .cm-confirmed-hero-media img{height:58vw;min-height:210px}
-  .cm-footer-main .cm-footer-column ul li a{min-height:40px}
   #cm-ai-fab,.cm-ai-fab{right:12px!important;bottom:12px!important}
 }
