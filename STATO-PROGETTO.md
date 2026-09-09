@@ -8,58 +8,114 @@
 
 ---
 
-## 1. STATO ATTUALE
+## 1. SCOPO DEL FILE
 
-Questo file è il registro tecnico ufficiale del progetto CM Consulting.
+Questo file è il **registro tecnico ufficiale del progetto CM Consulting**.
 
-Prima di effettuare qualsiasi modifica:
+Serve a mantenere la continuità del lavoro tra chat diverse e tra assistenti diversi, in particolare **ChatGPT e Claude**.
 
-1. leggere questo file dal branch `main`;
-2. verificare il RAW attuale dei file interessati direttamente da GitHub;
-3. verificare il contesto completo prima di modificare;
-4. effettuare una sola correzione alla volta;
-5. modificare esclusivamente il file e le righe necessarie;
-6. non ricostruire file grandi da copie precedenti o da contenuti troncati;
-7. dopo l'upload, verificare il file e il deploy Vercel;
-8. usare un commit separato per ogni correzione richiesta.
+Il contenuto di questo file ha priorità rispetto alla memoria della singola conversazione. Ogni assistente che lavora sul progetto deve leggerlo prima di intervenire.
 
-### Procedura operativa concordata
+La copia su GitHub, nel branch `main`, è il riferimento ufficiale dello stato del progetto.
+
+È inoltre presente una copia di sicurezza sul PC dell'utente, nella cartella:
+
+`Sito cm consulting with CHATGPT`
+
+---
+
+## 2. REGOLE PER CHATGPT E CLAUDE
+
+Queste regole valgono per **qualsiasi assistente AI** che lavori sul progetto.
+
+### Prima di qualsiasi modifica
+
+1. Leggere `STATO-PROGETTO.md` direttamente dal branch `main` di GitHub.
+2. Verificare il RAW attuale dei file interessati.
+3. Controllare il contesto completo del codice prima di modificare.
+4. Non basarsi su copie locali, memoria della chat precedente o supposizioni.
+5. Identificare prima il problema reale.
+6. Procedere una sola correzione alla volta.
+7. Modificare esclusivamente ciò che è necessario.
+8. Non modificare file o righe non coinvolti.
+9. Dopo la modifica, verificare il risultato.
+10. Dopo il commit, verificare il deploy Vercel.
+
+### Regola di continuità
+
+Se si apre una nuova chat, l'assistente deve usare questo file per capire:
+
+- cosa è già stato fatto;
+- cosa è ancora da fare;
+- quali file sono importanti;
+- quali correzioni sono già pubblicate;
+- quali correzioni sono soltanto pianificate;
+- quali vincoli devono essere rispettati.
+
+### Regola di sicurezza
+
+Se il contenuto del RAW corrente di GitHub non è disponibile o è troncato, **non ricostruire il file completo basandosi su una copia vecchia**.
+
+In quel caso bisogna fermarsi, recuperare il contenuto necessario oppure chiedere all'utente il file completo.
+
+---
+
+## 3. PROCEDURA OPERATIVA CONCORDATA
 
 Per ogni correzione:
 
-- identificare prima il problema reale;
-- preparare il **file completo** interessato, quando richiesto;
-- indicare sempre il **nome esatto del file** da sostituire;
-- indicare sempre il **messaggio esatto del commit**;
-- l'utente carica il file tramite GitHub → **Add file → Upload files**;
-- l'utente effettua il commit direttamente su `main`;
-- verificare che Vercel riporti **Production → Ready**;
-- solo dopo passare alla correzione successiva.
+1. audit del problema;
+2. verifica del file attuale su GitHub;
+3. identificazione esatta della modifica;
+4. preparazione del file completo, quando necessario;
+5. indicazione del nome esatto del file;
+6. indicazione del messaggio esatto del commit;
+7. upload tramite GitHub → **Add file → Upload files**;
+8. commit direttamente su `main`;
+9. verifica del commit;
+10. verifica Vercel → **Production → Ready**;
+11. aggiornamento di questo registro quando la correzione è realmente conclusa.
+
+### Commit
+
+Ogni correzione indipendente deve avere un commit separato.
+
+Non raggruppare modifiche diverse in un unico commit se non espressamente deciso.
 
 ---
 
-## 2. REGOLE DI MODIFICA
+## 4. GESTIONE DELLA FINE DELLA CHAT
 
-### Regola fondamentale
-Non fare modifiche alla cieca.
+La capacità residua della conversazione non è rappresentata da un contatore preciso visibile all'assistente.
 
-Prima di modificare un file bisogna conoscere la versione attualmente presente su `main`.
+Pertanto non bisogna aspettare necessariamente che la chat sia completamente piena.
 
-### Vincoli
-- Non modificare file non coinvolti nella correzione.
-- Non modificare blocchi non richiesti.
-- Non eliminare funzioni esistenti senza una verifica preventiva.
-- Non sostituire un file completo usando una copia vecchia se il RAW corrente non è stato verificato.
-- Non dichiarare una correzione come pubblicata finché il commit e il deploy non sono stati verificati.
-- Non dichiarare un file "orfano" senza una ricerca delle sue referenze nel repository.
-- Distinguere sempre tra:
-  - correzione già pubblicata;
-  - correzione verificata nel codice ma non ancora pubblicata;
-  - problema ancora aperto.
+Quando la conversazione diventa molto lunga o quando viene concluso un blocco importante di lavoro, l'assistente deve valutare se è opportuno salvare lo stato.
+
+Quando è opportuno, deve avvisare l'utente con un messaggio del tipo:
+
+**"Prima di continuare, aggiorniamo STATO-PROGETTO.md."**
+
+L'assistente deve quindi preparare un **nuovo file completo** `STATO-PROGETTO.md`, pronto per essere scaricato.
+
+L'utente deve:
+
+1. scaricare il nuovo file;
+2. sostituire la copia precedente sul PC;
+3. sostituire la copia precedente su GitHub;
+4. fare il commit su `main`.
+
+L'assistente deve indicare sempre il nome esatto del file e il messaggio esatto del commit.
+
+### Importante
+
+Non promettere un rilevamento matematico della percentuale di spazio residuo della chat.
+
+L'obiettivo è evitare la perdita di contesto tramite aggiornamenti preventivi del registro.
 
 ---
 
-## 3. CORREZIONI GIÀ PUBBLICATE E VERIFICATE
+## 5. CORREZIONI GIÀ PUBBLICATE E VERIFICATE
 
 ### Homepage — link FIDEIUSSIONI
 **File:** `index.html`
@@ -115,15 +171,14 @@ Correzione:
 **File:** `assets/v9-final.css`
 
 Correzione pubblicata:
-- rimossa la regola globale che applicava un bordo bianco al media hero:
-  `.cm-confirmed-hero-media{border:1px solid rgba(255,255,255,.14);...}`
+- rimossa la regola globale che applicava un bordo bianco al media hero;
 - mantenuta la correzione relativa allo stile footer.
 
 **Commit:** `Ripristina stile footer e mantiene correzione hero`  
 **Commit breve:** `fa98593`  
 **Deploy:** Production → Ready
 
-Nota: il successivo problema strutturale relativo a `.hero-stage picture` è separato e non deve essere considerato già applicato.
+Nota: la correzione strutturale successiva relativa a `.hero-stage picture` è separata e non deve essere considerata già applicata.
 
 ---
 
@@ -162,14 +217,14 @@ Questo ha eliminato la precedente referenza a `appalti.html`.
 
 ---
 
-## 4. PROBLEMI ANCORA APERTI
+## 6. PROBLEMI ANCORA APERTI
 
 ### A. Struttura `.hero-stage picture`
 **File:** `assets/v9-final.css`
 
 Correzione identificata ma **NON ancora applicata**.
 
-Attuale struttura verificata:
+Struttura attuale verificata:
 
 ```css
 .hero-stage picture{
@@ -234,7 +289,7 @@ Formato commit concordato:
 
 ---
 
-## 5. FILE ORFANI — VERIFICA E STATO
+## 7. FILE ORFANI — VERIFICA E STATO
 
 Sono stati analizzati come candidati alla rimozione:
 
@@ -249,6 +304,7 @@ Sono stati analizzati come candidati alla rimozione:
 È stata eseguita una ricerca delle referenze.
 
 ### Punto importante
+
 `appalti.html` in precedenza risultava referenziato da `assets/app.js` tramite la voce `appalto` della mappa `aiChoose`.
 
 La referenza è stata aggiornata a:
@@ -258,15 +314,16 @@ La referenza è stata aggiornata a:
 Quindi, prima di eliminare `appalti.html`, bisogna eseguire una nuova ricerca completa delle referenze sul branch `main`.
 
 ### Regola
+
 Non eliminare nessuno dei sette file finché l'assenza di referenze non è stata verificata nuovamente sullo stato corrente del repository.
 
 In particolare:
-- `assets/v9-final.css` **non deve essere confuso** con il vecchio `v9-final.css` nella root;
+- `assets/v9-final.css` **non deve essere confuso** con il vecchio `v9-final.css` presente nella root;
 - una ricerca per filename deve essere effettuata prima della cancellazione.
 
 ---
 
-## 6. FOOTER — AUDIT ATTUALE
+## 8. FOOTER — AUDIT ATTUALE
 
 Audit diretto sul branch `main`.
 
@@ -296,7 +353,7 @@ Audit diretto sul branch `main`.
 
 ---
 
-## 7. STRUTTURA E FILE IMPORTANTI
+## 9. FILE IMPORTANTI
 
 ### HTML principali
 - `index.html`
@@ -332,13 +389,13 @@ Contiene, tra le altre:
 
 ---
 
-## 8. STATO VERCEL
+## 10. STATO VERCEL
 
 Le correzioni pubblicate elencate in questo documento sono state verificate con deploy:
 
 **Production → Ready**
 
-Ultimi commit verificati nel lavoro corrente:
+Commit verificati nel lavoro corrente:
 - `dd0472d` — navigazione servizi Appalti pubblici
 - `fa98593` — stile footer / hero
 - `78a7846` — footer 404
@@ -349,7 +406,26 @@ Prima di considerare una nuova modifica conclusa, verificare nuovamente il deplo
 
 ---
 
-## 9. PROSSIMO PASSO
+## 11. COPIE DI SICUREZZA SUL PC
+
+L'utente conserva i backup nella cartella:
+
+`Sito cm consulting with CHATGPT`
+
+In questa cartella sono presenti, tra gli altri:
+- `STATO-PROGETTO.md`;
+- backup ZIP;
+- audit;
+- documentazione tecnica;
+- altri file di sicurezza del progetto.
+
+Quando viene generato un nuovo `STATO-PROGETTO.md`, sostituire la copia precedente sul PC.
+
+Il file TXT `ISTRUZIONI_STATO_PROGETTO_CM_CONSULTING.txt` è un promemoria operativo separato e non sostituisce questo registro.
+
+---
+
+## 12. PROSSIMO PASSO
 
 Quando si riprende il progetto:
 
@@ -360,10 +436,26 @@ Quando si riprende il progetto:
 5. indicare nome file e commit message esatti;
 6. l'utente carica e committa su `main`;
 7. verificare Vercel Production → Ready;
-8. aggiornare questo registro solo dopo la verifica.
+8. aggiornare questo registro dopo la conclusione della correzione.
 
 ---
 
-## 10. ISTRUZIONE DI AVVIO PER QUALSIASI NUOVA CHAT
+## 13. ISTRUZIONE DI AVVIO PER QUALSIASI NUOVA CHAT
 
 > Prima di fare qualsiasi modifica al progetto CM Consulting, leggi il file `STATO-PROGETTO.md` direttamente dal branch `main` di GitHub. Consideralo il registro tecnico ufficiale del progetto. Dopo averlo letto, verifica sempre il RAW attuale dei file interessati prima di modificare qualsiasi cosa. Non basarti su copie locali, memoria della chat o supposizioni. Procedi una sola correzione alla volta e non modificare parti non richieste.
+
+### Istruzione aggiuntiva per Claude
+
+> Se stai lavorando sul progetto CM Consulting, usa `STATO-PROGETTO.md` come registro tecnico ufficiale esattamente come ChatGPT. Prima di modificare qualsiasi file, leggi il registro e verifica il RAW corrente del repository GitHub `migliore50-afk/Cm-Consulting-`, branch `main`. Non ricostruire file da versioni vecchie o da memoria della conversazione. Procedi una sola modifica alla volta, indica il file esatto e il commit previsto e non modificare parti non richieste.
+
+---
+
+## 14. PRINCIPIO FINALE
+
+**GitHub `main` = stato reale del progetto.**
+
+**`STATO-PROGETTO.md` = registro tecnico ufficiale.**
+
+**PC = archivio di sicurezza e backup.**
+
+ChatGPT e Claude devono utilizzare lo stesso registro e verificare sempre GitHub prima di modificare il progetto.
