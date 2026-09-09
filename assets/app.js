@@ -11,6 +11,7 @@ const imageSizes = '(max-width: 760px) 100vw, 56vw';
 
 let slideIndex = 0;
 let slideTimer = null;
+let currentSlideRequest = 0;
 
 function initSlider() {
   const img = document.getElementById('heroImage');
@@ -34,6 +35,7 @@ function initSlider() {
   }
 
   function paintSlide(index, manual = false) {
+    const requestId = ++currentSlideRequest;
     slideIndex = (index + SLIDES.length) % SLIDES.length;
     const [stem, label, heading, description] = SLIDES[slideIndex];
 
@@ -48,6 +50,8 @@ function initSlider() {
     img.classList.add('fade');
 
     const swap = () => {
+      if (requestId !== currentSlideRequest) return;
+
       if (webp) {
         webp.srcset = srcset;
         webp.sizes = imageSizes;
