@@ -14,15 +14,143 @@ let slideTimer = null;
 
 
 function initSlider() {
-  const img = document.getElementById('heroImage');
-  if (!img) return;
+  const stage = document.querySelector('.hero-stage');
+  const pictureA = stage?.querySelector('picture');
+  const imgA = document.getElementById('heroImage');
+  if (!stage || !pictureA || !imgA) return;
 
-  const webp = document.getElementById('heroWebp');
+  const sourceA = document.getElementById('heroWebp');
   const kicker = document.getElementById('heroKicker');
   const title = document.getElementById('heroTitle');
   const text = document.getElementById('heroText');
   const progress = document.getElementById('heroProgress');
   const dots = document.getElementById('heroDots');
+
+  const pictureB = pictureA.cloneNode(true);
+  pictureB.removeAttribute('id');
+  pictureB.querySelectorAll('[id]').forEach(element => element.removeAttribute('id'));
+  const sourceB = pictureB.querySelector('source');
+  const imgB = pictureB.querySelector('img');
+  if (!imgB) return;
+
+  stage.style.position = 'relative';
+  [pictureA, pictureB].forEach((layer, i) => {
+    layer.style.position = 'absolute';
+    layer.style.inset = '0';
+    layer.style.width = '100%';
+    layer.style.height = '100%';
+    layer.style.margin = '0';
+    layer.style.padding = '0';
+    layer.style.lineHeight = '0';
+    layer.style.zIndex = '0';
+    layer.style.pointerEvents = 'none';
+    layer.style.opacity = i === 0 ? '1' : '0';
+    layer.style.transition = 'opacity 400ms ease';
+  });
+  imgA.style.width = '100%';
+  imgA.style.height = '100%';
+  imgA.style.objectFit = 'cover';
+  imgA.style.transition = 'none';
+  imgB.style.width = '100%';
+  imgB.style.height = '100%';
+  imgB.style.objectFit = 'cover';
+  imgB.style.transition = 'none';
+  imgB.setAttribute('aria-hidden', 'true');
+  pictureB.setAttribute('aria-hidden', 'true');
+  pictureA.setAttribute('aria-hidden', 'false');
+  stage.appendChild(pictureB);
+
+  let activeLayer = 0;
+  let isTransitioning = false;
+  let transitionFallback = null;
+  const layers = [
+    { picture: pictureA, source: sourceA, img: imgA },
+    { picture: pictureB, source: sourceB, img: imgB }
+  ];
+
+  const TRANSITION_MS = 400;
+  const FAILSAFE_MS = TRANSITION_MS + 150;
+
+  function setLayerContent(layer, srcset, nextSrc, alt) {
+    if (layer.source) {
+      layer.source.srcset = srcset;
+      layer.source.sizes = imageSizes;
+    }
+    layer.img.srcset = srcset;
+    layer.img.sizes = imageSizes;
+    layer.img.src = nextSrc;
+    layer.img.alt = alt;
+  }
+
+  function prepareLayer(layer, done) {
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      layer.img.removeEventListener('load', finish);
+      layer.img.removeEventListener('error', finish);
+      done();
+    };
+
+    layer.img.addEventListener('load', finish, {once: true});
+    layer.img.addEventListener('error', finish, {once: true});
+
+    if (layer.img.complete && layer.img.naturalWidth > 0) {
+      if (typeof layer.img.decode === 'function') {
+        layer.img.decode().catch(() => {}).then(finish);
+      } else {
+        finish();
+      }
+    } else if (typeof layer.img.decode === 'function') {
+      layer.img.decode().catch(() => {});
+    }
+  }
+
+  function finishTransition() {
+    if (!isTransitioning) return;
+    if (transitionFallback) {
+      window.clearTimeout(transitionFallback);
+      transitionFallback = null;
+    }
+
+    const oldLayer = layers[activeLayer];
+    const newLayerIndex = activeLayer === 0 ? 1 : 0;
+    const newLayer = layers[newLayerIndex];
+
+    oldLayer.picture.style.opacity = '0';
+    newLayer.picture.style.opacity = '1';
+    oldLayer.picture.setAttribute('aria-hidden', 'true');
+    newLayer.picture.setAttribute('aria-hidden', 'false');
+    activeLayer = newLayerIndex;
+    isTransitioning = false;
+  }
+
+  function crossfadeTo(layerIndex, onComplete) {
+    const oldLayer = layers[activeLayer];
+    const newLayer = layers[layerIndex];
+    isTransitioning = true;
+    newLayer.picture.style.opacity = '0';
+    newLayer.picture.style.zIndex = '1';
+    oldLayer.picture.style.zIndex = '0';
+
+    let ended = false;
+    const finish = () => {
+      if (ended) return;
+      ended = true;
+      newLayer.picture.removeEventListener('transitionend', finish);
+      finishTransition();
+      if (onComplete) onComplete();
+    };
+
+    newLayer.picture.addEventListener('transitionend', finish, {once: true});
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        newLayer.picture.style.opacity = '1';
+        oldLayer.picture.style.opacity = '0';
+      });
+    });
+    transitionFallback = window.setTimeout(finish, FAILSAFE_MS);
+  }
 
   if (dots && !dots.children.length) {
     SLIDES.forEach((_, i) => {
@@ -35,52 +163,33 @@ function initSlider() {
   }
 
   function paintSlide(index, manual = false) {
-    
-    slideIndex = (index + SLIDES.length) % SLIDES.length;
-    const [stem, label, heading, description] = SLIDES[slideIndex];
+    if (isTransitioning) return;
 
+    const nextIndex = (index + SLIDES.length) % SLIDES.length;
+    if (nextIndex === slideIndex && layers[activeLayer].img.currentSrc) {
+      if (manual) restartSlider();
+      return;
+    }
+
+    slideIndex = nextIndex;
+    const [stem, label, heading, description] = SLIDES[slideIndex];
     const srcset = imageSet(stem);
     const nextSrc = `assets/${stem}-retina-1920.webp`;
+    const targetLayerIndex = activeLayer === 0 ? 1 : 0;
+    const targetLayer = layers[targetLayerIndex];
 
-    const preload = new Image();
-    preload.srcset = srcset;
-    preload.sizes = imageSizes;
-    preload.src = nextSrc;
+    targetLayer.picture.style.opacity = '0';
+    targetLayer.picture.style.zIndex = '0';
+    setLayerContent(targetLayer, srcset, nextSrc, `${label} — ${heading}`);
 
-    img.classList.add('fade');
-
-    const swap = () => {
-      
-
-      if (webp) {
-        webp.srcset = srcset;
-        webp.sizes = imageSizes;
-      }
-
-      img.srcset = srcset;
-      img.sizes = imageSizes;
-      img.src = nextSrc;
-      img.alt = `${label} — ${heading}`;
-
-      if (kicker) kicker.textContent = label;
-      if (title) title.textContent = heading;
-      if (text) text.textContent = description;
-
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => img.classList.remove('fade'));
+    prepareLayer(targetLayer, () => {
+      if (isTransitioning) return;
+      crossfadeTo(targetLayerIndex, () => {
+        if (kicker) kicker.textContent = label;
+        if (title) title.textContent = heading;
+        if (text) text.textContent = description;
       });
-    };
-
-    if (preload.decode) {
-      preload.decode()
-        .catch(() => {})
-        .then(swap);
-    } else if (preload.complete) {
-      swap();
-    } else {
-      preload.addEventListener('load', swap, {once:true});
-      preload.addEventListener('error', swap, {once:true});
-    }
+    });
 
     if (progress) {
       progress.style.width = `${((slideIndex + 1) / SLIDES.length) * 100}%`;
@@ -102,10 +211,23 @@ function initSlider() {
   document.getElementById('next')?.addEventListener('click', () => paintSlide(slideIndex + 1, true));
   document.getElementById('prev')?.addEventListener('click', () => paintSlide(slideIndex - 1, true));
 
-  paintSlide(0);
+  pictureA.style.opacity = '1';
+  pictureB.style.opacity = '0';
+  pictureA.style.zIndex = '0';
+  pictureB.style.zIndex = '0';
+  slideIndex = 0;
+  const [initialStem, initialLabel, initialHeading] = SLIDES[0];
+  setLayerContent(layers[0], imageSet(initialStem), `assets/${initialStem}-retina-1920.webp`, `${initialLabel} — ${initialHeading}`);
+  if (kicker) kicker.textContent = initialLabel;
+  if (title) title.textContent = initialHeading;
+  if (text) text.textContent = SLIDES[0][3];
+  if (progress) progress.style.width = `${100 / SLIDES.length}%`;
+  dots?.querySelectorAll('button').forEach((button, i) => {
+    button.classList.toggle('active', i === 0);
+    button.setAttribute('aria-current', i === 0 ? 'true' : 'false');
+  });
   restartSlider();
 }
-
 function initMenu() {
   const menu = document.getElementById('menu');
   const links = document.getElementById('links');
