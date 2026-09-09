@@ -51,10 +51,12 @@ function initSlider() {
   imgA.style.height = '100%';
   imgA.style.objectFit = 'cover';
   imgA.style.transition = 'none';
+  imgA.style.objectPosition = '5% center';
   imgB.style.width = '100%';
   imgB.style.height = '100%';
   imgB.style.objectFit = 'cover';
   imgB.style.transition = 'none';
+  imgB.style.objectPosition = '5% center';
   imgB.setAttribute('aria-hidden', 'true');
   pictureB.setAttribute('aria-hidden', 'true');
   pictureA.setAttribute('aria-hidden', 'false');
