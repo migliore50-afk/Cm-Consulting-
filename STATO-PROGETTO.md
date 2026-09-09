@@ -3,273 +3,330 @@
 
 **Ultimo aggiornamento:** 9 settembre 2026  
 **Repository:** `migliore50-afk/Cm-Consulting-`  
-**Branch di riferimento:** `main`  
-**Deploy:** Vercel — Production
+**Branch:** `main`  
+**Deploy:** Vercel — Production  
+**Stato:** progetto attivo; il problema JavaScript del Carousel homepage e dell'Assistente CM deve ancora essere diagnosticato e verificato nel browser.
 
 ---
 
-## 1. SCOPO DEL FILE
+## 1. SCOPO E REGOLE
 
-Questo file è il **registro tecnico ufficiale del progetto CM Consulting**.
+Questo file è il registro tecnico ufficiale condiviso da **ChatGPT, Claude e GitHub Copilot**.
 
-Serve a mantenere la continuità del lavoro tra chat diverse e tra assistenti diversi, in particolare **ChatGPT e Claude**.
+**GitHub `main` = stato reale del progetto.**  
+**STATO-PROGETTO.md = registro tecnico ufficiale.**  
+**PC = archivio di sicurezza e backup.**
 
-Il contenuto di questo file ha priorità rispetto alla memoria della singola conversazione. Ogni assistente che lavora sul progetto deve leggerlo prima di intervenire.
+Prima di qualsiasi modifica:
 
-La copia su GitHub, nel branch `main`, è il riferimento ufficiale dello stato del progetto.
+1. leggere questo file da GitHub;
+2. verificare il RAW corrente del file interessato;
+3. controllare il contesto completo;
+4. identificare prima il problema reale;
+5. una sola correzione alla volta;
+6. modificare solo ciò che è necessario;
+7. non ricostruire file da vecchie copie o memoria;
+8. verificare il diff;
+9. verificare il commit;
+10. verificare Vercel `Production → Ready`;
+11. verificare il comportamento reale sul sito.
 
-È inoltre presente una copia di sicurezza sul PC dell'utente, nella cartella:
+Ogni correzione indipendente deve avere un commit separato.
+
+Se il RAW GitHub è troncato, non ricostruire il file alla cieca: recuperare il contenuto necessario oppure chiedere il file completo.
+
+---
+
+## 2. PROCEDURA CONCORDATA
+
+Per ogni correzione:
+
+1. audit;
+2. verifica GitHub;
+3. identificazione esatta della modifica;
+4. preparazione del file completo quando necessario;
+5. indicazione del nome esatto del file;
+6. indicazione del commit message esatto;
+7. upload/edizione controllata su `main`;
+8. verifica del commit;
+9. verifica Vercel;
+10. verifica funzionale;
+11. aggiornamento di questo registro.
+
+Quando la chat diventa molto lunga o termina un blocco importante, creare un nuovo `STATO-PROGETTO.md`.
+
+Copia di sicurezza sul PC:
 
 `Sito cm consulting with CHATGPT`
 
 ---
 
-## 2. REGOLE PER CHATGPT E CLAUDE
+## 3. DATI E VINCOLI DEL PROGETTO
 
-Queste regole valgono per **qualsiasi assistente AI** che lavori sul progetto.
+**Azienda:** CM Consulting di Carmelo Migliore – Intermediazione Assicurativa.
 
-### Prima di qualsiasi modifica
+Attività: intermediazione assicurativa, con particolare attenzione a fideiussioni, appalti pubblici, locazioni, capacità finanziaria per albi trasportatori, dogane, ambiente e altre esigenze.
 
-1. Leggere `STATO-PROGETTO.md` direttamente dal branch `main` di GitHub.
-2. Verificare il RAW attuale dei file interessati.
-3. Controllare il contesto completo del codice prima di modificare.
-4. Non basarsi su copie locali, memoria della chat precedente o supposizioni.
-5. Identificare prima il problema reale.
-6. Procedere una sola correzione alla volta.
-7. Modificare esclusivamente ciò che è necessario.
-8. Non modificare file o righe non coinvolti.
-9. Dopo la modifica, verificare il risultato.
-10. Dopo il commit, verificare il deploy Vercel.
+### Contatti
 
-### Regola di continuità
+- telefono: `328 6382612`
+- email: `info@cm-consulting.info`
+- PEC: `carmelo.migliore@legalmail.it`
 
-Se si apre una nuova chat, l'assistente deve usare questo file per capire:
+### Indirizzo attualmente riportato
 
-- cosa è già stato fatto;
-- cosa è ancora da fare;
-- quali file sono importanti;
-- quali correzioni sono già pubblicate;
-- quali correzioni sono soltanto pianificate;
-- quali vincoli devono essere rispettati.
+`Via Giacomo Puccini 4, 10092 Beinasco (TO)`
 
-### Regola di sicurezza
+### Vincoli
 
-Se il contenuto del RAW corrente di GitHub non è disponibile o è troncato, **non ricostruire il file completo basandosi su una copia vecchia**.
-
-In quel caso bisogna fermarsi, recuperare il contenuto necessario oppure chiedere all'utente il file completo.
+- non riportare il vecchio indirizzo di Pomezia;
+- non elencare stabilmente broker/compagnie/intermediari collaboranti;
+- mantenere impostazione moderna e professionale;
+- rispettare gli obblighi IVASS;
+- non modificare parti non richieste.
 
 ---
 
-## 3. PROCEDURA OPERATIVA CONCORDATA
+# 4. CORREZIONI PUBBLICATE E VERIFICATE
 
-Per ogni correzione:
+## Homepage — link FIDEIUSSIONI
 
-1. audit del problema;
-2. verifica del file attuale su GitHub;
-3. identificazione esatta della modifica;
-4. preparazione del file completo, quando necessario;
-5. indicazione del nome esatto del file;
-6. indicazione del messaggio esatto del commit;
-7. upload tramite GitHub → **Add file → Upload files**;
-8. commit direttamente su `main`;
-9. verifica del commit;
-10. verifica Vercel → **Production → Ready**;
-11. aggiornamento di questo registro quando la correzione è realmente conclusa.
-
-### Commit
-
-Ogni correzione indipendente deve avere un commit separato.
-
-Non raggruppare modifiche diverse in un unico commit se non espressamente deciso.
-
----
-
-## 4. GESTIONE DELLA FINE DELLA CHAT
-
-La capacità residua della conversazione non è rappresentata da un contatore preciso visibile all'assistente.
-
-Pertanto non bisogna aspettare necessariamente che la chat sia completamente piena.
-
-Quando la conversazione diventa molto lunga o quando viene concluso un blocco importante di lavoro, l'assistente deve valutare se è opportuno salvare lo stato.
-
-Quando è opportuno, deve avvisare l'utente con un messaggio del tipo:
-
-**"Prima di continuare, aggiorniamo STATO-PROGETTO.md."**
-
-L'assistente deve quindi preparare un **nuovo file completo** `STATO-PROGETTO.md`, pronto per essere scaricato.
-
-L'utente deve:
-
-1. scaricare il nuovo file;
-2. sostituire la copia precedente sul PC;
-3. sostituire la copia precedente su GitHub;
-4. fare il commit su `main`.
-
-L'assistente deve indicare sempre il nome esatto del file e il messaggio esatto del commit.
-
-### Importante
-
-Non promettere un rilevamento matematico della percentuale di spazio residuo della chat.
-
-L'obiettivo è evitare la perdita di contesto tramite aggiornamenti preventivi del registro.
-
----
-
-## 5. CORREZIONI GIÀ PUBBLICATE E VERIFICATE
-
-### Homepage — link FIDEIUSSIONI
 **File:** `index.html`
 
-Correzione:
-- il link `FIDEIUSSIONI` della homepage è stato portato da `/appalti-pubblici` a `/fideiussioni`.
+`/appalti-pubblici` → `/fideiussioni`
 
-**Commit:** `Corregge homepage e link FIDEIUSSIONI`  
-**Commit breve:** `ab6bdc5`  
-**Deploy:** Production → Ready
+Commit: `Corregge homepage e link FIDEIUSSIONI`  
+SHA: `ab6bdc5`  
+Vercel: Production → Ready
 
----
+## Footer Appalti pubblici
 
-### Footer Appalti pubblici
 **File:** `appalti-pubblici.html`
 
-Correzione:
-- titolo della prima colonna footer da `Fideiussioni` a `CM Consulting`.
+Prima colonna: `Fideiussioni` → `CM Consulting`
 
-**Commit:** `Corregge titolo footer Appalti pubblici`  
-**Commit breve:** `a651e2b`  
-**Deploy:** Production → Ready
+Commit: `Corregge titolo footer Appalti pubblici`  
+SHA: `a651e2b`  
+Vercel: Production → Ready
 
----
+## Footer 404
 
-### Footer pagina 404
 **File:** `404.html`
 
-Correzione:
-- titolo della prima colonna footer da `Fideiussioni` a `CM Consulting`.
+Prima colonna: `Fideiussioni` → `CM Consulting`
 
-**Commit:** `Corregge titolo footer pagina 404`  
-**Commit breve:** `78a7846`  
-**Deploy:** Production → Ready
+Commit: `Corregge titolo footer pagina 404`  
+SHA: `78a7846`  
+Vercel: Production → Ready
 
----
+## Navigazione servizi Appalti
 
-### Navigazione servizi Appalti pubblici
 **File:** `appalti-pubblici.html`
 
-Correzione:
 - `ambiente.html` → `/ambiente`
 - `fideiussioni.html` → `/fideiussioni`
 - `capacita-finanziaria.html` → `/capacita-finanziaria`
 
-**Commit:** `Corregge navigazione servizi Appalti pubblici`  
-**Commit breve:** `dd0472d`  
-**Deploy:** Production → Ready
+Commit: `Corregge navigazione servizi Appalti pubblici`  
+SHA: `dd0472d`  
+Vercel: Production → Ready
 
----
+## CSS hero/footer
 
-### CSS — hero e footer
 **File:** `assets/v9-final.css`
 
-Correzione pubblicata:
-- rimossa la regola globale che applicava un bordo bianco al media hero;
+- rimossa la regola globale del bordo bianco sul media hero;
 - mantenuta la correzione relativa allo stile footer.
 
-**Commit:** `Ripristina stile footer e mantiene correzione hero`  
-**Commit breve:** `fa98593`  
-**Deploy:** Production → Ready
+Commit: `Ripristina stile footer e mantiene correzione hero`  
+SHA: `fa98593`  
+Vercel: Production → Ready
 
-Nota: la correzione strutturale successiva relativa a `.hero-stage picture` è separata e non deve essere considerata già applicata.
+**Attenzione:** il CSS attivo è `assets/v9-final.css`. Non confonderlo con il vecchio `v9-final.css` nella root, che è stato eliminato.
 
 ---
 
-### Carousel homepage — gestione del cambio immagine
+# 5. CAROUSEL HOMEPAGE — STORIA E STATO
+
 **File:** `assets/app.js`
 
-La funzione `paintSlide()` è stata corretta per evitare problemi durante il cambio delle immagini responsive.
+La funzione `paintSlide()` contiene:
 
-La versione attuale comprende:
-- preload con lo stesso `srcset` e `sizes` della slide;
-- uso di `decode()` quando disponibile;
+- preload con stesso `srcset`/`sizes`;
+- `decode()` quando disponibile;
 - aggiornamento di `<source>` prima di `<img>`;
-- doppio `requestAnimationFrame()` prima della rimozione della classe `fade`.
+- doppio `requestAnimationFrame()` prima della rimozione di `fade`.
 
-Non modificare nuovamente `paintSlide()` senza una nuova verifica del comportamento reale.
+**Non modificare `paintSlide()` senza nuova diagnosi.**
+
+## Tentativo race-condition
+
+Sono state introdotte temporaneamente:
+
+```javascript
+let currentSlideRequest = 0;
+const requestId = ++currentSlideRequest;
+if (requestId !== currentSlideRequest) return;
+```
+
+Commit:
+
+`0f888c31a628ae2c58d4a09e152ca291c9cb43c1`  
+`Corregge race condition carousel: protezione callback obsolete`
+
+Prima era stato creato il ripristino:
+
+`142cc10b18a636dfefff0e3c1575842f04ae7848`  
+`Ripristina assets/app.js al commit 93ad5d7 (revert temporaneo)`
+
+Dopo il deploy con la protezione il carosello risultava statico. La protezione è stata quindi rimossa.
+
+### Stato attuale
+
+Commit:
+
+`9dedbf29cdee81accc4e174aa7fcb95b55fd0e7d`  
+`fix: rimuove controllo currentSlideRequest che blocca carousel hero`
+
+Vercel: Production → Ready, branch `main`.
+
+Il commit ha modificato solo `assets/app.js`, rimuovendo il controllo `currentSlideRequest`.
+
+### Nota tecnica
+
+Non considerare come causa certa il solo controllo `currentSlideRequest`: matematicamente, su una normale seconda chiamata `paintSlide()`, il nuovo `requestId` coincide con `currentSlideRequest`. Il controllo serve soprattutto a ignorare callback obsolete.
+
+La rimozione è stata fatta perché il comportamento reale osservato dopo `0f888c3` era il carosello completamente statico.
 
 ---
 
-### Assistente — FAB/footer
-**File:** `assets/app.js`
+# 6. PROBLEMA ATTUALE — CAROUSEL + ASSISTENTE CM
 
-È presente `initAssistantFabFooterHide()` e il relativo avvio tramite `DOMContentLoaded`.
+Dopo il commit `9dedbf29` è stato osservato nel browser:
 
-**NON rimuovere o alterare questa funzione** durante correzioni non correlate.
+### Carousel
+
+- rimane sempre sulla prima immagine;
+- non cambia automaticamente;
+- freccia destra non cambia;
+- freccia sinistra non cambia.
+
+### Assistente CM
+
+- il pulsante/floating è visibile;
+- cliccandolo non si apre correttamente.
+
+Poiché due funzioni diverse dello stesso `assets/app.js` risultano inattive contemporaneamente, **non fare altre modifiche alla cieca al carosello**.
+
+### Ipotesi diagnostica principale
+
+`assets/app.js` potrebbe:
+
+- non essere eseguito correttamente nel browser;
+- non essere caricato correttamente;
+- interrompersi per un errore JavaScript prima dell'inizializzazione degli eventi.
+
+I log runtime Vercel non sono sufficienti per escludere un errore JavaScript lato browser.
+
+### Test da completare prima di modificare `assets/app.js`
+
+Aprire nel browser:
+
+`https://www.cm-consulting.info/assets/app.js`
+
+Interpretazione:
+
+- codice JavaScript visibile → file servito;
+- 404 / Not Found → problema di percorso/deploy;
+- HTML o errore → problema di caricamento.
+
+Dopo questo test bisogna verificare la Console del browser per eventuali errori JavaScript e testare dal vivo il click sull'Assistente CM.
+
+**Non modificare `assets/app.js` prima di completare la diagnosi.**
 
 ---
 
-### Appalti — destinazione dell'assistente
-**File:** `assets/app.js`
+# 7. ASSISTENTE CM
 
-La voce `appalto` nella mappa `aiChoose` attualmente punta a:
+`assets/app.js` contiene:
+
+- `initAssistantUI()`;
+- `openAI()`;
+- `closeAI()`;
+- `startAI()`;
+- `startAssistantRecognition()`;
+- `stopAssistantRecognition()`;
+- `aiChoose()`;
+- `initAssistantFab()`;
+- `initAssistantFabFooterHide()`.
+
+L'avvio generale comprende:
+
+```javascript
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu();
+  initSlider();
+  initAssistantUI();
+  initAssistantFab();
+  initAssistantFabFooterHide();
+  initClickableCards();
+  initBasicFormValidation();
+});
+```
+
+**NON rimuovere o modificare `initAssistantFabFooterHide()` durante correzioni non correlate.**
+
+La voce `appalto` nella mappa `aiChoose` punta ora a:
 
 `appalti-pubblici.html`
 
-Questo ha eliminato la precedente referenza a `appalti.html`.
+La vecchia destinazione `appalti.html` è stata rimossa dalla mappa.
 
 ---
 
-## 6. PROBLEMI ANCORA APERTI
+# 8. STRUTTURA HERO `.hero-stage picture`
 
-### A. Struttura `.hero-stage picture`
-**File:** `assets/v9-final.css`
+Una precedente ipotesi prevedeva di aggiungere:
 
-Correzione identificata ma **NON ancora applicata**.
+- `position:absolute`;
+- `inset:0`;
+- altre regole di isolamento.
 
-Struttura attuale verificata:
+**Stato verificato:** non considerare tale modifica come già applicata.
 
-```css
-.hero-stage picture{
-  width:100%;
-  height:100%
-}
-```
-
-Correzione prevista:
+La verifica del CSS attivo `assets/v9-final.css` ha mostrato che il blocco corrente è:
 
 ```css
-.hero-stage picture{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  display:block;
-  margin:0;
-  padding:0;
-}
+.hero-stage picture{width:100%;height:100%}
+.hero-stage picture img{width:100%;height:100%;object-fit:cover}
 ```
 
-Vincoli:
-- non modificare `.hero-stage picture img`;
-- non modificare `.hero-stage` base;
-- non modificare `assets/app.js`;
-- non modificare altri blocchi CSS.
+Non dichiarare quindi che `position:absolute` / `inset:0` siano presenti senza una nuova verifica del RAW corrente.
 
-Prima di applicare la correzione, verificare nuovamente il RAW corrente di `assets/v9-final.css`.
+**Non applicare questa modifica senza nuova diagnosi visiva/tecnica.**
 
 ---
 
-### B. Titoli footer da uniformare
+# 9. FOOTER — AUDIT ATTUALE
 
-Obiettivo:
-la prima colonna del footer deve avere `<h3>CM Consulting</h3>`.
+Obiettivo per il footer standard:
 
-**Già corretti:**
+```html
+<h3>CM Consulting</h3>
+```
+
+come titolo della prima colonna.
+
+## Già corretti
+
 - `404.html`
 - `ambiente.html`
 - `appalti-pubblici.html`
 - `dogane.html`
 - `locazioni.html`
 
-**Ancora da correggere:**
+## Ancora da correggere
+
 - `index.html`
 - `altre-esigenze.html`
 - `capacita-finanziaria.html`
@@ -281,81 +338,72 @@ la prima colonna del footer deve avere `<h3>CM Consulting</h3>`.
 - `richiedi-preventivo.html`
 - `trasparenza.html`
 
-Ogni correzione deve essere effettuata separatamente, con un commit distinto.
+Ogni correzione deve essere separata.
 
-Formato commit concordato:
+### Commit concordato
 
 `Uniforma titolo footer CM Consulting su [nome pagina]`
 
----
+Prima di ogni correzione:
 
-## 7. FILE ORFANI — VERIFICA E STATO
+1. verificare il RAW corrente;
+2. modificare solo il titolo `<h3>` richiesto;
+3. non toccare altre righe;
+4. verificare il diff;
+5. fare un solo commit;
+6. verificare Vercel;
+7. passare alla pagina successiva solo dopo conferma.
 
-Sono stati analizzati come candidati alla rimozione:
+## Pagine senza footer standard oggetto dell'audit
 
-1. `index-fix-fideiussioni.html`
-2. `v9-final.css` nella root — **non confondere con `assets/v9-final.css`**
-3. `v9-final-footer-text-links.css`
-4. `assets/cm-assistant.css`
-5. `assets/cm-assistant.js`
-6. `assets/cm-assistant-v7.css`
-7. `appalti.html`
-
-È stata eseguita una ricerca delle referenze.
-
-### Punto importante
-
-`appalti.html` in precedenza risultava referenziato da `assets/app.js` tramite la voce `appalto` della mappa `aiChoose`.
-
-La referenza è stata aggiornata a:
-
-`appalti-pubblici.html`
-
-Quindi, prima di eliminare `appalti.html`, bisogna eseguire una nuova ricerca completa delle referenze sul branch `main`.
-
-### Regola
-
-Non eliminare nessuno dei sette file finché l'assenza di referenze non è stata verificata nuovamente sullo stato corrente del repository.
-
-In particolare:
-- `assets/v9-final.css` **non deve essere confuso** con il vecchio `v9-final.css` presente nella root;
-- una ricerca per filename deve essere effettuata prima della cancellazione.
-
----
-
-## 8. FOOTER — AUDIT ATTUALE
-
-Audit diretto sul branch `main`.
-
-### Prima colonna corretta — `CM Consulting`
-- `404.html`
-- `ambiente.html`
-- `appalti-pubblici.html`
-- `dogane.html`
-- `locazioni.html`
-
-### Prima colonna ancora errata — `Fideiussioni`
-- `index.html`
-- `altre-esigenze.html`
-- `capacita-finanziaria.html`
-- `contatti.html`
-- `cookie.html`
-- `fideiussioni.html`
-- `privacy.html`
-- `reclami-e-arbitro-assicurativo.html`
-- `richiedi-preventivo.html`
-- `trasparenza.html`
-
-### Pagine senza il footer standard oggetto dell'audit
 - `area-cm.html` — redirect
 - `admin/index.html`
 - `admin/reset.html`
 
 ---
 
-## 9. FILE IMPORTANTI
+# 10. FILE ORFANI
 
-### HTML principali
+Candidati originari:
+
+1. `index-fix-fideiussioni.html`
+2. `v9-final.css` nella root
+3. `v9-final-footer-text-links.css`
+4. `assets/cm-assistant.css`
+5. `assets/cm-assistant.js`
+6. `assets/cm-assistant-v7.css`
+7. `appalti.html`
+
+## Sei file già eliminati
+
+- `assets/cm-assistant-v7.css` — `dc1072d`
+- `assets/cm-assistant.js` — `9ea5e6b`
+- `assets/cm-assistant.css` — `2802c9f`
+- `v9-final-footer-text-links.css` — `f0f15d0`
+- root `v9-final.css` — `450b506`
+- `index-fix-fideiussioni.html` — `ef38058`
+
+## `appalti.html`
+
+In precedenza era referenziato da `assets/app.js`.
+
+La mappa `aiChoose` è stata corretta a:
+
+`appalti-pubblici.html`
+
+Prima di eliminare `appalti.html` è obbligatoria una nuova ricerca completa delle referenze sul branch `main`.
+
+Non confondere mai:
+
+- `assets/v9-final.css` = CSS attivo;
+- `v9-final.css` = vecchio file root già eliminato.
+
+---
+
+# 11. FILE IMPORTANTI
+
+## HTML
+
 - `index.html`
 - `ambiente.html`
 - `appalti-pubblici.html`
@@ -372,90 +420,117 @@ Audit diretto sul branch `main`.
 - `trasparenza.html`
 - `404.html`
 
-### JavaScript principale
+## JavaScript
+
 `assets/app.js`
 
-Contiene, tra le altre:
-- carousel homepage;
-- `paintSlide()`;
-- `initAssistantFabFooterHide()`;
-- mappa `aiChoose`.
+## CSS
 
-### CSS principali
 - `assets/style.css`
 - `assets/v9-final.css`
 
-**Attenzione:** `assets/v9-final.css` è il CSS V9 attivo. Non confonderlo con il vecchio `v9-final.css` presente nella root.
+---
+
+# 12. STATO VERCEL
+
+Ultimo deploy noto:
+
+- commit `9dedbf29`;
+- messaggio `fix: rimuove controllo currentSlideRequest che blocca carousel hero`;
+- Production → Ready;
+- branch `main`.
+
+Commit recenti importanti:
+
+- `93ad5d7` — versione di riferimento precedente;
+- `142cc10` — ripristino temporaneo `assets/app.js`;
+- `0f888c3` — protezione callback obsolete;
+- `9dedbf2` — rimozione della protezione.
+
+**Production → Ready non significa che il JavaScript lato browser funzioni: il comportamento deve essere verificato sul sito.**
 
 ---
 
-## 10. STATO VERCEL
+# 13. BACKUP PC
 
-Le correzioni pubblicate elencate in questo documento sono state verificate con deploy:
-
-**Production → Ready**
-
-Commit verificati nel lavoro corrente:
-- `dd0472d` — navigazione servizi Appalti pubblici
-- `fa98593` — stile footer / hero
-- `78a7846` — footer 404
-- `a651e2b` — footer Appalti
-- `ab6bdc5` — homepage / link FIDEIUSSIONI
-
-Prima di considerare una nuova modifica conclusa, verificare nuovamente il deploy Production.
-
----
-
-## 11. COPIE DI SICUREZZA SUL PC
-
-L'utente conserva i backup nella cartella:
+Cartella:
 
 `Sito cm consulting with CHATGPT`
 
-In questa cartella sono presenti, tra gli altri:
+Deve contenere:
+
 - `STATO-PROGETTO.md`;
 - backup ZIP;
 - audit;
 - documentazione tecnica;
-- altri file di sicurezza del progetto.
+- altre copie importanti del progetto.
 
-Quando viene generato un nuovo `STATO-PROGETTO.md`, sostituire la copia precedente sul PC.
+Quando questo file viene aggiornato:
 
-Il file TXT `ISTRUZIONI_STATO_PROGETTO_CM_CONSULTING.txt` è un promemoria operativo separato e non sostituisce questo registro.
-
----
-
-## 12. PROSSIMO PASSO
-
-Quando si riprende il progetto:
-
-1. leggere questo file;
-2. verificare il RAW corrente del file interessato;
-3. affrontare una sola correzione;
-4. preparare il file completo se necessario;
-5. indicare nome file e commit message esatti;
-6. l'utente carica e committa su `main`;
-7. verificare Vercel Production → Ready;
-8. aggiornare questo registro dopo la conclusione della correzione.
+1. scaricarlo;
+2. sostituire la copia sul PC;
+3. sostituire la copia su GitHub;
+4. fare commit su `main`.
 
 ---
 
-## 13. ISTRUZIONE DI AVVIO PER QUALSIASI NUOVA CHAT
+# 14. ISTRUZIONE SPECIFICA PER CLAUDE E COPILOT
 
-> Prima di fare qualsiasi modifica al progetto CM Consulting, leggi il file `STATO-PROGETTO.md` direttamente dal branch `main` di GitHub. Consideralo il registro tecnico ufficiale del progetto. Dopo averlo letto, verifica sempre il RAW attuale dei file interessati prima di modificare qualsiasi cosa. Non basarti su copie locali, memoria della chat o supposizioni. Procedi una sola correzione alla volta e non modificare parti non richieste.
+Claude e GitHub Copilot devono usare questo registro esattamente come ChatGPT.
 
-### Istruzione aggiuntiva per Claude
+Prima di modificare:
 
-> Se stai lavorando sul progetto CM Consulting, usa `STATO-PROGETTO.md` come registro tecnico ufficiale esattamente come ChatGPT. Prima di modificare qualsiasi file, leggi il registro e verifica il RAW corrente del repository GitHub `migliore50-afk/Cm-Consulting-`, branch `main`. Non ricostruire file da versioni vecchie o da memoria della conversazione. Procedi una sola modifica alla volta, indica il file esatto e il commit previsto e non modificare parti non richieste.
+1. leggere `STATO-PROGETTO.md`;
+2. verificare `migliore50-afk/Cm-Consulting-`, branch `main`;
+3. verificare il RAW corrente;
+4. non ricostruire file da memoria;
+5. diagnosticare prima;
+6. una sola modifica alla volta;
+7. un solo commit per correzione;
+8. verificare il diff;
+9. verificare Vercel;
+10. verificare il comportamento reale.
+
+### Stato da comunicare
+
+Il problema aperto è:
+
+**Carousel homepage + Assistente CM entrambi inattivi nel browser.**
+
+Il prossimo test prioritario è:
+
+`https://www.cm-consulting.info/assets/app.js`
+
+Poi:
+
+- Console browser;
+- eventuali errori JavaScript;
+- test click Assistente CM;
+- test frecce carousel;
+- test cambio automatico.
+
+**Non modificare `assets/app.js` prima di completare questi test e la diagnosi.**
 
 ---
 
-## 14. PRINCIPIO FINALE
+# 15. ISTRUZIONE DI AVVIO PER NUOVE CHAT
 
-**GitHub `main` = stato reale del progetto.**
+> Prima di fare qualsiasi modifica al progetto CM Consulting, leggi `STATO-PROGETTO.md` direttamente dal branch `main` di GitHub. Consideralo il registro tecnico ufficiale. Verifica sempre il RAW corrente dei file interessati. Non basarti su copie locali, memoria della chat o supposizioni. Identifica prima il problema reale. Procedi una sola correzione alla volta e non modificare parti non richieste.
 
-**`STATO-PROGETTO.md` = registro tecnico ufficiale.**
+Frase breve:
 
-**PC = archivio di sicurezza e backup.**
+**“Riprendiamo il progetto CM Consulting.”**
 
-ChatGPT e Claude devono utilizzare lo stesso registro e verificare sempre GitHub prima di modificare il progetto.
+---
+
+# 16. PRINCIPIO FINALE
+
+**GitHub `main` = stato reale.**
+
+**`STATO-PROGETTO.md` = registro tecnico ufficiale condiviso.**
+
+**PC = backup di sicurezza.**
+
+**ChatGPT, Claude e Copilot devono usare lo stesso registro e verificare sempre GitHub prima di modificare.**
+
+**Nessuna correzione alla cieca. Prima diagnosi, poi modifica minima, poi verifica.**
