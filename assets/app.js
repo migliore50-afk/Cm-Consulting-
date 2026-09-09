@@ -1,6 +1,6 @@
 const SLIDES = [
   ['appalti', 'APPALTI PUBBLICI', 'Garanzie per le tue gare', 'Per chi deve partecipare a una gara o gestire obblighi contrattuali.'],
-  ['autotrasportatori', 'TRASPORTI', "Soluzioni per l'autotrasporto", 'Per imprese che operano nel trasporto e nell'autotrasporto.'],
+  ['autotrasportatori', 'TRASPORTI', "Soluzioni per l'autotrasporto", "Per imprese che operano nel trasporto e nell'autotrasporto."],
   ['locazioni', 'LOCAZIONI', 'Garanzie per il tuo contratto', 'Per esigenze legate a rapporti di locazione.'],
   ['altre-esigenze', 'ALTRE ESIGENZE', 'Garanzie per esigenze specifiche', 'Soluzioni per dogane, ambiente, energia, sanità e altre necessità.']
 ];
@@ -126,7 +126,7 @@ function initMenu() {
 
 function assistantImageMarkup(className = '') {
   return `<img class="${className}" src="assets/assistente-cm-retina-768.webp"
-    srcset="assets/assistente-cm-retina-480.webp 480w, assets/assistente-cm-retina-768.webp 768w, assets/assistente-cm-retina-1024.webp 1024w, assets/assistente-cm-retina-1440.webp 1440w, assets/[...]
+    srcset="assets/assistente-cm-retina-480.webp 480w, assets/assistente-cm-retina-768.webp 768w, assets/assistente-cm-retina-1024.webp 1024w, assets/assistente-cm-retina-1440.webp 1440w, assets/assistente-cm-retina-1920.webp 1920w, assets/assistente-cm-retina-2560.webp 2560w"
     sizes="(max-width: 640px) 100vw, 440px"
     width="768" height="432" loading="lazy" decoding="async" alt="Assistente CM">`;
 }
@@ -253,7 +253,7 @@ function startAssistantRecognition() {
     }, isVoiceEnabled() ? 700 : 0);
   };
   assistantRecognition.onerror = event => {
-    if (status) status.textContent = event.error === 'not-allowed' ? 'Consenti l'uso del microfono per parlare con l'assistente.' : 'Non ho potuto acquisire l'audio. Riprova.';
+    if (status) status.textContent = event.error === 'not-allowed' ? "Consenti l'uso del microfono per parlare con l'assistente." : "Non ho potuto acquisire l'audio. Riprova.";
   };
   assistantRecognition.onend = () => {
     if (mic) mic.classList.remove('listening');
@@ -278,10 +278,10 @@ function aiChoose(type) {
 
   const map = {
     appalto: ['Per un appalto posso indirizzarti alle garanzie collegate alla gara e agli obblighi contrattuali.', 'appalti-pubblici.html'],
-    trasporto: ['Per l'autotrasporto possiamo distinguere tra capacità finanziaria e altre esigenze di garanzia.', 'capacita-finanziaria.html'],
+    trasporto: ["Per l'autotrasporto possiamo distinguere tra capacità finanziaria e altre esigenze di garanzia.", 'capacita-finanziaria.html'],
     locazione: ['Per la locazione partiamo dalle condizioni richieste dal contratto o dal locatore.', 'locazioni.html'],
     dogana: ['Per una pratica doganale partiamo dal tipo di obbligo e dalla documentazione ricevuta.', 'dogane.html'],
-    ambiente: ['Per l'ambiente partiamo dall'obbligo specifico e dal soggetto che richiede la garanzia.', 'ambiente.html'],
+    ambiente: ["Per l'ambiente partiamo dall'obbligo specifico e dal soggetto che richiede la garanzia.", 'ambiente.html'],
     altro: ['Va bene. Raccontami il caso concreto e allega la documentazione che hai: apriamo direttamente la valutazione generica.', 'richiedi-preventivo.html?esigenza=generica']
   };
 
@@ -312,7 +312,7 @@ function initAssistantFab() {
   button.type = 'button';
   button.setAttribute('aria-label', 'Apri Assistente CM');
   button.setAttribute('title', 'Apri Assistente CM');
-  button.innerHTML = '<span class="cm-ai-fab-logo" aria-hidden="true"><img src="assets/assistente-cm-retina-768.webp" alt=""></span><span class="cm-ai-fab-copy"><strong>Assistente CM</strong><sma[...]
+  button.innerHTML = '<span class="cm-ai-fab-logo" aria-hidden="true"><img src="assets/assistente-cm-retina-768.webp" alt=""></span><span class="cm-ai-fab-copy"><strong>Assistente CM</strong><small>Posso aiutarti?</small></span><span class="cm-ai-fab-arrow" aria-hidden="true">→</span>';
   button.addEventListener('click', openAI);
   document.body.appendChild(button);
 }
@@ -396,13 +396,13 @@ document.addEventListener('DOMContentLoaded', () => {
     subheading.textContent='Scegli la tipologia di fideiussione che ti interessa.';
     menu.append(heading,subheading);
     const items=[
-      ['Appalti pubblici','/appalti-pubblici'],['Locazioni','/locazioni'],['Trasporti','/richiedi-preventivo?tipo=trasporti'],['Dogane','/dogane'],['Ambiente','/ambiente'],['Contributi e agevolaz[...]
+      ['Appalti pubblici','/appalti-pubblici'],['Locazioni','/locazioni'],['Trasporti','/richiedi-preventivo?tipo=trasporti'],['Dogane','/dogane'],['Ambiente','/ambiente'],['Contributi e agevolazioni','/richiedi-preventivo?tipo=contributi'],['Urbanistica ed edilizia','/richiedi-preventivo?tipo=urbanistica'],['Garanzie fiscali','/richiedi-preventivo?tipo=fiscali'],['Altra fideiussione','/richiedi-preventivo?tipo=altra']
     ];
     items.forEach(([label,href])=>{const a=document.createElement('a');a.href=href;a.textContent=label;a.setAttribute('role','menuitem');menu.appendChild(a);});
     wrap.append(trigger,menu);
     anchor.replaceWith(wrap);
     const close=()=>{wrap.classList.remove('open');trigger.setAttribute('aria-expanded','false');};
-    trigger.addEventListener('click',e=>{e.stopPropagation();const open=!wrap.classList.contains('open');document.querySelectorAll('.nav-fideiussioni.open').forEach(x=>x.classList.remove('open'))[...]
+    trigger.addEventListener('click',e=>{e.stopPropagation();const open=!wrap.classList.contains('open');document.querySelectorAll('.nav-fideiussioni.open').forEach(x=>x.classList.remove('open'));wrap.classList.toggle('open',open);trigger.setAttribute('aria-expanded',String(open));});
     wrap.addEventListener('mouseenter',()=>wrap.classList.add('open'));
     wrap.addEventListener('mouseleave',close);
     document.addEventListener('click',e=>{if(!wrap.contains(e.target))close();});
