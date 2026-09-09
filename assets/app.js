@@ -95,14 +95,12 @@ function initSlider() {
     layer.img.addEventListener('load', finish, {once: true});
     layer.img.addEventListener('error', finish, {once: true});
 
-    if (layer.img.complete && layer.img.naturalWidth > 0) {
-      if (typeof layer.img.decode === 'function') {
-        layer.img.decode().catch(() => {}).then(finish);
-      } else {
-        finish();
-      }
-    } else if (typeof layer.img.decode === 'function') {
-      layer.img.decode().catch(() => {});
+    if (typeof layer.img.decode === 'function') {
+      layer.img.decode().then(finish).catch(() => {
+        if (layer.img.complete && layer.img.naturalWidth > 0) finish();
+      });
+    } else if (layer.img.complete) {
+      finish();
     }
   }
 
@@ -181,9 +179,9 @@ function initSlider() {
     targetLayer.picture.style.opacity = '0';
     targetLayer.picture.style.zIndex = '0';
     setLayerContent(targetLayer, srcset, nextSrc, `${label} — ${heading}`);
+    isTransitioning = true;
 
     prepareLayer(targetLayer, () => {
-      if (isTransitioning) return;
       crossfadeTo(targetLayerIndex, () => {
         if (kicker) kicker.textContent = label;
         if (title) title.textContent = heading;
