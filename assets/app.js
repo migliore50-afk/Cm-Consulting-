@@ -47,16 +47,15 @@ function initSlider() {
     layer.style.opacity = i === 0 ? '1' : '0';
     layer.style.transition = 'opacity 400ms ease';
   });
-  imgA.style.width = '100%';
-  imgA.style.height = '100%';
-  imgA.style.objectFit = 'cover';
-  imgA.style.transition = 'none';
-  imgA.style.objectPosition = '5% center';
-  imgB.style.width = '100%';
-  imgB.style.height = '100%';
-  imgB.style.objectFit = 'cover';
-  imgB.style.transition = 'none';
-  imgB.style.objectPosition = '5% center';
+  [imgA, imgB].forEach(image => {
+    image.style.width = 'calc(100% + 10px)';
+    image.style.height = '100%';
+    image.style.maxWidth = 'none';
+    image.style.objectFit = 'cover';
+    image.style.objectPosition = '5% center';
+    image.style.marginLeft = '-10px';
+    image.style.transition = 'none';
+  });
   imgB.setAttribute('aria-hidden', 'true');
   pictureB.setAttribute('aria-hidden', 'true');
   pictureA.setAttribute('aria-hidden', 'false');
