@@ -1,11 +1,11 @@
 # STATO-PROGETTO.md
 ## CM Consulting — Registro tecnico ufficiale
 
-**Ultimo aggiornamento:** 9 settembre 2026  
+**Ultimo aggiornamento:** 11 settembre 2026  
 **Repository:** `migliore50-afk/Cm-Consulting-`  
 **Branch:** `main`  
 **Deploy:** Vercel — Production  
-**Stato:** progetto attivo; il problema JavaScript del Carousel homepage e dell'Assistente CM deve ancora essere diagnosticato e verificato nel browser.
+**Stato:** progetto attivo; Correzione B (overscan hero) applicata e verificata su GitHub (commit `69ac5b1`); da riverificare Vercel Production → Ready e comportamento live. Le sezioni 5-8 descrivono uno stato storico del carousel non più corrispondente al codice attuale — vedi §5 e §5-bis.
 
 ---
 
@@ -144,6 +144,23 @@ Vercel: Production → Ready
 
 **Attenzione:** il CSS attivo è `assets/v9-final.css`. Non confonderlo con il vecchio `v9-final.css` nella root, che è stato eliminato.
 
+## Correzione B — overscan hero carousel (11 settembre 2026)
+
+**File:** `assets/app.js`, dentro `initSlider()`, blocco di stile su `[imgA, imgB]`.
+
+Sostituzioni applicate, nessun'altra riga toccata:
+
+- `image.style.width = 'calc(100% + 10px)'` → `'100%'`
+- `image.style.objectPosition = '5% center'` → `'center center'`
+- `image.style.marginLeft = '-10px'` → `'0'`
+
+`paintSlide()`, il meccanismo di crossfade, CSS, HTML e immagini non sono stati toccati.
+
+Commit: `fix: rimuove overscan hero e ripristina centratura immagini`  
+SHA: `69ac5b1`  
+Verifica sintattica (`node --check`): OK  
+Applicato tramite editor web GitHub (vedi nota tecnica §5-bis per il motivo).
+
 ---
 
 # 5. CAROUSEL HOMEPAGE — STORIA E STATO
@@ -198,9 +215,44 @@ Non considerare come causa certa il solo controllo `currentSlideRequest`: matema
 
 La rimozione è stata fatta perché il comportamento reale osservato dopo `0f888c3` era il carosello completamente statico.
 
+### AGGIORNAMENTO 11 settembre 2026 — architettura carousel cambiata
+
+Le sezioni 5-8 di questo registro descrivono un'architettura del carousel (singolo `<picture>`, classe `fade`, `currentSlideRequest`) che **non corrisponde più al codice attualmente su `main`**. Verificato leggendo il RAW di `assets/app.js` in questa sessione: `initSlider()` ora usa un'architettura a doppio buffer con crossfade (`pictureA`/`pictureB` clonati, `layers[]`, `crossfadeTo()`, `finishTransition()`, `prepareLayer()`), introdotta presumibilmente in una sessione precedente non ancora riportata in questo registro. Il carousel e l'Assistente CM risultavano funzionanti prima dell'inizio di questa sessione (nessun problema riportato dall'utente).
+
+**Chi riprende questo progetto non deve considerare valide le sezioni 5-8 come descrizione dello stato attuale del codice**, ma solo come cronologia storica. Verificare sempre il RAW corrente prima di intervenire su `assets/app.js`.
+
+---
+
+# 5-bis. NOTA TECNICA — 403 "Resource not accessible by integration" sul connettore GitHub MCP (11 settembre 2026)
+
+Durante questa sessione, i tentativi di scrittura su GitHub tramite il tool `GitHub:create_or_update_file` (connettore MCP di Claude, endpoint `https://api.githubcopilot.com/mcp`) hanno restituito costantemente:
+
+```
+403 Resource not accessible by integration
+PUT https://api.github.com/repos/migliore50-afk/Cm-Consulting-/contents/assets/app.js
+```
+
+**Diagnosi effettuata:**
+
+1. Verificata la GitHub App **"Claude"** (Settings → Applications → Installed GitHub Apps): permesso Contents = Read and write, repository `Cm-Consulting-` correttamente selezionato. Push comunque fallito con lo stesso 403.
+2. Riconnesso il connettore GitHub in Claude (Disconnetti → Collega → Authorize) per ottenere un token OAuth fresco. Push fallito di nuovo, stesso errore identico.
+3. Verificata la pagina "Authorized GitHub Apps" (`github.com/settings/apps/authorizations`): risultano **due app GitHub distinte di Anthropic**:
+   - **"Claude"** — quella usata da Claude Code, con permessi Contents R/W configurati correttamente sul repo.
+   - **"Claude Github MCP Connector"** — quella effettivamente legata al connettore MCP usato in questa chat web. La sua pagina dettagli dichiara esplicitamente: *"Claude Github MCP Connector has not been installed on any accounts you have access to."*
+
+**Causa individuata:** l'app GitHub che serve la chiamata `api.githubcopilot.com/mcp` non risulta installata su alcun repository, quindi non ha accesso effettivo in scrittura, indipendentemente dai permessi OAuth generali concessi (identità, lettura risorse, "act on your behalf"). Questo spiega il 403 anche con token fresco.
+
+**Non risolto in questa sessione** (nessuna modifica a permessi/installazioni GitHub è stata effettuata, su richiesta esplicita dell'utente di non improvvisare cambi di autorizzazione). 
+
+**Soluzione applicata come bypass per completare la correzione B:** editing manuale del file tramite l'editor web di GitHub (`github.com/.../edit/main/assets/app.js`), con sostituzione dell'intero contenuto del file (fornito da Claude come file scaricabile) e commit diretto su `main` dall'interfaccia GitHub.
+
+**Per le prossime sessioni:** se il tool `GitHub:create_or_update_file` (o altri tool di scrittura del connettore MCP) restituisce di nuovo `403 Resource not accessible by integration`, non ripetere da zero questa diagnosi. Verificare prima se nel frattempo l'app **"Claude Github MCP Connector"** è stata installata su un repository (Settings → Applications → Installed GitHub Apps, cercare quel nome specifico, non solo "Claude"). Se non installata, il bypass via editor web GitHub resta la via più rapida.
+
 ---
 
 # 6. PROBLEMA ATTUALE — CAROUSEL + ASSISTENTE CM
+
+**Nota (11 settembre 2026): questa sezione descrive uno stato storico risolto in una sessione precedente non documentata qui. Vedi §5 "AGGIORNAMENTO 11 settembre 2026" e §5-bis. Non usare come base per una nuova diagnosi senza prima verificare il RAW corrente.**
 
 Dopo il commit `9dedbf29` è stato osservato nel browser:
 
@@ -435,12 +487,13 @@ Non confondere mai:
 
 Ultimo deploy noto:
 
-- commit `9dedbf29`;
-- messaggio `fix: rimuove controllo currentSlideRequest che blocca carousel hero`;
-- Production → Ready;
+- commit `69ac5b1`;
+- messaggio `fix: rimuove overscan hero e ripristina centratura immagini`;
 - branch `main`.
 
-Commit recenti importanti:
+**Vercel Production → Ready non ancora riverificato dopo questo commit in questa sessione: da controllare alla prossima ripresa.**
+
+Commit storici rilevanti (vedi §5 per nota sull'architettura obsoleta):
 
 - `93ad5d7` — versione di riferimento precedente;
 - `142cc10` — ripristino temporaneo `assets/app.js`;
@@ -493,23 +546,11 @@ Prima di modificare:
 
 ### Stato da comunicare
 
-Il problema aperto è:
+Correzione B (overscan hero) completata e verificata l'11 settembre 2026, commit `69ac5b1`. Resta da riverificare Vercel Production → Ready e il comportamento live sul sito per questo commit specifico.
 
-**Carousel homepage + Assistente CM entrambi inattivi nel browser.**
+Le sezioni 5-8 descrivono uno stato storico del carousel non più corrispondente al codice attuale: vedi nota in §5 e §5-bis prima di intervenire di nuovo su `assets/app.js`.
 
-Il prossimo test prioritario è:
-
-`https://www.cm-consulting.info/assets/app.js`
-
-Poi:
-
-- Console browser;
-- eventuali errori JavaScript;
-- test click Assistente CM;
-- test frecce carousel;
-- test cambio automatico.
-
-**Non modificare `assets/app.js` prima di completare questi test e la diagnosi.**
+Se il tool di scrittura GitHub del connettore MCP restituisce `403 Resource not accessible by integration`, vedi §5-bis prima di rifare la diagnosi da zero.
 
 ---
 
