@@ -48,12 +48,12 @@ function initSlider() {
     layer.style.transition = 'opacity 400ms ease';
   });
   [imgA, imgB].forEach(image => {
-    image.style.width = 'calc(100% + 10px)';
+    image.style.width = '100%';
     image.style.height = '100%';
     image.style.maxWidth = 'none';
     image.style.objectFit = 'cover';
-    image.style.objectPosition = '5% center';
-    image.style.marginLeft = '-10px';
+    image.style.objectPosition = 'center center';
+    image.style.marginLeft = '0';
     image.style.transition = 'none';
   });
   imgB.setAttribute('aria-hidden', 'true');
