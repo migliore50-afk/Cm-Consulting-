@@ -1,7 +1,7 @@
 # STATO-PROGETTO.md
 ## CM Consulting — Registro tecnico ufficiale
 
-**Ultimo aggiornamento:** 11 settembre 2026  
+**Ultimo aggiornamento:** 12 settembre 2026  
 **Repository:** `migliore50-afk/Cm-Consulting-`  
 **Branch:** `main`  
 **Deploy:** Vercel — Production  
@@ -160,6 +160,37 @@ Commit: `fix: rimuove overscan hero e ripristina centratura immagini`
 SHA: `69ac5b1`  
 Verifica sintattica (`node --check`): OK  
 Applicato tramite editor web GitHub (vedi nota tecnica §5-bis per il motivo).
+
+## Diagnosi fascia chiara bordo superiore Hero — 12 settembre 2026
+
+**Problema esaminato:** sottile fascia chiara percepita tra Header e Hero nella homepage, soprattutto sulla fotografia della slide con penna/documento.
+
+**Diagnosi eseguita sul sito live Vercel tramite Console Chrome.**
+
+Risultati desktop:
+- `headerHeight = 88px`;
+- `headerBottom = 88px`;
+- `heroTop = 88px`;
+- `gap = 0px`;
+- `devicePixelRatio = 1`;
+- `viewportWidth = 1920px`.
+
+Ulteriore verifica:
+- `border-bottom` dell'header rilevato come `none` nel rendering testato;
+- `heroTopPixelElement = .hero.hero-home`;
+- `pictures = 2`;
+- `images = 2`;
+- `<picture>` e `<img>` risultano coincidenti nella posizione;
+- `object-fit = cover`;
+- la disattivazione temporanea di `backdrop-filter` non ha modificato visivamente la fascia.
+
+**Conclusione:** non è stato rilevato alcun gap strutturale Header → Hero e non è stata confermata una causa CSS/HTML/JS. La fascia è compatibile con il contenuto/rendering dell'asset fotografico della slide e viene classificata come **issue estetica dell'asset**, non come bug di layout.
+
+**Decisione:** nessuna modifica a `index.html`, `assets/style.css`, `assets/v9-final.css` o `assets/app.js` per questa issue. Non intervenire sul layout senza una nuova evidenza diagnostica. Un eventuale intervento futuro dovrà riguardare direttamente l'asset fotografico (crop, correzione esposizione o sostituzione).
+
+### Carousel servizi — card “Altre esigenze”
+
+La visualizzazione parzialmente tagliata dell'ultima card a destra è **comportamento intenzionale** del carousel orizzontale con `overflow-x:auto` e `scroll-snap-type`, usato come affordance visiva dello scorrimento. Non classificare come bug salvo richiesta esplicita di redesign.
 
 ---
 
