@@ -18,7 +18,7 @@ Dati societari forniti dal titolare:
 - Codice Fiscale MGLCML71M25L219S
 - REA RM – 1519347
 - Codice Univoco KRRH6B9
-- Via Giacomo Puccini 4, 10092 Beinasco (TO)
+- Via Spinoza n. 49 - 00137 - Roma
 - 328 6382612
 - info@cm-consulting.info
 - carmelo.migliore@legalmail.it
