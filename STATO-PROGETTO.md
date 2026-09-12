@@ -75,7 +75,7 @@ Attività: intermediazione assicurativa, con particolare attenzione a fideiussio
 
 ### Indirizzo attualmente riportato
 
-`Via Giacomo Puccini 4, 10092 Beinasco (TO)`
+`Via Spinoza n. 49 - 00137 - Roma`
 
 ### Vincoli
 
