@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import { get } from '@vercel/blob';
 
 function str(v) { return typeof v === 'string' ? v.trim() : ''; }
 function ipOf(req) {
@@ -66,6 +67,116 @@ export async function scanAttachment({ filename, content, contentType }) {
     return { clean:true, engine:'external-antivirus' };
   } catch {
     return { clean:false, reason:'antivirus_unavailable' };
+  }
+}
+
+
+export async function scanBlobAttachment({ pathname, filename, contentType }) {
+  const safePath = typeof pathname === 'string' ? pathname.trim() : '';
+  const safeName = typeof filename === 'string' ? filename.trim() : '';
+  const safeType = typeof contentType === 'string' ? contentType.trim().toLowerCase() : '';
+
+  if (!safePath || !safePath.startsWith('requests/') || !safeName || !safeType) {
+    return { clean: false, reason: 'invalid_blob_reference' };
+  }
+
+  try {
+    const result = await get(safePath, {
+      access: 'private',
+      useCache: false
+    });
+
+    if (!result || !result.stream) {
+      return { clean: false, reason: 'blob_not_found' };
+    }
+
+    const reader = result.stream.getReader();
+    const chunks = [];
+    let total = 0;
+    const maxSize = 5 * 1024 * 1024;
+
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        total += value.byteLength;
+
+        if (total > maxSize) {
+          return { clean: false, reason: 'file_too_large' };
+        }
+
+        chunks.push(Buffer.from(value));
+      }
+    } finally {
+      reader.releaseLock();
+    }
+
+    const bytes = Buffer.concat(chunks);
+
+    if (!bytes.length) {
+      return { clean: false, reason: 'file_empty' };
+    }
+
+    if (!magicMatches(safeType, bytes)) {
+      return { clean: false, reason: 'file_signature_mismatch' };
+    }
+
+    if (safeType === 'application/pdf' && hasDangerousPdf(bytes)) {
+      return { clean: false, reason: 'pdf_active_content' };
+    }
+
+    if (safeType.includes('openxmlformats') && dangerousZipMarkers(bytes)) {
+      return { clean: false, reason: 'office_macro_or_embedding' };
+    }
+
+    const scannerUrl = str(process.env.CM_ANTIVIRUS_WEBHOOK_URL);
+
+    if (!scannerUrl) {
+      if (String(process.env.CM_REQUIRE_ANTIVIRUS).toLowerCase() === 'true') {
+        return { clean: false, reason: 'antivirus_not_configured' };
+      }
+
+      return { clean: true, engine: 'signature-heuristics' };
+    }
+
+    try {
+      const headers = { 'Content-Type': 'application/json' };
+
+      if (process.env.CM_ANTIVIRUS_WEBHOOK_SECRET) {
+        headers['x-cm-antivirus-secret'] = process.env.CM_ANTIVIRUS_WEBHOOK_SECRET;
+      }
+
+      const content = bytes.toString('base64');
+
+      const r = await fetch(scannerUrl, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          filename: safeName,
+          contentType: safeType,
+          content,
+          sha256: crypto.createHash('sha256').update(bytes).digest('hex')
+        })
+      });
+
+      const result = await r.json().catch(() => ({}));
+
+      if (!r.ok || result.clean !== true) {
+        return { clean: false, reason: 'antivirus_rejected' };
+      }
+
+      return { clean: true, engine: 'external-antivirus' };
+    } catch {
+      return { clean: false, reason: 'antivirus_unavailable' };
+    }
+  } catch (error) {
+    console.error(
+      'CM Consulting API - blob scan error:',
+      error?.message || error
+    );
+
+    return { clean: false, reason: 'blob_scan_failed' };
   }
 }
 
