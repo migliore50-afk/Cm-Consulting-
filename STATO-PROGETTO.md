@@ -606,3 +606,90 @@ Frase breve:
 **ChatGPT, Claude e Copilot devono usare lo stesso registro e verificare sempre GitHub prima di modificare.**
 
 **Nessuna correzione alla cieca. Prima diagnosi, poi modifica minima, poi verifica.**
+
+---
+
+# 17. AGGIORNAMENTO — 13 SETTEMBRE 2026
+
+## Correzione sede legale — completata e verificata
+
+Sono state corrette le seguenti pagine:
+
+- `index.html`
+- `capacita-finanziaria.html`
+
+Sostituzione effettuata:
+
+`Via Giacomo Puccini 4, 10092 Beinasco (TO)`
+
+con:
+
+`Via Spinoza n. 49 - 00137 - Roma`
+
+### GitHub
+
+Commit:
+
+`61d4ec9849f68ebad321798bef51d61072b57460`
+
+Messaggio:
+
+`fix: corregge sede legale in homepage e capacita finanziaria`
+
+Branch:
+
+`main`
+
+Verifica Git locale:
+
+`Your branch is up to date with 'origin/main'.`
+
+`nothing to commit, working tree clean`
+
+### Vercel
+
+Deployment associato al commit `61d4ec9`:
+
+- Target: `production`
+- Stato: `READY`
+- Source: Git
+- Branch: `main`
+- Alias error: `null`
+
+La produzione Vercel è quindi aggiornata al commit `61d4ec9`.
+
+### Verifica produzione
+
+La homepage della produzione ha risposto con:
+
+`HTTP 200 OK`
+
+Nel codice HTML pubblicato è presente:
+
+`Sede legale: Via Spinoza n. 49 - 00137 - Roma`
+
+La correzione è quindi verificata lungo tutta la catena:
+
+**PC/Mac → GitHub main → Vercel → Production**
+
+## Stato attuale
+
+La correzione dell'indirizzo è **CHIUSA**.
+
+Non risultano modifiche Git locali pendenti.
+
+Il vecchio indirizzo di Beinasco è stato eliminato dai due file corretti.
+
+### Prossimo lavoro
+
+Riprendere l'audit tecnico del progetto senza modifiche alla cieca.
+
+Priorità già individuate:
+
+1. verificare le anomalie residue del footer;
+2. verificare i redirect e le regole di `vercel.json`;
+3. verificare la gestione degli upload in `capacita-finanziaria.html`, in particolare il limite payload Vercel;
+4. verificare privacy/localStorage e passaggio dati verso WhatsApp;
+5. aggiornare `sitemap.xml` quando le modifiche definitive lo richiedono.
+
+Ogni modifica dovrà seguire la procedura prevista da questo registro: diagnosi → verifica RAW → modifica minima → diff → commit separato → verifica Vercel → verifica funzionale.
