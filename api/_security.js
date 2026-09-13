@@ -56,7 +56,7 @@ export async function scanAttachment({ filename, content, contentType }) {
   const scannerUrl = str(process.env.CM_ANTIVIRUS_WEBHOOK_URL);
   if (!scannerUrl) {
     if (String(process.env.CM_REQUIRE_ANTIVIRUS).toLowerCase() === 'true') return { clean: false, reason: 'antivirus_not_configured' };
-    return { clean: true, engine: 'signature-heuristics' };
+    return { clean: true, size: total, engine: 'signature-heuristics' };
   }
   try {
     const headers = { 'Content-Type':'application/json' };
@@ -166,7 +166,7 @@ export async function scanBlobAttachment({ pathname, filename, contentType }) {
         return { clean: false, reason: 'antivirus_rejected' };
       }
 
-      return { clean: true, engine: 'external-antivirus' };
+      return { clean: true, size: total, engine: 'external-antivirus' };
     } catch {
       return { clean: false, reason: 'antivirus_unavailable' };
     }
