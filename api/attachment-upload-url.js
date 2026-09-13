@@ -95,6 +95,8 @@ export default async function handler(req, res) {
       validUntil,
       allowedContentTypes: [contentType],
       maximumSizeInBytes: MAX_ATTACHMENT_SIZE,
+      oidcToken: process.env.VERCEL_OIDC_TOKEN,
+      storeId: process.env.BLOB_STORE_ID,
     });
 
     const { presignedUrl } = presignUrl(signedToken, {
