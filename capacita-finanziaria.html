@@ -79,28 +79,68 @@ function buildSummary(){
   document.getElementById('capacitySummary').innerHTML=html;
 }
 
-function fileToBase64(file){
-  return new Promise((resolve,reject)=>{
-    const reader=new FileReader();
-    reader.onload=()=>resolve(String(reader.result).split(',')[1]||'');
-    reader.onerror=reject;
-    reader.readAsDataURL(file);
-  });
-}
-
 async function submitCapacity(){
   const privacy=document.getElementById('privacyAccepted');
   if(!privacy.checked){privacy.focus();return;}
 
-  const d=formData();
+  const d=new FormData();
   const attachments=[];
   let total=0;
 
   for(const file of selectedFiles){
-    if(file.size>5*1024*1024){alert(`Il file "${file.name}" supera il limite di 5 MB.`);return;}
+    if(file.size>5*1024*1024){
+      alert(`Il file "${file.name}" supera il limite di 5 MB.`);
+      return;
+    }
+
     total+=file.size;
-    if(total>10*1024*1024){alert('La dimensione complessiva degli allegati supera 10 MB.');return;}
-    attachments.push({filename:file.name,contentType:file.type,content:await fileToBase64(file)});
+
+    if(total>10*1024*1024){
+      alert('La dimensione complessiva degli allegati supera 10 MB.');
+      return;
+    }
+  }
+
+  for(const file of selectedFiles){
+    try{
+      const uploadResponse=await fetch('/api/attachment-upload-url',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          filename:file.name,
+          contentType:file.type,
+          size:file.size
+        })
+      });
+
+      const uploadResult=await uploadResponse.json().catch(()=>({}));
+
+      if(!uploadResponse.ok || !uploadResult.uploadUrl || !uploadResult.pathname){
+        throw new Error(uploadResult.error||'Impossibile preparare il caricamento dell’allegato.');
+      }
+
+      const putResponse=await fetch(uploadResult.uploadUrl,{
+        method:'PUT',
+        headers:{
+          'Content-Type':file.type
+        },
+        body:file
+      });
+
+      if(!putResponse.ok){
+        throw new Error('Caricamento dell’allegato non riuscito.');
+      }
+
+      attachments.push({
+        filename:file.name,
+        contentType:file.type,
+        size:file.size,
+        pathname:uploadResult.pathname
+      });
+    }catch(error){
+      alert(error.message||'Non è stato possibile caricare un allegato. Riprova.');
+      return;
+    }
   }
 
   const text=[
@@ -110,14 +150,14 @@ async function submitCapacity(){
     `Sede: ${d.get('city')} (${d.get('province')})`,
     `Referente: ${d.get('contact')}`,
     `Email: ${d.get('email')}`,
-    `Numero mezzi: ${vehicles}`,
+    `Numero mezzi: ${d.get('vehicles')}`,
     `Bilancio: ${d.get('bilancio')||'non indicato'}`,
-    ...Array.from({length:vehicles},(_,i)=>`Mezzo ${i+1}: ${d.get(`vehicle_type_${i+1}`)||''} / ${d.get(`vehicle_plate_${i+1}`)||''}`)
+    ...Array.from({length:5},(_,i)=>`${i+1}: ${d.get(`vehicle_type_${i+1}`)||''} / ${d.get(`vehicle_plate_${i+1}`)||''}`)
   ].join('\n');
 
   const button=f.querySelector('button[type="submit"]');
   button.disabled=true;
-  button.textContent='INVIO IN CORSO…';
+  button.textContent='INVIO IN CORSO...';
 
   try{
     const response=await fetch('/api/submit-request',{
@@ -131,9 +171,12 @@ async function submitCapacity(){
         attachments
       })
     });
+
     const result=await response.json().catch(()=>({}));
+
     if(!response.ok || !result.ok) throw new Error(result?.error?.message||'Invio non riuscito.');
-    document.getElementById('step3').classList.add('hidden');
+
+    document.getElementById('capacitySent').classList.add('hidden');
     document.getElementById('capacityDone').classList.remove('hidden');
   }catch(error){
     alert(error.message||'Non è stato possibile inviare la richiesta. Riprova.');
