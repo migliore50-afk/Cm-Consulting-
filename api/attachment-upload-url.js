@@ -99,7 +99,7 @@ export default async function handler(req, res) {
       storeId: process.env.BLOB_STORE_ID,
     });
 
-    const { presignedUrl } = presignUrl(signedToken, {
+    const { presignedUrl } = await presignUrl(signedToken, {
       operation: 'put',
       pathname,
       access: 'private',
