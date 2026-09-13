@@ -56,7 +56,7 @@ export async function scanAttachment({ filename, content, contentType }) {
   const scannerUrl = str(process.env.CM_ANTIVIRUS_WEBHOOK_URL);
   if (!scannerUrl) {
     if (String(process.env.CM_REQUIRE_ANTIVIRUS).toLowerCase() === 'true') return { clean: false, reason: 'antivirus_not_configured' };
-    return { clean: true, size: total, engine: 'signature-heuristics' };
+    return { clean: true, engine: 'signature-heuristics' };
   }
   try {
     const headers = { 'Content-Type':'application/json' };
@@ -81,10 +81,21 @@ export async function scanBlobAttachment({ pathname, filename, contentType }) {
   }
 
   try {
-    const result = await get(safePath, {
-      access: 'private',
-      useCache: false
-    });
+    const blobReadRetryDelaysMs = [200, 400, 800];
+    let result = null;
+
+    for (let attempt = 0; attempt <= blobReadRetryDelaysMs.length; attempt++) {
+      result = await get(safePath, {
+        access: 'private',
+        useCache: false
+      });
+
+      if (result && result.stream) break;
+
+      if (attempt < blobReadRetryDelaysMs.length) {
+        await new Promise(resolve => setTimeout(resolve, blobReadRetryDelaysMs[attempt]));
+      }
+    }
 
     if (!result || !result.stream) {
       return { clean: false, reason: 'blob_not_found' };
@@ -137,7 +148,7 @@ export async function scanBlobAttachment({ pathname, filename, contentType }) {
         return { clean: false, reason: 'antivirus_not_configured' };
       }
 
-      return { clean: true, engine: 'signature-heuristics' };
+      return { clean: true, size: total, engine: 'signature-heuristics' };
     }
 
     try {
