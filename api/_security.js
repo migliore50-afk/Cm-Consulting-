@@ -104,6 +104,13 @@ export async function scanBlobAttachment({ pathname, filename, contentType }) {
       cache: 'no-store'
     });
 
+    console.warn(
+      'CM Consulting API - Blob GET diagnostic:',
+      response.status,
+      response.statusText,
+      safePath
+    );
+
     if (!response.ok || !response.body) {
       return { clean: false, reason: 'blob_not_found' };
     }
