@@ -43,6 +43,11 @@ function str(value) {
   return typeof value === "string" ? value.trim() : "";
 }
 
+function normalizeApiKey(value) {
+  const key = str(value);
+  return key.startsWith('eyJ') ? key.replace(/\s+/g, '') : key;
+}
+
 function validEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
@@ -268,22 +273,27 @@ export default async function handler(req, res) {
     }
 
     const supabaseUrl = str(process.env.SUPABASE_URL).replace(/\/$/, '');
-    const serviceRoleKey = str(process.env.SUPABASE_SERVICE_ROLE_KEY);
+    const serviceRoleKey = normalizeApiKey(process.env.SUPABASE_SERVICE_ROLE_KEY);
+    const secretKey = normalizeApiKey(process.env.SUPABASE_SECRET_KEY);
+    const supabaseApiKey = secretKey || serviceRoleKey;
 
-    if (!supabaseUrl || !serviceRoleKey) {
-      console.error("CM Consulting API - Supabase storage configuration missing.");
-      return json(res, 503, {
-        ok: false,
-        error: { code: "STORAGE_NOT_CONFIGURED", message: "Servizio allegati momentaneamente non disponibile." }
+    let supabase = null;
+    if (attachments.length > 0) {
+      if (!supabaseUrl || !supabaseApiKey) {
+        console.error("CM Consulting API - Supabase storage configuration missing.");
+        return json(res, 503, {
+          ok: false,
+          error: { code: "STORAGE_NOT_CONFIGURED", message: "Servizio allegati momentaneamente non disponibile." }
+        });
+      }
+
+      supabase = createClient(supabaseUrl, supabaseApiKey, {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
       });
     }
-
-    const supabase = createClient(supabaseUrl, serviceRoleKey, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
-      }
-    });
 
     let totalSize = 0;
     const safeAttachments = [];
@@ -419,8 +429,8 @@ export default async function handler(req, res) {
       {
         method: "POST",
         headers: {
-          apikey: str(process.env.SUPABASE_SERVICE_ROLE_KEY),
-          Authorization: `Bearer ${str(process.env.SUPABASE_SERVICE_ROLE_KEY)}`,
+          apikey: supabaseApiKey,
+          Authorization: `Bearer ${supabaseApiKey}`,
           "Content-Type": "application/json",
           Prefer: "return=minimal"
         },

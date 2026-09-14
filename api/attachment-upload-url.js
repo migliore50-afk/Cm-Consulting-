@@ -20,6 +20,11 @@ function str(value) {
   return typeof value === 'string' ? value.trim() : '';
 }
 
+function normalizeApiKey(value) {
+  const key = str(value);
+  return key.startsWith('eyJ') ? key.replace(/\s+/g, '') : key;
+}
+
 function safeFilename(value) {
   const filename = str(value).normalize('NFKC');
 
@@ -33,13 +38,15 @@ function safeFilename(value) {
 
 function supabaseAdmin() {
   const url = str(process.env.SUPABASE_URL).replace(/\/$/, '');
-  const serviceRoleKey = str(process.env.SUPABASE_SERVICE_ROLE_KEY);
+  const serviceRoleKey = normalizeApiKey(process.env.SUPABASE_SERVICE_ROLE_KEY);
+  const secretKey = normalizeApiKey(process.env.SUPABASE_SECRET_KEY);
+  const apiKey = secretKey || serviceRoleKey;
 
-  if (!url || !serviceRoleKey) {
+  if (!url || !apiKey) {
     throw new Error('Supabase server configuration is missing.');
   }
 
-  return createClient(url, serviceRoleKey, {
+  return createClient(url, apiKey, {
     auth: {
       autoRefreshToken: false,
       persistSession: false
