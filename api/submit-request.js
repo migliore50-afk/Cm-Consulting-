@@ -1,4 +1,5 @@
-import { consumeRateLimit, scanAttachment } from './_security.js';
+import { createClient } from '@supabase/supabase-js';
+import { consumeRateLimit, scanAttachmentBuffer } from './_security.js';
 /**
  * CM Consulting - secure request submission endpoint
  * POST /api/submit-request
@@ -21,6 +22,7 @@ const MAX_TEXT_LENGTH = 20000;
 const MAX_ATTACHMENTS = 5;
 const MAX_ATTACHMENT_SIZE = 5 * 1024 * 1024;
 const MAX_TOTAL_ATTACHMENT_SIZE = 10 * 1024 * 1024;
+const ATTACHMENT_BUCKET = process.env.CM_ATTACHMENT_BUCKET || 'request-attachments';
 
 const ALLOWED_ATTACHMENT_TYPES = new Set([
   "application/pdf",
@@ -257,12 +259,31 @@ export default async function handler(req, res) {
     }
 
     const attachments = Array.isArray(body.attachments) ? body.attachments : [];
+
     if (attachments.length > MAX_ATTACHMENTS) {
       return json(res, 400, {
         ok: false,
         error: { code: "TOO_MANY_ATTACHMENTS", message: `Sono consentiti massimo ${MAX_ATTACHMENTS} allegati.` }
       });
     }
+
+    const supabaseUrl = str(process.env.SUPABASE_URL).replace(/\/$/, '');
+    const serviceRoleKey = str(process.env.SUPABASE_SERVICE_ROLE_KEY);
+
+    if (!supabaseUrl || !serviceRoleKey) {
+      console.error("CM Consulting API - Supabase storage configuration missing.");
+      return json(res, 503, {
+        ok: false,
+        error: { code: "STORAGE_NOT_CONFIGURED", message: "Servizio allegati momentaneamente non disponibile." }
+      });
+    }
+
+    const supabase = createClient(supabaseUrl, serviceRoleKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    });
 
     let totalSize = 0;
     const safeAttachments = [];
@@ -276,13 +297,14 @@ export default async function handler(req, res) {
       }
 
       const filename = safeFilename(item.filename);
-      const content = item.content;
+      const path = str(item.path);
       const type = str(item.contentType || item.type || "application/octet-stream").toLowerCase();
+      const declaredSize = Number(item.size);
 
-      if (!filename || !content) {
+      if (!filename || !path) {
         return json(res, 400, {
           ok: false,
-          error: { code: "INVALID_ATTACHMENT", message: "Nome o contenuto di un allegato non valido." }
+          error: { code: "INVALID_ATTACHMENT", message: "Riferimento o nome di un allegato non valido." }
         });
       }
 
@@ -293,29 +315,139 @@ export default async function handler(req, res) {
         });
       }
 
-      const size = base64Size(content);
-      if (size > MAX_ATTACHMENT_SIZE) {
+      const pathParts = path.split('/');
+      const uuid = pathParts[1] || '';
+      const pathFilename = pathParts.slice(2).join('/');
+      const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+      if (
+        pathParts.length !== 3 ||
+        pathParts[0] !== 'requests' ||
+        !uuidPattern.test(uuid) ||
+        pathFilename !== filename
+      ) {
         return json(res, 400, {
           ok: false,
-          error: { code: "ATTACHMENT_TOO_LARGE", message: `L'allegato "${filename}" è troppo grande.` }
+          error: { code: "INVALID_ATTACHMENT_PATH", message: `Percorso allegato non valido: ${filename}.` }
         });
       }
 
-      totalSize += size;
+      if (!Number.isSafeInteger(declaredSize) || declaredSize <= 0 || declaredSize > MAX_ATTACHMENT_SIZE) {
+        return json(res, 400, {
+          ok: false,
+          error: {
+            code: "ATTACHMENT_TOO_LARGE",
+            message: `L'allegato "${filename}" ha una dimensione non consentita.`
+          }
+        });
+      }
+
+      const { data, error } = await supabase.storage
+        .from(ATTACHMENT_BUCKET)
+        .download(path);
+
+      if (error || !data) {
+        console.error("CM Consulting API - Supabase attachment download failed:", filename, error?.message || error);
+        return json(res, 400, {
+          ok: false,
+          error: {
+            code: "ATTACHMENT_NOT_FOUND",
+            message: `L'allegato "${filename}" non è disponibile. Ricaricalo e riprova.`
+          }
+        });
+      }
+
+      const bytes = Buffer.from(await data.arrayBuffer());
+      const actualSize = bytes.length;
+
+      if (!Number.isSafeInteger(actualSize) || actualSize <= 0 || actualSize > MAX_ATTACHMENT_SIZE) {
+        return json(res, 400, {
+          ok: false,
+          error: {
+            code: "ATTACHMENT_TOO_LARGE",
+            message: `L'allegato "${filename}" ha una dimensione non consentita.`
+          }
+        });
+      }
+
+      if (actualSize !== declaredSize) {
+        return json(res, 400, {
+          ok: false,
+          error: {
+            code: "ATTACHMENT_SIZE_MISMATCH",
+            message: `La verifica dell'allegato "${filename}" non è andata a buon fine.`
+          }
+        });
+      }
+
+      totalSize += actualSize;
       if (totalSize > MAX_TOTAL_ATTACHMENT_SIZE) {
         return json(res, 400, {
           ok: false,
-          error: { code: "TOTAL_ATTACHMENTS_TOO_LARGE", message: "La dimensione complessiva degli allegati è troppo elevata." }
+          error: {
+            code: "TOTAL_ATTACHMENTS_TOO_LARGE",
+            message: "La dimensione complessiva degli allegati è troppo elevata."
+          }
         });
       }
 
-      const scan = await scanAttachment({ filename, content, contentType: type });
+      const scan = await scanAttachmentBuffer({
+        filename,
+        buffer: bytes,
+        contentType: type
+      });
+
       if (!scan.clean) {
-        console.warn('CM Consulting API - attachment rejected:', filename, scan.reason);
-        return json(res, 400, { ok: false, error: { code: 'ATTACHMENT_SECURITY_REJECTED', message: `L’allegato "${filename}" non ha superato i controlli di sicurezza.` } });
+        console.warn('CM Consulting API - Supabase attachment rejected:', filename, scan.reason);
+        return json(res, 400, {
+          ok: false,
+          error: {
+            code: 'ATTACHMENT_SECURITY_REJECTED',
+            message: `L’allegato "${filename}" non ha superato i controlli di sicurezza.`
+          }
+        });
       }
 
-      safeAttachments.push({ filename, content });
+      safeAttachments.push({
+        filename,
+        content: bytes.toString('base64')
+      });
+    }
+
+    const requestSave = await fetch(
+      `${str(process.env.SUPABASE_URL).replace(/\/$/, '')}/rest/v1/admin_requests`,
+      {
+        method: "POST",
+        headers: {
+          apikey: str(process.env.SUPABASE_SERVICE_ROLE_KEY),
+          Authorization: `Bearer ${str(process.env.SUPABASE_SERVICE_ROLE_KEY)}`,
+          "Content-Type": "application/json",
+          Prefer: "return=minimal"
+        },
+        body: JSON.stringify({
+          customer_name: customerName || null,
+          company: str(body.company) || null,
+          email: email || null,
+          phone: phone || null,
+          request_type: requestTypeName || subject,
+          subject,
+          request_text: text,
+          attachments_count: safeAttachments.length,
+          attachment_names: safeAttachments.map(item => item.filename),
+          status: "Nuova"
+        })
+      }
+    );
+
+    if (!requestSave.ok) {
+      console.error("CM Consulting API - request database save failed:", requestSave.status);
+      return json(res, 503, {
+        ok: false,
+        error: {
+          code: "REQUEST_SAVE_FAILED",
+          message: "La richiesta non è stata registrata. Riprova tra poco."
+        }
+      });
     }
 
     const from = process.env.CM_FROM_EMAIL;

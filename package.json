@@ -7,9 +7,9 @@
     "node": ">=22"
   },
   "scripts": {
-    "check": "node --check api/admin.js && node --check api/_security.js && node --check api/submit-request.js && node --check admin/admin.js"
+    "check": "node --check api/admin.js && node --check api/_security.js && node --check api/attachment-upload-url.js && node --check api/submit-request.js && node --check admin/admin.js"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.116.0"
+    "@supabase/supabase-js": "2.116.0"
   }
 }
