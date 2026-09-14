@@ -1,5 +1,5 @@
 import crypto from 'node:crypto';
-import { get } from '@vercel/blob';
+import { issueSignedToken, presignUrl } from '@vercel/blob';
 
 function str(v) { return typeof v === 'string' ? v.trim() : ''; }
 function ipOf(req) {
@@ -81,27 +81,34 @@ export async function scanBlobAttachment({ pathname, filename, contentType }) {
   }
 
   try {
-    const blobReadRetryDelaysMs = [200, 400, 800];
-    let result = null;
+    const validUntil = Date.now() + 5 * 60 * 1000;
 
-    for (let attempt = 0; attempt <= blobReadRetryDelaysMs.length; attempt++) {
-      result = await get(safePath, {
-        access: 'private',
-        useCache: false
-      });
+    const signedToken = await issueSignedToken({
+      pathname: safePath,
+      operations: ['get'],
+      validUntil,
+      oidcToken: process.env.VERCEL_OIDC_TOKEN,
+      storeId: process.env.BLOB_STORE_ID
+    });
 
-      if (result && result.stream) break;
+    const { presignedUrl } = await presignUrl(signedToken, {
+      pathname: safePath,
+      operation: 'get',
+      access: 'private',
+      validUntil,
+      useCache: false
+    });
 
-      if (attempt < blobReadRetryDelaysMs.length) {
-        await new Promise(resolve => setTimeout(resolve, blobReadRetryDelaysMs[attempt]));
-      }
-    }
+    const response = await fetch(presignedUrl, {
+      method: 'GET',
+      cache: 'no-store'
+    });
 
-    if (!result || !result.stream) {
+    if (!response.ok || !response.body) {
       return { clean: false, reason: 'blob_not_found' };
     }
 
-    const reader = result.stream.getReader();
+    const reader = response.body.getReader();
     const chunks = [];
     let total = 0;
     const maxSize = 5 * 1024 * 1024;
