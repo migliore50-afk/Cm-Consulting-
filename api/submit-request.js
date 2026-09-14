@@ -1,5 +1,4 @@
-import { issueSignedToken, presignUrl } from '@vercel/blob';
-import { consumeRateLimit, scanBlobAttachment } from './_security.js';
+import { consumeRateLimit, scanAttachment } from './_security.js';
 /**
  * CM Consulting - secure request submission endpoint
  * POST /api/submit-request
@@ -258,7 +257,6 @@ export default async function handler(req, res) {
     }
 
     const attachments = Array.isArray(body.attachments) ? body.attachments : [];
-
     if (attachments.length > MAX_ATTACHMENTS) {
       return json(res, 400, {
         ok: false,
@@ -278,13 +276,13 @@ export default async function handler(req, res) {
       }
 
       const filename = safeFilename(item.filename);
-      const pathname = str(item.pathname);
+      const content = item.content;
       const type = str(item.contentType || item.type || "application/octet-stream").toLowerCase();
 
-      if (!filename || !pathname) {
+      if (!filename || !content) {
         return json(res, 400, {
           ok: false,
-          error: { code: "INVALID_ATTACHMENT", message: "Riferimento o nome di un allegato non valido." }
+          error: { code: "INVALID_ATTACHMENT", message: "Nome o contenuto di un allegato non valido." }
         });
       }
 
@@ -295,110 +293,29 @@ export default async function handler(req, res) {
         });
       }
 
-      const scan = await scanBlobAttachment({
-        pathname,
-        filename,
-        contentType: type
-      });
-
-      if (!scan.clean) {
-        console.warn(
-          'CM Consulting API - Blob attachment rejected:',
-          filename,
-          scan.reason
-        );
-
+      const size = base64Size(content);
+      if (size > MAX_ATTACHMENT_SIZE) {
         return json(res, 400, {
           ok: false,
-          error: {
-            code: 'ATTACHMENT_SECURITY_REJECTED',
-            message: `L’allegato "${filename}" non ha superato i controlli di sicurezza.`
-          }
-        });
-      }
-
-      const size = Number(scan.size);
-
-      if (!Number.isSafeInteger(size) || size <= 0 || size > MAX_ATTACHMENT_SIZE) {
-        return json(res, 400, {
-          ok: false,
-          error: {
-            code: "ATTACHMENT_TOO_LARGE",
-            message: `L'allegato "${filename}" ha una dimensione non consentita.`
-          }
+          error: { code: "ATTACHMENT_TOO_LARGE", message: `L'allegato "${filename}" è troppo grande.` }
         });
       }
 
       totalSize += size;
-
       if (totalSize > MAX_TOTAL_ATTACHMENT_SIZE) {
         return json(res, 400, {
           ok: false,
-          error: {
-            code: "TOTAL_ATTACHMENTS_TOO_LARGE",
-            message: "La dimensione complessiva degli allegati è troppo elevata."
-          }
+          error: { code: "TOTAL_ATTACHMENTS_TOO_LARGE", message: "La dimensione complessiva degli allegati è troppo elevata." }
         });
       }
 
-      const validUntil = Date.now() + 10 * 60 * 1000;
-
-      const signedToken = await issueSignedToken({
-        pathname,
-        operations: ['get'],
-        validUntil,
-        oidcToken: process.env.VERCEL_OIDC_TOKEN,
-        storeId: process.env.BLOB_STORE_ID
-      });
-
-      const { presignedUrl } = await presignUrl(signedToken, {
-        pathname,
-        operation: 'get',
-        access: 'private',
-        validUntil,
-        useCache: false
-      });
-
-      safeAttachments.push({
-        filename,
-        path: presignedUrl
-      });
-    }
-
-        const requestSave = await fetch(
-      `${str(process.env.SUPABASE_URL).replace(/\/$/, '')}/rest/v1/admin_requests`,
-      {
-        method: "POST",
-        headers: {
-          apikey: str(process.env.SUPABASE_SERVICE_ROLE_KEY),
-          Authorization: `Bearer ${str(process.env.SUPABASE_SERVICE_ROLE_KEY)}`,
-          "Content-Type": "application/json",
-          Prefer: "return=minimal"
-        },
-        body: JSON.stringify({
-          customer_name: customerName || null,
-          company: str(body.company) || null,
-          email: email || null,
-          phone: phone || null,
-          request_type: requestTypeName || subject,
-          subject,
-          request_text: text,
-          attachments_count: safeAttachments.length,
-          attachment_names: safeAttachments.map(item => item.filename),
-          status: "Nuova"
-        })
+      const scan = await scanAttachment({ filename, content, contentType: type });
+      if (!scan.clean) {
+        console.warn('CM Consulting API - attachment rejected:', filename, scan.reason);
+        return json(res, 400, { ok: false, error: { code: 'ATTACHMENT_SECURITY_REJECTED', message: `L’allegato "${filename}" non ha superato i controlli di sicurezza.` } });
       }
-    );
 
-    if (!requestSave.ok) {
-      console.error("CM Consulting API - request database save failed:", requestSave.status);
-      return json(res, 503, {
-        ok: false,
-        error: {
-          code: "REQUEST_SAVE_FAILED",
-          message: "La richiesta non è stata registrata. Riprova tra poco."
-        }
-      });
+      safeAttachments.push({ filename, content });
     }
 
     const from = process.env.CM_FROM_EMAIL;

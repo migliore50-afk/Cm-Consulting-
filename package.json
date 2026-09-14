@@ -10,6 +10,6 @@
     "check": "node --check api/admin.js && node --check api/_security.js && node --check api/submit-request.js && node --check admin/admin.js"
   },
   "dependencies": {
-    "@vercel/blob": "^2.7.0"
+    "@supabase/supabase-js": "^2.116.0"
   }
 }
