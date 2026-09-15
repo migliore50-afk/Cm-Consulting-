@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="650" height="650" viewBox="0 0 650 650">
+<rect width="650" height="650" fill="#151515"/>
+<defs><marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#999"/></marker></defs>
+<g font-family="Arial,Helvetica,sans-serif">
+<rect x="156" y="56" width="360" height="57" rx="8" fill="#155287" stroke="#4b91c9"/>
+<text x="336" y="80" text-anchor="middle" fill="#d9e5f2" font-size="16" font-weight="700">Vercel — CM Consulting</text>
+<text x="336" y="97" text-anchor="middle" fill="#9fc1df" font-size="12">POST JSON + base64, autenticato</text>
+<line x1="336" y1="113" x2="336" y2="171" stroke="#999" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="156" y="172" width="360" height="56" rx="8" fill="#075c4d" stroke="#39a68f"/>
+<text x="336" y="195" text-anchor="middle" fill="#cce9e2" font-size="16" font-weight="700">Oracle Cloud — Frankfurt</text>
+<text x="336" y="212" text-anchor="middle" fill="#8bd0c1" font-size="12">Webhook container Docker</text>
+<line x1="336" y1="228" x2="336" y2="287" stroke="#999" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="156" y="288" width="360" height="56" rx="8" fill="#433a91" stroke="#7065cf"/>
+<text x="336" y="311" text-anchor="middle" fill="#dddafa" font-size="16" font-weight="700">ClamAV (clamd)</text>
+<text x="336" y="328" text-anchor="middle" fill="#bcb6e8" font-size="12">Firme aggiornate da freshclam</text>
+<line x1="336" y1="344" x2="336" y2="403" stroke="#999" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="136" y="404" width="400" height="57" rx="8" fill="#4a4a48" stroke="#888885"/>
+<text x="336" y="427" text-anchor="middle" fill="#e2e2df" font-size="15" font-weight="700">Risposta della scansione</text>
+<text x="336" y="444" text-anchor="middle" fill="#c4c4c0" font-size="12">clean:true oppure clean:false</text>
+<line x1="336" y1="461" x2="336" y2="486" stroke="#999" stroke-width="1.5"/>
+<line x1="336" y1="486" x2="211" y2="486" stroke="#999" stroke-width="1.5"/>
+<line x1="336" y1="486" x2="461" y2="486" stroke="#999" stroke-width="1.5"/>
+<line x1="211" y1="486" x2="211" y2="521" stroke="#999" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="461" y1="486" x2="461" y2="521" stroke="#999" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="96" y="522" width="230" height="57" rx="8" fill="#27610a" stroke="#5b9d24"/>
+<text x="211" y="545" text-anchor="middle" fill="#d5e9c2" font-size="15" font-weight="700">Allegato accettato</text>
+<text x="211" y="562" text-anchor="middle" fill="#a9cf88" font-size="12">clean:true</text>
+<rect x="346" y="522" width="230" height="57" rx="8" fill="#852020" stroke="#b94a4a"/>
+<text x="461" y="545" text-anchor="middle" fill="#f0cccc" font-size="15" font-weight="700">Fail-closed</text>
+<text x="461" y="562" text-anchor="middle" fill="#dda0a0" font-size="12">Bloccato per sicurezza</text>
+</g></svg>
