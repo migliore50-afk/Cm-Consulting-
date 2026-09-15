@@ -176,7 +176,7 @@ async function submitCapacity(){
 
     if(!response.ok || !result.ok) throw new Error(result?.error?.message||'Invio non riuscito.');
 
-    document.getElementById('capacitySent').classList.add('hidden');
+    document.getElementById('step3').classList.add('hidden');
     document.getElementById('capacityDone').classList.remove('hidden');
   }catch(error){
     alert(error.message||'Non è stato possibile inviare la richiesta. Riprova.');
