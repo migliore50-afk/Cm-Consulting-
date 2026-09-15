@@ -6,20 +6,33 @@ function ipOf(req) {
   const f = req.headers['x-forwarded-for'];
   return typeof f === 'string' ? f.split(',')[0].trim() : String(req.headers['x-real-ip'] || 'unknown');
 }
+
 async function redis(path, options = {}) {
   const url = str(process.env.UPSTASH_REDIS_REST_URL).replace(/\/$/, '');
   const token = str(process.env.UPSTASH_REDIS_REST_TOKEN);
   if (!url || !token) return null;
-  const r = await fetch(`${url}${path}`, { method: options.method || 'GET', headers: { Authorization: `Bearer ${token}`, ...(options.body !== undefined ? {'Content-Type':'application/json'} : {}) }, body: options.body === undefined ? undefined : JSON.stringify(options.body) });
-  const data = await r.json().catch(() => ({}));
-  if (!r.ok || data.error) return null;
-  return data.result;
+  try {
+    const r = await fetch(`${url}${path}`, { method: options.method || 'GET', headers: { Authorization: `Bearer ${token}`, ...(options.body !== undefined ? {'Content-Type':'application/json'} : {}) }, body: options.body === undefined ? undefined : JSON.stringify(options.body) });
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok || data.error) return null;
+    return data.result;
+  } catch {
+    // Rete irraggiungibile, timeout, DNS, ecc.: trattato come Redis non disponibile.
+    return null;
+  }
 }
+
 export async function consumeRateLimit(req, scope, limit = 10, windowSeconds = 900) {
   const ip = ipOf(req);
   const key = `cm:rl:${scope}:${crypto.createHash('sha256').update(ip).digest('hex').slice(0,32)}`;
   const current = await redis(`/incr/${encodeURIComponent(key)}`);
-  if (current === null) return { configured: false, allowed: true, remaining: null };
+
+  if (current === null) {
+    // Fail-closed: se Redis non è configurato, non risponde o restituisce errore,
+    // non possiamo verificare il limite quindi la richiesta NON viene ammessa.
+    return { configured: false, allowed: false, remaining: null, reason: 'redis_unavailable' };
+  }
+
   if (Number(current) === 1) await redis(`/expire/${encodeURIComponent(key)}/${windowSeconds}`);
   return { configured: true, allowed: Number(current) <= limit, remaining: Math.max(0, limit - Number(current)) };
 }
@@ -55,8 +68,8 @@ export async function scanAttachment({ filename, content, contentType }) {
 
   const scannerUrl = str(process.env.CM_ANTIVIRUS_WEBHOOK_URL);
   if (!scannerUrl) {
-    if (String(process.env.CM_REQUIRE_ANTIVIRUS).toLowerCase() === 'true') return { clean: false, reason: 'antivirus_not_configured' };
-    return { clean: true, engine: 'signature-heuristics' };
+    // Fail-closed: senza un vero scanner antivirus configurato, l'allegato non viene accettato.
+    return { clean: false, reason: 'antivirus_not_configured' };
   }
   try {
     const headers = { 'Content-Type':'application/json' };
@@ -104,14 +117,31 @@ export async function scanBlobAttachment({ pathname, filename, contentType }) {
       cache: 'no-store'
     });
 
-    console.warn(
-      'CM Consulting API - Blob GET diagnostic:',
-      response.status,
-      response.statusText,
-      safePath
-    );
+    // requests/<uuid>, senza il filename: evita di scrivere dati potenzialmente
+    // personali (nome del file scelto dall'utente) nei log diagnostici.
+    const logSafePath = safePath.split('/').slice(0, 2).join('/');
 
-    if (!response.ok || !response.body) {
+    if (!response.ok) {
+      console.warn(
+        'CM Consulting API - Blob GET failed:',
+        response.status,
+        response.statusText,
+        logSafePath
+      );
+
+      return {
+        clean: false,
+        reason: response.status === 404 ? 'blob_not_found' : 'blob_fetch_failed',
+        httpStatus: response.status
+      };
+    }
+
+    if (!response.body) {
+      console.warn(
+        'CM Consulting API - Blob GET returned no body:',
+        logSafePath
+      );
+
       return { clean: false, reason: 'blob_not_found' };
     }
 
@@ -158,11 +188,8 @@ export async function scanBlobAttachment({ pathname, filename, contentType }) {
     const scannerUrl = str(process.env.CM_ANTIVIRUS_WEBHOOK_URL);
 
     if (!scannerUrl) {
-      if (String(process.env.CM_REQUIRE_ANTIVIRUS).toLowerCase() === 'true') {
-        return { clean: false, reason: 'antivirus_not_configured' };
-      }
-
-      return { clean: true, size: total, engine: 'signature-heuristics' };
+      // Fail-closed: senza un vero scanner antivirus configurato, l'allegato non viene accettato.
+      return { clean: false, reason: 'antivirus_not_configured' };
     }
 
     try {
