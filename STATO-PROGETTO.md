@@ -693,3 +693,37 @@ Priorità già individuate:
 5. aggiornare `sitemap.xml` quando le modifiche definitive lo richiedono.
 
 Ogni modifica dovrà seguire la procedura prevista da questo registro: diagnosi → verifica RAW → modifica minima → diff → commit separato → verifica Vercel → verifica funzionale.
+
+---
+
+# 18. ANTIVIRUS CLAMAV — ARCHITETTURA IN VALUTAZIONE
+
+**Stato:** architettura proposta/in fase di validazione. Oracle Cloud + ClamAV non sono attualmente collegati alla produzione. Nessuna modifica a `_security.js`, GitHub o Vercel è prevista fino al completamento dei test end-to-end.
+
+L’architettura oggetto di valutazione prevede:
+
+Vercel / CM Consulting
+→ Oracle Cloud — Frankfurt
+→ Webhook Docker
+→ ClamAV (`clamd`)
+→ risposta `clean:true` / `clean:false`
+
+Il comportamento di sicurezza rimane fail-closed:
+
+- scansione completata e allegato pulito → `clean:true` → allegato accettato;
+- minaccia rilevata → `clean:false` → allegato bloccato;
+- webhook antivirus irraggiungibile → allegato bloccato;
+- antivirus non configurato → allegato bloccato;
+- errore del servizio antivirus → allegato bloccato.
+
+Questa architettura è esclusivamente in fase di prova e validazione. Non rappresenta lo stato operativo della produzione.
+
+**Decisione:** prima di qualsiasi integrazione con la produzione devono essere completati i test end-to-end di provisioning Oracle, webhook HTTPS, ClamAV, `freshclam`, autenticazione del webhook, risposta `clean:true/false`, gestione degli errori e comportamento fail-closed.
+
+**Regola:** fino alla conclusione positiva della validazione non modificare `api/_security.js`, configurazioni Vercel o altri componenti della produzione per collegare ClamAV.
+
+### Diagramma architetturale
+
+`docs/CM-Consulting-ClamAV-Oracle-architettura.svg`
+
+Il diagramma rappresenta esclusivamente l’architettura proposta e non implica che ClamAV sia attualmente operativo in produzione.
