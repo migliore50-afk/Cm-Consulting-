@@ -236,7 +236,6 @@ async function submitRequest(){
   });
 
   let total=0;
-  const attachments=[];
   for(const file of selected){
     if(file.size>5*1024*1024){
       errorBox.textContent=`Il file "${file.name}" supera il limite di 5 MB.`;
@@ -249,7 +248,50 @@ async function submitRequest(){
       errorBox.classList.remove('hidden');
       return;
     }
-    attachments.push({filename:file.name,contentType:file.type||mimeFromName(file.name),content:await fileToBase64(file)});
+  }
+
+  const attachments=[];
+  for(const file of selected){
+    try{
+      const uploadResponse=await fetch('/api/attachment-upload-url',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          filename:file.name,
+          contentType:file.type||mimeFromName(file.name),
+          size:file.size
+        })
+      });
+
+      const uploadResult=await uploadResponse.json().catch(()=>({}));
+
+      if(!uploadResponse.ok || !uploadResult.uploadUrl || !uploadResult.pathname){
+        throw new Error(uploadResult.error||'Impossibile preparare il caricamento dell’allegato.');
+      }
+
+      const putResponse=await fetch(uploadResult.uploadUrl,{
+        method:'PUT',
+        headers:{
+          'Content-Type':file.type||mimeFromName(file.name)
+        },
+        body:file
+      });
+
+      if(!putResponse.ok){
+        throw new Error('Caricamento dell’allegato non riuscito.');
+      }
+
+      attachments.push({
+        filename:file.name,
+        contentType:file.type||mimeFromName(file.name),
+        size:file.size,
+        pathname:uploadResult.pathname
+      });
+    }catch(error){
+      errorBox.textContent=error.message||'Non è stato possibile caricare un allegato. Riprova.';
+      errorBox.classList.remove('hidden');
+      return;
+    }
   }
 
   const fields={
