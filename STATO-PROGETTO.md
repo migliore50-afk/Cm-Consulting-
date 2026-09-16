@@ -1,7 +1,7 @@
 # STATO-PROGETTO.md
 ## CM Consulting — Registro tecnico ufficiale
 
-**Ultimo aggiornamento:** 16 settembre 2026  
+**Ultimo aggiornamento:** 17 settembre 2026  
 **Repository:** `migliore50-afk/Cm-Consulting-`  
 **Branch:** `main`  
 **Deploy:** Vercel — Production  
@@ -279,7 +279,7 @@ PUT https://api.github.com/repos/migliore50-afk/Cm-Consulting-/contents/assets/a
 
 **Per le prossime sessioni:** se il tool `GitHub:create_or_update_file` (o altri tool di scrittura del connettore MCP) restituisce di nuovo `403 Resource not accessible by integration`, non ripetere da zero questa diagnosi. Verificare prima se nel frattempo l'app **"Claude Github MCP Connector"** è stata installata su un repository (Settings → Applications → Installed GitHub Apps, cercare quel nome specifico, non solo "Claude"). Se non installata, il bypass via editor web GitHub resta la via più rapida.
 
-**Conferma 16 settembre 2026:** il problema si è ripresentato identico durante l'audit di sicurezza di `api/_security.js` e durante il tentativo di aggiungere la sezione 18 e il relativo diagramma SVG. Sia `create_or_update_file` sia `push_files` restituiscono lo stesso `403 Resource not accessible by integration`, anche dopo disconnessione/riconnessione del connettore GitHub in Claude e con permessi Contents R/W confermati corretti sulla app "Claude". La causa resta quella individuata qui: l'app "Claude Github MCP Connector" non risulta installata. Bypass confermato ancora valido: editing manuale via editor web GitHub, file forniti da Claude come download pronti per il copia-incolla. Tool di sola lettura (`get_file_contents`, `search_code`) continuano invece a funzionare regolarmente tramite il connettore.
+**Conferma 16 settembre 2026:** il problema si è ripresentato identico durante l'audit di sicurezza di `api/_security.js` e durante il tentativo di aggiungere la sezione 18 e il relativo diagramma SVG. Sia `create_or_update_file` sia `push_files` restituiscono lo stesso `403 Resource not accessible by integration`, anche dopo disconnessione/riconnessione del connettore GitHub in Claude e con permessi Contents R/W confermati corretti sulla app "Claude". La causa resta quella individuata qui: l'app "Claude Github MCP Connector" non risulta installata. Bypass confermato ancora valido: editing manuale via editor web GitHub, file forniti da Claude come download pronti per il copia-incolla. Tool di sola lettura (`get_file_contents`, `search_code`) continuano invece a funzionare regolarmente tramite il connettore. Il commit del 16 settembre (upload manuale tramite "Add file → Upload files" su GitHub) ha funzionato regolarmente per tre file contemporaneamente — quella via resta la procedura consigliata.
 
 ---
 
@@ -587,6 +587,8 @@ Se il tool di scrittura GitHub del connettore MCP restituisce `403 Resource not 
 
 **Dal 16 settembre 2026, nessuna pagina del sito usa più upload diretti di file: vedi §18.** Se si trovano riferimenti a `/api/attachment-upload-url` o `attachments` in una pagina HTML, verificare che non sia una versione non ancora pubblicata: quel flusso è stato dismesso su tutto il portale.
 
+**Dal 17 settembre 2026, `richiedi-preventivo.html` e `capacita-finanziaria.html` hanno un'architettura completamente diversa da quella descritta nelle sezioni precedenti a questo registro: vedi §19.** Non fare riferimento a step numerati vecchi (es. "step3 documentazione") senza aver prima verificato il RAW corrente.
+
 ---
 
 # 15. ISTRUZIONE DI AVVIO PER NUOVE CHAT
@@ -702,37 +704,69 @@ Ogni modifica dovrà seguire la procedura prevista da questo registro: diagnosi 
 
 # 18. UPLOAD DIRETTO E ANTIVIRUS CLAMAV — PERCORSO ARCHIVIATO (16 settembre 2026)
 
-**Stato: CHIUSO.** L'intero percorso di valutazione Oracle Cloud + ClamAV è stato archiviato. Il sito non usa più upload diretti di file in nessuna pagina. Questa sezione sostituisce la precedente versione (architettura "in valutazione"), mantenuta più sotto come cronologia.
+**Stato: CHIUSO.** L'intero percorso di valutazione Oracle Cloud + ClamAV è stato archiviato. Il sito non usa più upload diretti di file in nessuna pagina.
 
 ## Cosa è cambiato
 
-Sono stati riscritti due file per rimuovere completamente l'upload diretto, sostituendolo con invio della documentazione via email/WhatsApp da parte del cliente, fuori dal sito:
+Sono stati riscritti due file per rimuovere completamente l'upload diretto, sostituendolo con invio della documentazione via email da parte del cliente, fuori dal sito:
 
-- **`richiedi-preventivo.html`** — rimossi tutti gli input file, `fileToBase64`, le chiamate a `/api/attachment-upload-url`. Aggiunto blocco "Come inviarci i documenti" con link `mailto:` e `wa.me` precompilati con il riepilogo della richiesta.
-- **`capacita-finanziaria.html`** — rimossi gli input file (`docs`, `bilancioFile`), la funzione di rendering della lista file e il ciclo di upload in `submitCapacity()`. Aggiunto lo stesso blocco di invio email/WhatsApp nello step 2.
+- **`richiedi-preventivo.html`** — rimossi tutti gli input file, `fileToBase64`, le chiamate a `/api/attachment-upload-url`.
+- **`capacita-finanziaria.html`** — rimossi gli input file (`docs`, `bilancioFile`), la funzione di rendering della lista file e il ciclo di upload in `submitCapacity()`.
 
 Entrambi i file inviano `/api/submit-request` **senza il campo `attachments`** (il backend lo gestisce già correttamente come array vuoto).
 
-**Nota tecnica in entrambi i file:** contengono una costante `CM_WHATSAPP_NUMBER = 'INSERIRE_NUOVO_NUMERO_ESIM'` — segnaposto in attesa dell'attivazione di una nuova eSIM dedicata a CM Consulting. Aggiornare quella riga in entrambi i file quando il numero sarà attivo.
+**Nota:** l'invio documenti via WhatsApp, introdotto in una prima versione di questa modifica, è stato **rimosso definitivamente il 17 settembre 2026** — vedi §19. Resta solo l'invio via email.
 
 ## Perché è stato chiuso
 
-Verifica end-to-end completata prima della decisione (16 settembre 2026): è stato accertato che, oltre a `richiedi-preventivo.html`, anche `capacita-finanziaria.html` usava attivamente lo stesso flusso di upload (`/api/attachment-upload-url` → `scanBlobAttachment()` in `api/_security.js`). Con l'antivirus fail-closed e `CM_ANTIVIRUS_WEBHOOK_URL` mai configurato, qualunque cliente che allegasse un documento su quella pagina riceveva un rifiuto totale della richiesta (`ATTACHMENT_SECURITY_REJECTED`), mentre le richieste senza allegato passavano regolarmente. Decisione: invece di configurare un antivirus reale (a pagamento o self-hosted, entrambi scartati per vincoli di Carmelo — niente carte di credito/debito salvate, nessun dispositivo sempre acceso gestibile), è stato rimosso l'upload diretto da entrambe le pagine del sito.
+Verifica end-to-end completata prima della decisione (16 settembre 2026): è stato accertato che, oltre a `richiedi-preventivo.html`, anche `capacita-finanziaria.html` usava attivamente lo stesso flusso di upload (`/api/attachment-upload-url` → `scanBlobAttachment()` in `api/_security.js`). Con l'antivirus fail-closed e `CM_ANTIVIRUS_WEBHOOK_URL` mai configurato, qualunque cliente che allegasse un documento su quella pagina riceveva un rifiuto totale della richiesta (`ATTACHMENT_SECURITY_REJECTED`). Decisione: invece di configurare un antivirus reale (a pagamento o self-hosted, entrambi scartati per vincoli di Carmelo — niente carte di credito/debito salvate, nessun dispositivo sempre acceso gestibile), è stato rimosso l'upload diretto da entrambe le pagine del sito.
 
 ## Stato del codice backend (non modificato)
 
-`api/_security.js` (incluse `scanBlobAttachment`, `scanAttachment`, la logica antivirus fail-closed), `api/attachment-upload-url.js` e la gestione di `attachments` dentro `api/submit-request.js` **non sono stati toccati né rimossi**. Restano nel repository come codice non più richiamato da nessuna pagina HTML (verificato con `search_code` sull'intero repo: solo `richiedi-preventivo.html` e `capacita-finanziaria.html` referenziavano `attachment-upload-url`, entrambi ora aggiornati). Rimuovere questo codice backend è una decisione separata, non ancora presa.
+`api/_security.js` (incluse `scanBlobAttachment`, `scanAttachment`, la logica antivirus fail-closed), `api/attachment-upload-url.js` e la gestione di `attachments` dentro `api/submit-request.js` **non sono stati toccati né rimossi**. Restano nel repository come codice non più richiamato da nessuna pagina HTML. Rimuovere questo codice backend è una decisione separata, non ancora presa.
 
-## Da fare per chiudere completamente
-
-1. Caricare `richiedi-preventivo.html` e `capacita-finanziaria.html` (versioni senza upload) su `main`, con commit separato da qualunque altra modifica.
-2. Quando la nuova eSIM sarà attiva, aggiornare `CM_WHATSAPP_NUMBER` in entrambi i file.
-3. Decisione ancora aperta, non urgente: se e quando rimuovere anche il codice backend non più usato (`api/attachment-upload-url.js`, la parte antivirus di `api/_security.js`, la gestione `attachments` in `api/submit-request.js`) — per ora resta come codice orfano innocuo, non attivo.
+Diagramma storico (architettura ClamAV/Oracle valutata e poi archiviata, mai attiva in produzione): `docs/CM-Consulting-ClamAV-Oracle-architettura.svg`.
 
 ---
 
-## CRONOLOGIA — versione precedente di questa sezione (architettura in valutazione, superata)
+# 19. REDESIGN UX — richiedi-preventivo.html E capacita-finanziaria.html (17 settembre 2026)
 
-**Stato storico, non più attuale:** architettura proposta/in fase di validazione Oracle Cloud + ClamAV, poi archiviata come descritto sopra dopo che la rimozione dell'upload diretto ha reso l'intero percorso non più necessario.
+**Stato: pronto per il commit, approvato da Carmelo, non ancora caricato su `main`.**
 
-Diagramma di riferimento realizzato in quella fase (mantenuto per documentazione storica, non rappresenta più un'architettura attiva né pianificata): `docs/CM-Consulting-ClamAV-Oracle-architettura.svg`.
+## Motivo
+
+Carmelo ha segnalato che entrambe le pagine, anche dopo la rimozione dell'upload (§18), restavano troppo macchinose per clienti non esperti della materia assicurativa: troppi campi tecnici mostrati tutti insieme, troppi step, terminologia poco chiara.
+
+## Cosa è cambiato — `richiedi-preventivo.html`
+
+Da **4 step a 2**:
+1. Scelta tipologia (invariata)
+2. Un'unica schermata con: spiegazione in linguaggio semplice della garanzia scelta, campi essenziali sempre visibili (beneficiario, importo, durata, referente, email, telefono), dettagli tecnici (P.IVA, indirizzo, PEC, oggetto, note, riferimenti specifici) dentro una sezione facoltativa collassata (`<details>`), elenco documenti utili, riepilogo che si aggiorna in tempo reale, pulsante di invio email con oggetto/corpo precompilati
+
+**WhatsApp rimosso definitivamente dal flusso documenti** — resta solo l'email. Su indicazione di Carmelo, WhatsApp è rimandato a un utilizzo futuro come canale di chat/supporto generico, da collegare solo quando sarà attiva una nuova eSIM dedicata a CM Consulting — non va reintrodotto nel flusso di invio documenti.
+
+### Locazioni — contenuti verificati con ricerca mirata
+
+- Rimossa la parola "assicurativa" dalla spiegazione: la fideiussione per locazione può essere bancaria, assicurativa o prestata da un altro soggetto garante
+- Aggiunto un campo "Tipo di locazione" (uso abitativo / uso commerciale)
+- Distinti correttamente **locatore** (proprietario, il beneficiario della garanzia) e **conduttore** (l'inquilino, il contraente) — per Carmelo il termine "locatario" è sinonimo di locatore/beneficiario, non di conduttore
+- Documenti richiesti aggiornati a: contratto di locazione tra le parti (anche in bozza) e documentazione reddituale del conduttore
+- Verificato che la distinzione tra fideiussione "a prima richiesta" e "a perdita definitiva" **non va chiesta al cliente nel form**: è una clausola già presente nel testo/schema fornito dal beneficiario, che CM Consulting verifica in fase di istruttoria leggendo quel documento (coerente con la domanda già esistente "Il beneficiario ti ha fornito un testo, schema, richiesta o delibera?")
+
+### Altre tipologie — da rivedere
+
+Le spiegazioni per Appalti, Trasporti, Dogane, Ambiente, Contributi, Urbanistica, Fiscali sono **bozze scritte con nozioni generali**, non verificate con ricerche mirate come per Locazioni. Segnalate esplicitamente a Carmelo come punto aperto da correggere con la sua esperienza diretta prima o dopo la pubblicazione.
+
+## Cosa è cambiato — `capacita-finanziaria.html`
+
+Da **3 step a una schermata unica**: spiegazione (cos'è il requisito di idoneità finanziaria, riferimento alla circolare MIT n. 4499/2026), campi essenziali (ragione sociale, P.IVA/C.F., comune, provincia, numero mezzi, referente, email), dettagli sui singoli mezzi e domanda sul bilancio dentro la sezione facoltativa, elenco documenti, riepilogo live, invio via email.
+
+## Cosa NON è cambiato
+
+Il contratto con il backend resta identico in entrambi i file: `POST /api/submit-request` con `{subject, text, email, customerName, phone, requestType, requestTypeName, privacyAccepted}`, nessun campo `attachments`. Nessuna modifica a `api/submit-request.js`, `api/_security.js` o ad altri file backend.
+
+## Prossimi passi
+
+1. Carmelo carica i due file su `main` (stesso metodo del 16 settembre: "Add file → Upload files" su GitHub, un solo commit)
+2. Verifica GitHub (SHA), Vercel Production → Ready, comportamento live — stessa procedura già seguita per §18
+3. Revisione con Carmelo delle spiegazioni per le tipologie diverse da Locazioni, quando avrà tempo di verificarle una per una

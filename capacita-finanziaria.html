@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-
-<html lang="it"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Capacità finanziaria | CM Consulting</title><meta content="index,follow" name="robots"/><meta content="Percorso per la capacità finanziaria degli operatori dell'autotrasporto: raccolta guidata dei dati dell'impresa, mezzi e documentazione disponibile." name="description"/><link href="https://www.cm-consulting.info/capacita-finanziaria" rel="canonical"/><meta content="Capacità finanziaria | CM Consulting" property="og:title"/><meta content="Percorso per la capacità finanziaria degli operatori dell'autotrasporto: raccolta guidata dei dati dell'impresa, mezzi e documentazione disponibile." property="og:description"/><meta content="https://www.cm-consulting.info/capacita-finanziaria" property="og:url"/><meta content="https://www.cm-consulting.info/assets/images/logo-cm-consulting.webp" property="og:image"/><link href="assets/style.css" rel="stylesheet"/><link href="site.webmanifest" rel="manifest"/>
+<html lang="it"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Capacità finanziaria | CM Consulting</title><meta content="index,follow" name="robots"/><meta content="Percorso per la capacità finanziaria degli operatori dell'autotrasporto: spiegazione, dati essenziali e documentazione necessaria." name="description"/><link href="https://www.cm-consulting.info/capacita-finanziaria" rel="canonical"/><meta content="Capacità finanziaria | CM Consulting" property="og:title"/><meta content="Percorso per la capacità finanziaria degli operatori dell'autotrasporto." property="og:description"/><meta content="https://www.cm-consulting.info/capacita-finanziaria" property="og:url"/><meta content="https://www.cm-consulting.info/assets/images/logo-cm-consulting.webp" property="og:image"/><link href="assets/style.css" rel="stylesheet"/><link href="site.webmanifest" rel="manifest"/>
 <meta content="website" property="og:type"/>
 <meta content="CM Consulting" property="og:site_name"/>
 <meta content="it_IT" property="og:locale"/>
@@ -8,141 +7,228 @@
 .cm-capacity-photo{display:block;width:100%;aspect-ratio:16/9;overflow:hidden;border-radius:16px;background:#eaf6fa}
 .cm-capacity-photo picture{display:block;width:100%;height:100%}
 .cm-capacity-photo img{display:block;width:100%;height:100%;max-width:none;object-fit:cover;object-position:center center}
-.cm-send-box{margin-top:16px;padding:18px;border:1px solid var(--line);border-radius:14px;background:#f1f5f7}
-.cm-send-box h4{margin:0 0 6px}
-.cm-send-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
-.cm-send-actions .btn{white-space:nowrap}
-@media(max-width:700px){.cm-send-actions{flex-direction:column}.cm-send-actions .btn{width:100%;text-align:center}}
+
+.type-explain{padding:20px 22px;border:1px solid #cfe3ea;border-left:4px solid var(--gold);border-radius:12px;background:#eef7fa;color:#17344e;font-size:14px;line-height:1.6;margin-bottom:22px}
+.type-explain strong{display:block;margin-bottom:6px;font-size:15px}
+.simplify-grid{display:grid;grid-template-columns:1.35fr .95fr;gap:26px;align-items:start}
+@media(max-width:860px){.simplify-grid{grid-template-columns:1fr}}
+.essential-field{display:grid;gap:7px;margin-bottom:16px}
+.essential-field label{font-size:13px;font-weight:900;color:var(--ink)}
+.essential-field input{width:100%;padding:14px;border:1px solid var(--line);border-radius:10px;font-size:15px;background:#fff;color:var(--ink)}
+.essential-field small{color:var(--muted);font-size:11px}
+.vehicle-stepper{display:flex;gap:10px;align-items:center}
+.vehicle-stepper strong{font-size:24px;min-width:35px;text-align:center}
+.advanced-details{margin-top:20px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.advanced-details summary{padding:15px 18px;cursor:pointer;font-weight:900;font-size:13px;color:var(--ink);background:#f8fafb;list-style:none;display:flex;align-items:center;justify-content:space-between}
+.advanced-details summary::-webkit-details-marker{display:none}
+.advanced-details summary:after{content:'+ Aggiungi dettagli';color:var(--blue);font-weight:800;font-size:12px}
+.advanced-details[open] summary:after{content:'− Nascondi dettagli'}
+.advanced-body{padding:18px}
+.advanced-body .field-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:12px;border:1px solid var(--line);border-radius:10px;margin-bottom:12px}
+@media(max-width:600px){.advanced-body .field-grid{grid-template-columns:1fr}}
+.advanced-body label{display:block;font-size:12px;font-weight:800;margin-bottom:6px;color:var(--ink)}
+.advanced-body input,.advanced-body select,.advanced-body textarea{width:100%;padding:12px;border:1px solid var(--line);border-radius:9px;font-size:14px;background:#fff;color:var(--ink)}
+.choice-radio{position:relative}
+.choice-radio input{position:absolute;opacity:0}
+.choice-radio label{display:block;border:1px solid var(--line);padding:12px;border-radius:9px;cursor:pointer;text-align:center;font-size:13px;font-weight:800}
+.choice-radio input:checked+label{border-color:var(--gold);background:#fffbef}
+
+.side-box{position:sticky;top:20px;display:grid;gap:16px}
+.doc-box,.summary-box,.send-box{border:1px solid var(--line);border-radius:14px;padding:18px;background:#f8fafb}
+.doc-box h4,.summary-box h4,.send-box h4{margin:0 0 10px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--blue)}
+.doc-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.doc-list li{font-size:13px;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:#fff}
+.summary-box{background:#fff}
+.summary-row{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:12.5px}
+.summary-row:last-child{border:0}
+.summary-row span{color:var(--muted)}.summary-row b{color:var(--ink);text-align:right}
+.summary-empty{color:var(--muted);font-size:12px}
+.send-box{background:linear-gradient(135deg,#f7fbfc,#fff);border-color:rgba(221,178,63,.4)}
+.send-box a.btn{width:100%;text-align:center;margin-bottom:8px}
+.send-box small{display:block;color:var(--muted);font-size:11px}
+.privacy-check{display:flex;gap:10px;align-items:flex-start;margin:22px 0;font-size:13px;color:var(--ink)}
+.privacy-check a{color:var(--ink);font-weight:800;text-decoration:underline}
+.success-box{display:none;text-align:center;padding:40px}
+.success-box.show{display:block}
 </style><link href="favicon.ico" rel="icon" sizes="any"/><link href="assets/images/logo-cm-symbol.png" rel="icon" sizes="512x512" type="image/png"/><link href="assets/apple-touch-icon.png" rel="apple-touch-icon"/></head><body>
-<header class="header"><div class="wrap nav"><a class="brand" href="/"><img alt="CM Consulting" decoding="async" height="559" src="assets/images/logo-cm-consulting.webp" width="1494"/></a><button aria-label="Apri menu di navigazione" class="menu" id="menu">☰</button><nav class="links" id="links"><a href="/">HOME</a><a href="/fideiussioni">FIDEIUSSIONI</a><a class="active" href="/capacita-finanziaria">CAPACITÀ FINANZIARIA</a><a href="/#metodo">CHI SIAMO</a><a href="/#servizi">SERVIZI</a><a href="/contatti">CONTATTI</a><a class="nav-generic-cta" href="/richiedi-preventivo?esigenza=generica">NON SAI QUALE GARANZIA?</a></nav><a class="header-cta" href="/richiedi-preventivo?tipo=capacita">RICHIEDI PREVENTIVO</a></div></header>
-<section class="page-hero cm-confirmed-hero"><div class="wrap"><div class="cm-confirmed-hero-grid"><div class="cm-confirmed-hero-copy"><div class="crumb"><a href="/">Home</a> / Capacità finanziaria</div><div class="eyebrow">Percorso dedicato all’autotrasporto</div><h1>Capacità finanziaria</h1><p>Un percorso guidato per raccogliere i dati dell’impresa, il numero dei mezzi e la documentazione disponibile. La verifica finale della pratica resta a CM Consulting.</p></div><div class="cm-confirmed-hero-media"><img alt="Capacità finanziaria" decoding="async" fetchpriority="high" src="assets/capacita-retina-1920.webp"/></div></div></div></section>
-<section class="section cm-workflow-section"><div class="wrap"><div class="eyebrow">COME FUNZIONA</div><h2>Un percorso semplice, dalla tua richiesta alla soluzione</h2><div class="cm-workflow-grid"><article class="cm-workflow-card"><img alt="Dati e documentazione dell'impresa" loading="lazy" src="assets/capacita-retina-1920.webp"/><h3>Raccontaci cosa ti serve</h3><p>Inserisci i dati richiesti e ti indichiamo come inviarci la documentazione disponibile.</p></article><article class="cm-workflow-card"><img alt="Analisi della documentazione" loading="lazy" src="assets/appalti-retina-1920.webp"/><h3>Analizziamo la richiesta</h3><p>Verifichiamo le informazioni necessarie al percorso.</p></article><article class="cm-workflow-card"><img alt="Soluzione su misura" loading="lazy" src="assets/locazioni-retina-1920.webp"/><h3>Ti proponiamo la soluzione</h3><p>Ti orientiamo verso il percorso più adatto.</p></article><article class="cm-workflow-card"><img alt="Assistente CM" loading="lazy" src="assets/assistente-cm-retina-768.webp"/><h3>Ricevi assistenza</h3><p>Puoi chiedere supporto durante la compilazione.</p></article></div></div></section><section class="section"><div class="wrap split"><div class="panel"><div class="cm-capacity-photo"><picture>
-<source sizes="(max-width: 900px) 92vw, 50vw" srcset="assets/capacita-retina-768.webp 768w, assets/capacita-retina-1280.webp 1280w, assets/capacita-retina-1920.webp 1920w, assets/capacita-retina-2560.webp 2560w, assets/capacita-retina-3840.webp 3840w" type="image/webp"/>
-<img alt="Autotrasporto e capacità finanziaria — flotta di camion" decoding="async" height="1080" loading="lazy" sizes="(max-width: 900px) 92vw, 50vw" src="assets/capacita-retina-1920.webp" srcset="assets/capacita-retina-768.webp 768w, assets/capacita-retina-1280.webp 1280w, assets/capacita-retina-1920.webp 1920w, assets/capacita-retina-2560.webp 2560w, assets/capacita-retina-3840.webp 3840w" width="1920"/>
-</picture></div><div class="eyebrow">Prima di iniziare</div><h3>Ti chiediamo solo ciò che serve</h3><p>Il percorso è pensato per essere semplice anche da smartphone. In base alle risposte, alcune richieste documentali vengono mostrate solo quando pertinenti.</p><ul class="list"><li>Dati dell’impresa</li><li>Numero e informazioni sui mezzi</li><li>Indicazione se l’impresa redige un bilancio</li><li>Documentazione da inviarci via email o WhatsApp</li><li>Riepilogo finale prima dell’invio</li></ul><div class="notice" style="margin-top:18px">La documentazione e le modalità applicabili possono dipendere dalla situazione dell’impresa e dalle istruzioni dell’ufficio competente. Il sito non sostituisce la verifica della pratica.</div></div>
-<div class="form-card"><div class="form-head"><h2>Avvia la richiesta</h2><p>Compila i passaggi. Puoi salvare la pratica sul dispositivo e riprenderla.</p></div><div class="form-body"><form id="capacityForm"><div id="step1"><div class="field-grid"><div class="field"><label>Ragione sociale *</label><input name="company" required=""/></div><div class="field"><label>Partita IVA / Codice fiscale *</label><input name="vat" required=""/></div><div class="field"><label>Comune sede impresa *</label><input name="city" required=""/></div><div class="field"><label>Provincia *</label><input maxlength="2" name="province" required=""/></div><div class="field"><label>Nome e cognome referente *</label><input name="contact" required=""/></div><div class="field"><label>Email *</label><input name="email" required="" type="email"/></div></div><div style="margin-top:18px"><label style="display:block;font-size:12px;font-weight:900;margin-bottom:8px">Numero dei mezzi *</label><div style="display:flex;gap:10px;align-items:center"><button class="small-btn" onclick="changeVehicles(-1)" type="button">−</button><strong id="vehicleCount" style="font-size:24px;min-width:35px;text-align:center">1</strong><button class="small-btn" onclick="changeVehicles(1)" type="button">+</button></div><div id="vehicles" style="display:grid;gap:10px;margin-top:12px"></div></div><div style="display:flex;justify-content:flex-end;margin-top:22px"><button class="btn dark" onclick="nextCapacity(2)" type="button">CONTINUA →</button></div></div>
-<div class="hidden" id="step2"><div class="field"><label>La tua impresa redige un bilancio? *</label><div class="choice-grid" style="margin-top:7px"><div class="choice-radio"><input id="bilY" name="bilancio" type="radio" value="si"/><label for="bilY">Sì</label></div><div class="choice-radio"><input id="bilN" name="bilancio" type="radio" value="no"/><label for="bilN">No</label></div></div></div><div class="notice" style="margin-top:16px">Il modello IDOFIN e gli eventuali altri modelli ufficiali devono essere quelli vigenti e pertinenti alla pratica. Non inseriamo modelli inventati o non verificati.</div><div class="cm-send-box"><h4>Come inviarci la documentazione</h4><p class="intro" style="margin:0 0 4px">Bilancio (se lo redigi), modello IDOFIN compilato e firmato o altra documentazione utile: inviaceli direttamente via email o WhatsApp, non serve caricarli su questo sito.</p><div class="cm-send-actions"><a class="btn gold" id="sendEmailBtn" href="#" target="_blank" rel="noopener">📧 Invia via email</a><a class="btn outline" id="sendWhatsappBtn" href="#" target="_blank" rel="noopener">💬 Invia via WhatsApp</a></div><small style="display:block;margin-top:10px;color:var(--muted)">I link precompilano oggetto/messaggio con il riepilogo della tua richiesta: dovrai solo allegare i file prima di inviare.</small></div><div style="display:flex;justify-content:space-between;margin-top:22px"><button class="small-btn" onclick="nextCapacity(1)" type="button">← INDIETRO</button><button class="btn dark" onclick="nextCapacity(3)" type="button">RIEPILOGO →</button></div></div>
-<div class="hidden" id="step3"><div class="summary" id="capacitySummary"></div><div class="notice" style="margin-top:14px">Dopo l’invio, la richiesta deve essere verificata. Il sito non determina automaticamente l’esito della pratica. Se non hai ancora inviato la documentazione via email o WhatsApp come indicato al passaggio precedente, potrai farlo anche subito dopo l'invio di questo modulo.</div><label class="privacy-check" style="display:flex;gap:10px;align-items:flex-start;margin:18px 0;font-size:13px"><input id="privacyAccepted" name="privacyAccepted" required="" type="checkbox"/> <span>Ho letto l’<a href="/privacy" rel="noopener" target="_blank">informativa privacy</a> e accetto il trattamento dei dati necessario alla gestione della richiesta.</span></label><div style="display:flex;justify-content:space-between;margin-top:22px"><button class="small-btn" onclick="nextCapacity(2)" type="button">← MODIFICA</button><button class="btn gold" type="submit">INVIA RICHIESTA →</button></div></div>
-<div class="hidden" id="capacityDone"><div class="success"><b>Richiesta registrata.</b><br/>La richiesta è stata registrata correttamente. Non dimenticare di inviarci la documentazione via email o WhatsApp, se non l'hai già fatto. Verrai ricontattato per i prossimi passaggi.</div></div></form></div></div></div></section>
-<section class="section alt"><div class="wrap"><div class="section-head"><div class="eyebrow">Riferimento normativo</div><h2>Documentazione ufficiale</h2><p>La circolare MIT n. 4499 del 17 febbraio 2026 riguarda la dimostrazione annuale del requisito di idoneità finanziaria per l’esercizio della professione di trasportatore su strada.</p><a class="btn dark" href="https://www.mit.gov.it/normativa/circolare-protocollo-n-4499-del-17022026" rel="noopener" target="_blank">VEDI LA CIRCOLARE MIT →</a></div></div></section>
+<header class="header"><div class="wrap nav"><a class="brand" href="/"><img alt="CM Consulting" decoding="async" height="559" src="assets/images/logo-cm-consulting.webp" width="1494"/></a><button aria-label="Apri menu di navigazione" class="menu" id="menu">☰</button><nav class="links" id="links"><a href="/">HOME</a><a href="/fideiussioni">FIDEIUSSIONI</a><a class="active" href="/capacita-finanziaria">CAPACITÀ FINANZIARIA</a><a href="/#metodo">CHI SIAMO</a><a href="/#servizi">SERVIZI</a><a href="/contatti">CONTATTI</a></nav><a class="header-cta" href="/richiedi-preventivo?tipo=capacita">RICHIEDI PREVENTIVO</a></div></header>
+<section class="page-hero cm-confirmed-hero"><div class="wrap"><div class="cm-confirmed-hero-grid"><div class="cm-confirmed-hero-copy"><div class="crumb"><a href="/">Home</a> / Capacità finanziaria</div><div class="eyebrow">Percorso dedicato all'autotrasporto</div><h1>Capacità finanziaria</h1><p>Una schermata semplice: leggi la spiegazione, compila i dati essenziali, invia la documentazione via email.</p></div><div class="cm-confirmed-hero-media"><img alt="Capacità finanziaria" decoding="async" fetchpriority="high" src="assets/capacita-retina-1920.webp"/></div></div></div></section>
+
+<section class="section"><div class="wrap" style="max-width:1080px;margin:auto">
+<div class="request-card" style="background:#fff;border:1px solid var(--line);border-radius:18px;padding:30px;box-shadow:0 18px 50px #0a294512">
+
+<div id="mainForm">
+<h2>Idoneità finanziaria per l'autotrasporto</h2>
+<div class="type-explain"><strong>Cos'è e a chi serve</strong>Per operare come autotrasportatore devi dimostrare ogni anno di avere una solidità economica adeguata al numero di mezzi che utilizzi — il cosiddetto requisito di idoneità finanziaria, previsto dalla normativa di settore (circolare MIT n. 4499 del 17/02/2026). Ti aiutiamo a ottenere l'attestazione necessaria.</div>
+
+<div class="simplify-grid">
+  <div>
+    <div class="essential-field"><label>Ragione sociale <strong>*</strong></label><input id="company" oninput="refreshAll()"/></div>
+    <div class="essential-field"><label>Partita IVA / Codice fiscale <strong>*</strong></label><input id="vat" oninput="refreshAll()"/></div>
+    <div class="essential-field"><label>Comune sede impresa <strong>*</strong></label><input id="city" oninput="refreshAll()"/></div>
+    <div class="essential-field"><label>Provincia <strong>*</strong></label><input id="province" maxlength="2" oninput="refreshAll()"/></div>
+    <div class="essential-field">
+      <label>Numero dei mezzi <strong>*</strong></label>
+      <div class="vehicle-stepper"><button class="btn outline" onclick="changeVehicles(-1)" type="button">−</button><strong id="vehicleCount">1</strong><button class="btn outline" onclick="changeVehicles(1)" type="button">+</button></div>
+    </div>
+    <div class="essential-field"><label>Nome e cognome referente <strong>*</strong></label><input id="contact" oninput="refreshAll()"/></div>
+    <div class="essential-field"><label>Email <strong>*</strong></label><input id="email" type="email" oninput="refreshAll()"/></div>
+
+    <details class="advanced-details">
+      <summary>Hai già altri dati? Aggiungili (facoltativo)</summary>
+      <div class="advanced-body">
+        <div class="essential-field" style="margin-bottom:14px">
+          <label>La tua impresa redige un bilancio?</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div class="choice-radio"><input id="bilY" name="bilancio" type="radio" value="si" onchange="refreshAll()"><label for="bilY">Sì</label></div>
+            <div class="choice-radio"><input id="bilN" name="bilancio" type="radio" value="no" onchange="refreshAll()"><label for="bilN">No</label></div>
+          </div>
+        </div>
+        <div id="vehicleDetails"></div>
+        <div class="field full" style="margin-top:12px"><label>Note aggiuntive</label><textarea id="notes" rows="3" oninput="refreshAll()" style="width:100%;padding:12px;border:1px solid var(--line);border-radius:9px"></textarea></div>
+      </div>
+    </details>
+  </div>
+
+  <div class="side-box">
+    <div class="doc-box">
+      <h4>Documenti utili</h4>
+      <ul class="doc-list">
+        <li>Bilancio aggiornato, se la tua impresa lo redige</li>
+        <li>Modello IDOFIN compilato e firmato (quello vigente e pertinente alla pratica)</li>
+        <li>Altra documentazione utile alla valutazione, se disponibile</li>
+      </ul>
+    </div>
+    <div class="summary-box">
+      <h4>Riepilogo</h4>
+      <div id="summaryContent"><span class="summary-empty">Inizia a compilare i campi qui a fianco.</span></div>
+    </div>
+    <div class="send-box">
+      <h4>Invia la documentazione</h4>
+      <a class="btn gold" href="#" id="sendEmailBtn" target="_blank" rel="noopener">📧 Invia via email</a>
+      <small>Il link precompila oggetto e messaggio con il riepilogo della tua richiesta: dovrai solo allegare i file. Puoi farlo anche subito dopo aver inviato questa richiesta.</small>
+    </div>
+  </div>
+</div>
+
+<div class="notice" style="margin-top:20px">La documentazione e le modalità applicabili possono dipendere dalla situazione dell'impresa e dalle istruzioni dell'ufficio competente. Il sito non sostituisce la verifica della pratica.</div>
+<label class="privacy-check"><input id="privacyAccepted" type="checkbox"/> <span>Ho letto l'<a href="/privacy" rel="noopener" target="_blank">informativa privacy</a> e accetto il trattamento dei dati necessario alla gestione della richiesta.</span></label>
+<div class="notice hidden" id="submitError" role="alert"></div>
+<div style="display:flex;justify-content:flex-end;margin-top:10px"><button class="btn gold" id="submitBtn" onclick="submitCapacity()" type="button">INVIA RICHIESTA →</button></div>
+</div>
+
+<div class="success-box" id="successBox">
+<div class="eyebrow">Richiesta ricevuta</div><h2>Perfetto, abbiamo ricevuto la tua richiesta.</h2>
+<p style="max-width:600px;margin:12px auto">La richiesta è stata registrata correttamente. Verrai ricontattato per i prossimi passaggi.</p>
+<div class="notice" style="max-width:600px;margin:16px auto 0;text-align:left">Non dimenticare di inviarci la documentazione via email, se non l'hai già fatto.</div>
+<a class="btn gold" href="/" style="display:inline-block;margin-top:18px">TORNA ALLA HOME</a>
+</div>
+
+</div></div></section>
+<section class="section alt"><div class="wrap"><div class="section-head"><div class="eyebrow">Riferimento normativo</div><h2>Documentazione ufficiale</h2><p>La circolare MIT n. 4499 del 17 febbraio 2026 riguarda la dimostrazione annuale del requisito di idoneità finanziaria per l'esercizio della professione di trasportatore su strada.</p><a class="btn dark" href="https://www.mit.gov.it/normativa/circolare-protocollo-n-4499-del-17022026" rel="noopener" target="_blank">VEDI LA CIRCOLARE MIT →</a></div></div></section>
 <script src="assets/app.js"></script><script>
-// ─── Numero WhatsApp dedicato a CM Consulting per i nuovi contatti dal sito ───
-// AGGIORNARE QUESTA RIGA quando la nuova eSIM sarà attiva (stesso numero già impostato in richiedi-preventivo.html)
-const CM_WHATSAPP_NUMBER = 'INSERIRE_NUOVO_NUMERO_ESIM';
-// ───────────────────────────────────────────────────────────────────────────
-
 let vehicles=1;
-
-const f=document.getElementById('capacityForm');
-
-function renderVehicles(){
-  document.getElementById('vehicleCount').textContent=vehicles;
-  const box=document.getElementById('vehicles');
-  box.innerHTML='';
-  for(let i=1;i<=vehicles;i++){
-    box.innerHTML+=`<div class="field-grid" style="padding:12px;border:1px solid var(--line);border-radius:10px">
-      <div class="field"><label>Mezzo ${i} — tipologia</label>
-      <select name="vehicle_type_${i}"><option>Autoveicolo</option><option>Rimorchio</option><option>Semirimorchio</option><option>Altro</option></select></div>
-      <div class="field"><label>Targa (se disponibile)</label><input name="vehicle_plate_${i}"></div>
-    </div>`;
-  }
-}
 
 function changeVehicles(n){
   vehicles=Math.max(1,Math.min(100,vehicles+n));
-  renderVehicles();
+  document.getElementById('vehicleCount').textContent=vehicles;
+  renderVehicleDetails();
+  refreshAll();
 }
 
-function nextCapacity(n){
-  [1,2,3].forEach(i=>document.getElementById('step'+i).classList.toggle('hidden',i!==n));
-  if(n===2) refreshSendLinks();
-  if(n===3) buildSummary();
+function renderVehicleDetails(){
+  const box=document.getElementById('vehicleDetails');
+  let h='';
+  for(let i=1;i<=vehicles;i++){
+    h+=`<div class="field-grid">
+      <div><label>Mezzo ${i} — tipologia</label><select id="vehicle_type_${i}" onchange="refreshAll()"><option>Autoveicolo</option><option>Rimorchio</option><option>Semirimorchio</option><option>Altro</option></select></div>
+      <div><label>Targa (se disponibile)</label><input id="vehicle_plate_${i}" oninput="refreshAll()"></div>
+    </div>`;
+  }
+  box.innerHTML=h;
 }
 
-function formData(){return new FormData(f)}
+function val(id){return document.getElementById(id)?.value||''}
 
 function summaryRows(){
-  const d=formData();
+  const bilancio=document.querySelector('input[name="bilancio"]:checked')?.value;
   return [
-    ['Impresa', d.get('company')||'—'],
-    ['P.IVA/C.F.', d.get('vat')||'—'],
-    ['Sede', `${d.get('city')||'—'} (${d.get('province')||'—'})`],
-    ['Referente', d.get('contact')||'—'],
-    ['Email', d.get('email')||'—'],
-    ['Numero mezzi', String(vehicles)],
-    ['Bilancio', d.get('bilancio')||'non indicato']
-  ];
+    ['Impresa',val('company')],
+    ['P.IVA/C.F.',val('vat')],
+    ['Sede',[val('city'),val('province')].filter(Boolean).join(' — ')],
+    ['Numero mezzi',String(vehicles)],
+    ['Referente',val('contact')],
+    ['Email',val('email')],
+    ['Bilancio',bilancio==='si'?'Sì':bilancio==='no'?'No':''],
+    ['Note',val('notes')]
+  ].filter(r=>r[1]);
 }
 
-function buildSummary(){
+function refreshAll(){
   const rows=summaryRows();
-  document.getElementById('capacitySummary').innerHTML=`<div><strong>RICHIESTA CAPACITÀ FINANZIARIA</strong><br><br>${rows.map(r=>`<b>${r[0]}:</b> ${r[1]}<br>`).join('')}</div>`;
-}
-
-function refreshSendLinks(){
-  const lines=summaryRows().filter(r=>r[1]&&r[1]!=='—').map(r=>`${r[0]}: ${r[1]}`).join('\n');
+  document.getElementById('summaryContent').innerHTML = rows.length
+    ? rows.map(r=>`<div class="summary-row"><span>${r[0]}</span><b>${r[1]}</b></div>`).join('')
+    : '<span class="summary-empty">Inizia a compilare i campi qui a fianco.</span>';
 
   const mailSubject='Documenti per richiesta capacità finanziaria';
-  const mailBody=`Buongiorno,\n\nin allegato invio la documentazione relativa alla mia richiesta di capacità finanziaria.\n\nRiepilogo richiesta:\n${lines}\n\nCordiali saluti`;
-  const mailBtn=document.getElementById('sendEmailBtn');
-  if(mailBtn)mailBtn.href=`mailto:info@cm-consulting.info?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}`;
-
-  const waText=`Salve, Le invio la documentazione per la mia richiesta di capacità finanziaria.\n\n${lines}`;
-  const waBtn=document.getElementById('sendWhatsappBtn');
-  if(waBtn)waBtn.href=`https://wa.me/${CM_WHATSAPP_NUMBER}?text=${encodeURIComponent(waText)}`;
+  const mailBody=`Buongiorno,\n\nin allegato invio la documentazione relativa alla mia richiesta di capacità finanziaria.\n\nRiepilogo richiesta:\n${rows.map(r=>`${r[0]}: ${r[1]}`).join('\n')}\n\nCordiali saluti`;
+  document.getElementById('sendEmailBtn').href=`mailto:info@cm-consulting.info?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}`;
 }
 
-async function submitCapacity(){
-  const privacy=document.getElementById('privacyAccepted');
-  if(!privacy.checked){privacy.focus();return;}
+function submitCapacity(){
+  const errorBox=document.getElementById('submitError');
+  errorBox.classList.add('hidden');
 
-  const d=formData();
+  const name=val('contact');
+  const email=val('email');
 
-  const text=[
-    'Richiesta capacità finanziaria',
-    `Impresa: ${d.get('company')}`,
-    `P.IVA/C.F.: ${d.get('vat')}`,
-    `Sede: ${d.get('city')} (${d.get('province')})`,
-    `Referente: ${d.get('contact')}`,
-    `Email: ${d.get('email')}`,
-    `Numero mezzi: ${vehicles}`,
-    `Bilancio: ${d.get('bilancio')||'non indicato'}`,
-    ...Array.from({length:vehicles},(_,i)=>`Mezzo ${i+1}: ${d.get(`vehicle_type_${i+1}`)||''} / ${d.get(`vehicle_plate_${i+1}`)||''}`)
-  ].join('\n');
+  if(!val('company')||!val('vat')||!val('city')||!val('province')||!name||!email){
+    errorBox.textContent='Compila i campi essenziali obbligatori prima di inviare.';
+    errorBox.classList.remove('hidden');
+    return;
+  }
+  if(!document.getElementById('privacyAccepted').checked){
+    errorBox.textContent="Devi accettare l'informativa privacy.";
+    errorBox.classList.remove('hidden');
+    return;
+  }
 
-  const button=f.querySelector('button[type="submit"]');
+  const vehicleLines=Array.from({length:vehicles},(_,i)=>`Mezzo ${i+1}: ${val('vehicle_type_'+(i+1))||''} / ${val('vehicle_plate_'+(i+1))||''}`);
+  const rows=summaryRows();
+  const text=['Richiesta capacità finanziaria',...rows.map(r=>`${r[0]}: ${r[1]}`),...vehicleLines].join('\n');
+
+  const button=document.getElementById('submitBtn');
   button.disabled=true;
   button.textContent='INVIO IN CORSO...';
 
-  try{
-    const response=await fetch('/api/submit-request',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        subject:'Richiesta capacità finanziaria',
-        text,
-        email:d.get('email'),
-        customerName:d.get('contact'),
-        company:d.get('company'),
-        privacyAccepted:true
-      })
-    });
-
-    const result=await response.json().catch(()=>({}));
-
-    if(!response.ok || !result.ok) throw new Error(result?.error?.message||'Invio non riuscito.');
-
-    document.getElementById('step3').classList.add('hidden');
-    document.getElementById('capacityDone').classList.remove('hidden');
-  }catch(error){
-    alert(error.message||'Non è stato possibile inviare la richiesta. Riprova.');
+  fetch('/api/submit-request',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      subject:'Richiesta capacità finanziaria',
+      text,
+      email,
+      customerName:name,
+      company:val('company'),
+      privacyAccepted:true
+    })
+  })
+  .then(r=>r.json().catch(()=>({})).then(result=>{
+    if(!r.ok || !result.ok) throw new Error(result?.error?.message||'Invio non riuscito.');
+    document.getElementById('mainForm').classList.add('hidden');
+    document.getElementById('successBox').classList.add('show');
+    window.scrollTo({top:150,behavior:'smooth'});
+  }))
+  .catch(error=>{
+    errorBox.textContent=error.message||'Non è stato possibile inviare la richiesta. Riprova.';
+    errorBox.classList.remove('hidden');
     button.disabled=false;
     button.textContent='INVIA RICHIESTA →';
-  }
+  });
 }
 
-f.addEventListener('submit',e=>{e.preventDefault();submitCapacity()});
-renderVehicles();
+renderVehicleDetails();
+refreshAll();
 </script><div class="ai-panel" id="aiPanel"><div class="ai-head"><div class="ai-title"><img alt="Assistente CM" decoding="async" height="432" src="assets/assistente-cm-retina-768.webp" width="768"/><b>ASSISTENTE CM · ORIENTAMENTO</b></div><button class="ai-close" onclick="closeAI()">×</button></div><div class="ai-content" id="aiContent"></div><div class="ai-note">Assistente digitale di orientamento. Non sostituisce la valutazione professionale né la documentazione richiesta.</div></div>
 <section aria-label="Navigazione tra i servizi" class="cm-service-nav">
 <div class="cm-service-nav-inner">
@@ -174,15 +260,8 @@ renderVehicles();
 <li><a href="/cookie">Cookie</a></li><li><a href="/reclami-e-arbitro-assicurativo">Reclami e Arbitro Assicurativo</a></li><li><a href="/contatti">Contatti</a></li>
 </ul></div>
 <div class="cm-footer-column cm-footer-contact"><h3>Contatti</h3><p><strong>Telefono: </strong><a href="tel:+393286382612"><strong>328 6382612</strong></a></p><p><strong>Email: </strong><a href="mailto:info@cm-consulting.info">info@cm-consulting.info</a></p><p><strong>PEC: </strong><a href="mailto:carmelo.migliore@legalmail.it">carmelo.migliore@legalmail.it</a></p><a class="cm-rui-link" href="https://www.ivass.it/consumatori/rui/index.html" rel="noopener noreferrer" target="_blank">Verifica iscrizione RUI →</a><a class="cm-rui-link" href="/reclami-e-arbitro-assicurativo">Reclami e Arbitro Assicurativo →</a></div>
-</div><div class="cm-footer-legalbar"><h3>Dati societari e iscrizione</h3><p><strong>CM Consulting di Carmelo Migliore</strong></p><p><strong>Intermediazione assicurativa</strong></p><p>P. IVA: <strong>14416401009</strong></p><p>Codice Fiscale: <strong>MGLCML71M25L219S</strong></p><p>REA: <strong>RM – 1519347</strong></p><p>Codice Univoco: <strong>KRRH6B9</strong></p><p>Sede legale: <strong>Via Spinoza n. 49 - 00137 - Roma</strong></p><p>RUI: <strong>Sezione E</strong> — n. <strong>E000437237</strong></p><p>Data di iscrizione RUI: <strong>24/01/2013</strong></p><p>Telefono: </p><p>Email: </p><p>PEC: </p><p>Sito: <a href="https://www.cm-consulting.info/" rel="noopener noreferrer" target="_blank">www.cm-consulting.info</a></p><p><strong>Soggetto alla vigilanza dell’IVASS.</strong></p></div>
+</div><div class="cm-footer-legalbar"><h3>Dati societari e iscrizione</h3><p><strong>CM Consulting di Carmelo Migliore</strong></p><p><strong>Intermediazione assicurativa</strong></p><p>P. IVA: <strong>14416401009</strong></p><p>Codice Fiscale: <strong>MGLCML71M25L219S</strong></p><p>REA: <strong>RM – 1519347</strong></p><p>Codice Univoco: <strong>KRRH6B9</strong></p><p>Sede legale: <strong>Via Spinoza n. 49 - 00137 - Roma</strong></p><p>RUI: <strong>Sezione E</strong> — n. <strong>E000437237</strong></p><p>Data di iscrizione RUI: <strong>24/01/2013</strong></p><p>Telefono: </p><p>Email: </p><p>PEC: </p><p>Sito: <a href="https://www.cm-consulting.info/" rel="noopener noreferrer" target="_blank">www.cm-consulting.info</a></p><p><strong>Soggetto alla vigilanza dell'IVASS.</strong></p></div>
 <div class="cm-footer-bottom"><p>© <span class="cm-footer-year"></span> CM Consulting di Carmelo Migliore. Tutti i diritti riservati.</p><p>Registro Unico degli Intermediari — IVASS</p></div>
 </footer>
 <script>document.querySelectorAll(".cm-footer-year").forEach(e=>e.textContent=new Date().getFullYear());</script>
-
-<!-- CM GLOBAL ASSISTANT — persistent on every page -->
-<button id="cm-ai-fab" class="cm-ai-fab" type="button" aria-label="Apri Assistente CM" title="Apri Assistente CM" onclick="openAI()">
-  <span class="cm-ai-fab-logo" aria-hidden="true"><img src="assets/assistente-cm-retina-768.webp" alt="Assistente CM"></span>
-  <span class="cm-ai-fab-copy"><strong>Assistente CM</strong><small>Posso aiutarti?</small></span>
-  <span class="cm-ai-fab-arrow" aria-hidden="true">→</span>
-</button>
 </body></html>
