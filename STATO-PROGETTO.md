@@ -1,7 +1,7 @@
 # STATO-PROGETTO.md
 ## CM Consulting — Registro tecnico ufficiale
 
-**Ultimo aggiornamento:** 12 settembre 2026  
+**Ultimo aggiornamento:** 16 settembre 2026  
 **Repository:** `migliore50-afk/Cm-Consulting-`  
 **Branch:** `main`  
 **Deploy:** Vercel — Production  
@@ -188,7 +188,7 @@ Ulteriore verifica:
 
 **Decisione:** nessuna modifica a `index.html`, `assets/style.css`, `assets/v9-final.css` o `assets/app.js` per questa issue. Non intervenire sul layout senza una nuova evidenza diagnostica. Un eventuale intervento futuro dovrà riguardare direttamente l'asset fotografico (crop, correzione esposizione o sostituzione).
 
-### Carousel servizi — card “Altre esigenze”
+### Carousel servizi — card "Altre esigenze"
 
 La visualizzazione parzialmente tagliata dell'ultima card a destra è **comportamento intenzionale** del carousel orizzontale con `overflow-x:auto` e `scroll-snap-type`, usato come affordance visiva dello scorrimento. Non classificare come bug salvo richiesta esplicita di redesign.
 
@@ -278,6 +278,8 @@ PUT https://api.github.com/repos/migliore50-afk/Cm-Consulting-/contents/assets/a
 **Soluzione applicata come bypass per completare la correzione B:** editing manuale del file tramite l'editor web di GitHub (`github.com/.../edit/main/assets/app.js`), con sostituzione dell'intero contenuto del file (fornito da Claude come file scaricabile) e commit diretto su `main` dall'interfaccia GitHub.
 
 **Per le prossime sessioni:** se il tool `GitHub:create_or_update_file` (o altri tool di scrittura del connettore MCP) restituisce di nuovo `403 Resource not accessible by integration`, non ripetere da zero questa diagnosi. Verificare prima se nel frattempo l'app **"Claude Github MCP Connector"** è stata installata su un repository (Settings → Applications → Installed GitHub Apps, cercare quel nome specifico, non solo "Claude"). Se non installata, il bypass via editor web GitHub resta la via più rapida.
+
+**Conferma 16 settembre 2026:** il problema si è ripresentato identico durante l'audit di sicurezza di `api/_security.js` e durante il tentativo di aggiungere la sezione 18 e il relativo diagramma SVG. Sia `create_or_update_file` sia `push_files` restituiscono lo stesso `403 Resource not accessible by integration`, anche dopo disconnessione/riconnessione del connettore GitHub in Claude e con permessi Contents R/W confermati corretti sulla app "Claude". La causa resta quella individuata qui: l'app "Claude Github MCP Connector" non risulta installata. Bypass confermato ancora valido: editing manuale via editor web GitHub, file forniti da Claude come download pronti per il copia-incolla. Tool di sola lettura (`get_file_contents`, `search_code`) continuano invece a funzionare regolarmente tramite il connettore.
 
 ---
 
@@ -583,6 +585,8 @@ Le sezioni 5-8 descrivono uno stato storico del carousel non più corrispondente
 
 Se il tool di scrittura GitHub del connettore MCP restituisce `403 Resource not accessible by integration`, vedi §5-bis prima di rifare la diagnosi da zero.
 
+**Dal 16 settembre 2026, nessuna pagina del sito usa più upload diretti di file: vedi §18.** Se si trovano riferimenti a `/api/attachment-upload-url` o `attachments` in una pagina HTML, verificare che non sia una versione non ancora pubblicata: quel flusso è stato dismesso su tutto il portale.
+
 ---
 
 # 15. ISTRUZIONE DI AVVIO PER NUOVE CHAT
@@ -591,7 +595,7 @@ Se il tool di scrittura GitHub del connettore MCP restituisce `403 Resource not 
 
 Frase breve:
 
-**“Riprendiamo il progetto CM Consulting.”**
+**"Riprendiamo il progetto CM Consulting."**
 
 ---
 
@@ -688,7 +692,7 @@ Priorità già individuate:
 
 1. verificare le anomalie residue del footer;
 2. verificare i redirect e le regole di `vercel.json`;
-3. verificare la gestione degli upload in `capacita-finanziaria.html`, in particolare il limite payload Vercel;
+3. ~~verificare la gestione degli upload in `capacita-finanziaria.html`, in particolare il limite payload Vercel~~ — superato: upload diretto rimosso, vedi §18;
 4. verificare privacy/localStorage e passaggio dati verso WhatsApp;
 5. aggiornare `sitemap.xml` quando le modifiche definitive lo richiedono.
 
@@ -696,34 +700,39 @@ Ogni modifica dovrà seguire la procedura prevista da questo registro: diagnosi 
 
 ---
 
-# 18. ANTIVIRUS CLAMAV — ARCHITETTURA IN VALUTAZIONE
+# 18. UPLOAD DIRETTO E ANTIVIRUS CLAMAV — PERCORSO ARCHIVIATO (16 settembre 2026)
 
-**Stato:** architettura proposta/in fase di validazione. Oracle Cloud + ClamAV non sono attualmente collegati alla produzione. Nessuna modifica a `_security.js`, GitHub o Vercel è prevista fino al completamento dei test end-to-end.
+**Stato: CHIUSO.** L'intero percorso di valutazione Oracle Cloud + ClamAV è stato archiviato. Il sito non usa più upload diretti di file in nessuna pagina. Questa sezione sostituisce la precedente versione (architettura "in valutazione"), mantenuta più sotto come cronologia.
 
-L’architettura oggetto di valutazione prevede:
+## Cosa è cambiato
 
-Vercel / CM Consulting
-→ Oracle Cloud — Frankfurt
-→ Webhook Docker
-→ ClamAV (`clamd`)
-→ risposta `clean:true` / `clean:false`
+Sono stati riscritti due file per rimuovere completamente l'upload diretto, sostituendolo con invio della documentazione via email/WhatsApp da parte del cliente, fuori dal sito:
 
-Il comportamento di sicurezza rimane fail-closed:
+- **`richiedi-preventivo.html`** — rimossi tutti gli input file, `fileToBase64`, le chiamate a `/api/attachment-upload-url`. Aggiunto blocco "Come inviarci i documenti" con link `mailto:` e `wa.me` precompilati con il riepilogo della richiesta.
+- **`capacita-finanziaria.html`** — rimossi gli input file (`docs`, `bilancioFile`), la funzione di rendering della lista file e il ciclo di upload in `submitCapacity()`. Aggiunto lo stesso blocco di invio email/WhatsApp nello step 2.
 
-- scansione completata e allegato pulito → `clean:true` → allegato accettato;
-- minaccia rilevata → `clean:false` → allegato bloccato;
-- webhook antivirus irraggiungibile → allegato bloccato;
-- antivirus non configurato → allegato bloccato;
-- errore del servizio antivirus → allegato bloccato.
+Entrambi i file inviano `/api/submit-request` **senza il campo `attachments`** (il backend lo gestisce già correttamente come array vuoto).
 
-Questa architettura è esclusivamente in fase di prova e validazione. Non rappresenta lo stato operativo della produzione.
+**Nota tecnica in entrambi i file:** contengono una costante `CM_WHATSAPP_NUMBER = 'INSERIRE_NUOVO_NUMERO_ESIM'` — segnaposto in attesa dell'attivazione di una nuova eSIM dedicata a CM Consulting. Aggiornare quella riga in entrambi i file quando il numero sarà attivo.
 
-**Decisione:** prima di qualsiasi integrazione con la produzione devono essere completati i test end-to-end di provisioning Oracle, webhook HTTPS, ClamAV, `freshclam`, autenticazione del webhook, risposta `clean:true/false`, gestione degli errori e comportamento fail-closed.
+## Perché è stato chiuso
 
-**Regola:** fino alla conclusione positiva della validazione non modificare `api/_security.js`, configurazioni Vercel o altri componenti della produzione per collegare ClamAV.
+Verifica end-to-end completata prima della decisione (16 settembre 2026): è stato accertato che, oltre a `richiedi-preventivo.html`, anche `capacita-finanziaria.html` usava attivamente lo stesso flusso di upload (`/api/attachment-upload-url` → `scanBlobAttachment()` in `api/_security.js`). Con l'antivirus fail-closed e `CM_ANTIVIRUS_WEBHOOK_URL` mai configurato, qualunque cliente che allegasse un documento su quella pagina riceveva un rifiuto totale della richiesta (`ATTACHMENT_SECURITY_REJECTED`), mentre le richieste senza allegato passavano regolarmente. Decisione: invece di configurare un antivirus reale (a pagamento o self-hosted, entrambi scartati per vincoli di Carmelo — niente carte di credito/debito salvate, nessun dispositivo sempre acceso gestibile), è stato rimosso l'upload diretto da entrambe le pagine del sito.
 
-### Diagramma architetturale
+## Stato del codice backend (non modificato)
 
-`docs/CM-Consulting-ClamAV-Oracle-architettura.svg`
+`api/_security.js` (incluse `scanBlobAttachment`, `scanAttachment`, la logica antivirus fail-closed), `api/attachment-upload-url.js` e la gestione di `attachments` dentro `api/submit-request.js` **non sono stati toccati né rimossi**. Restano nel repository come codice non più richiamato da nessuna pagina HTML (verificato con `search_code` sull'intero repo: solo `richiedi-preventivo.html` e `capacita-finanziaria.html` referenziavano `attachment-upload-url`, entrambi ora aggiornati). Rimuovere questo codice backend è una decisione separata, non ancora presa.
 
-Il diagramma rappresenta esclusivamente l’architettura proposta e non implica che ClamAV sia attualmente operativo in produzione.
+## Da fare per chiudere completamente
+
+1. Caricare `richiedi-preventivo.html` e `capacita-finanziaria.html` (versioni senza upload) su `main`, con commit separato da qualunque altra modifica.
+2. Quando la nuova eSIM sarà attiva, aggiornare `CM_WHATSAPP_NUMBER` in entrambi i file.
+3. Decisione ancora aperta, non urgente: se e quando rimuovere anche il codice backend non più usato (`api/attachment-upload-url.js`, la parte antivirus di `api/_security.js`, la gestione `attachments` in `api/submit-request.js`) — per ora resta come codice orfano innocuo, non attivo.
+
+---
+
+## CRONOLOGIA — versione precedente di questa sezione (architettura in valutazione, superata)
+
+**Stato storico, non più attuale:** architettura proposta/in fase di validazione Oracle Cloud + ClamAV, poi archiviata come descritto sopra dopo che la rimozione dell'upload diretto ha reso l'intero percorso non più necessario.
+
+Diagramma di riferimento realizzato in quella fase (mantenuto per documentazione storica, non rappresenta più un'architettura attiva né pianificata): `docs/CM-Consulting-ClamAV-Oracle-architettura.svg`.

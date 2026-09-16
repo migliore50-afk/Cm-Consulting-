@@ -1,11 +1,9 @@
 <!DOCTYPE html>
-
 <html lang="it"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Richiedi un preventivo | CM Consulting</title><meta content="index,follow" name="robots"/><meta content="Racconta la tua esigenza e invia le informazioni utili per avviare la valutazione della richiesta." name="description"/><link href="https://www.cm-consulting.info/richiedi-preventivo" rel="canonical"/><meta content="Richiedi un preventivo | CM Consulting" property="og:title"/><meta content="Racconta la tua esigenza e invia le informazioni utili per avviare la valutazione della richiesta." property="og:description"/><meta content="https://www.cm-consulting.info/richiedi-preventivo" property="og:url"/><meta content="https://www.cm-consulting.info/assets/images/logo-cm-consulting.webp" property="og:image"/><link href="assets/style.css" rel="stylesheet"/><style>
 .request-shell{max-width:980px;margin:auto}.progressbar{display:flex;gap:8px;margin:25px 0}.progressbar span{flex:1;height:5px;background:#dce5ea;border-radius:99px}.progressbar span.on{background:var(--gold)}.request-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:30px;box-shadow:0 18px 50px #0a294512}.step{display:none}.step.active{display:block}.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}.form-grid .full{grid-column:1/-1}.field label{display:block;font-size:12px;font-weight:900;margin-bottom:6px}.field input,.field select,.field textarea{width:100%;padding:13px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}.field small{display:block;color:var(--muted);font-size:11px;margin-top:5px}.choice-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.big-choice{padding:18px;border:1px solid var(--line);background:#fff;border-radius:12px;text-align:left;cursor:pointer}.big-choice:hover,.big-choice.selected{border-color:var(--gold);box-shadow:0 0 0 3px #dfb34e22}.big-choice b{display:block}.big-choice span{font-size:12px;color:var(--muted)}.uploads{display:grid;gap:12px}.upload-box{border:1px dashed #b7c8d3;border-radius:12px;padding:16px;background:#f8fafb}.upload-box b{display:block;margin-bottom:5px}.summary{background:#f1f5f7;border-radius:12px;padding:18px}.summary div{display:flex;justify-content:space-between;border-bottom:1px solid #dce5ea;padding:8px 0;font-size:13px}.summary div:last-child{border:0}.nav-actions{display:flex;justify-content:space-between;gap:10px;margin-top:22px}.notice{padding:13px 15px;background:#fff8e8;border-left:4px solid var(--gold);border-radius:8px;font-size:12px;color:#5b4a20;margin:15px 0}.success{display:none;text-align:center;padding:45px}.success.show{display:block}.hidden{display:none!important}@media(max-width:700px){.form-grid,.choice-grid{grid-template-columns:1fr}.request-card{padding:20px}.nav-actions{flex-direction:column}.nav-actions .btn{width:100%}}
 .generic-only{display:none}.generic-mode .generic-only{display:block}.generic-orientation{padding:15px 17px;background:#eef7fa;border:1px solid #cfe3ea;border-left:4px solid var(--gold);border-radius:10px;color:#17344e;font-size:13px;line-height:1.5}.generic-upload-title{padding:14px 16px;background:#f8fafb;border:1px solid var(--line);border-radius:12px;margin-bottom:12px}.generic-upload-title strong{display:block;margin-bottom:4px}.nav-generic-cta{font-size:11px!important;font-weight:900!important;color:var(--gold)!important;white-space:nowrap}.cm-generic-evaluation{padding-top:10px}.cm-generic-box{display:flex;align-items:center;justify-content:space-between;gap:32px;padding:30px 34px;border:1px solid rgba(221,178,63,.38);border-radius:18px;background:linear-gradient(135deg,#f7fbfc,#fff);box-shadow:0 14px 38px rgba(9,43,67,.08)}.cm-generic-box h2{margin:6px 0 10px}.cm-generic-box p{max-width:780px;margin:0;color:var(--muted);line-height:1.65}@media(max-width:760px){.cm-generic-box{flex-direction:column;align-items:flex-start;padding:24px}.cm-generic-box .btn{width:100%;text-align:center}.nav-generic-cta{white-space:normal!important;text-align:center}}
 </style>
 <style>
-/* UX fix: rendi visibili i controlli di navigazione e la privacy nella procedura richiesta */
 .request-card .nav-actions .btn.outline{
   color:var(--ink)!important;
   border:1px solid #b7c8d3!important;
@@ -27,16 +25,28 @@
   text-decoration:underline;
 }
 </style>
+<style>
+.doc-info-list{margin:16px 0}
+.doc-info-ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.doc-info-ul li{padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:#f8fafb;font-size:13px;color:var(--ink)}
+.doc-send-box{margin-top:22px;padding:22px;border:1px solid rgba(221,178,63,.38);border-radius:14px;background:linear-gradient(135deg,#f7fbfc,#fff)}
+.doc-send-title{font-weight:900;font-size:14px;margin-bottom:14px;color:var(--ink)}
+.doc-send-btn{display:inline-block;margin:0 8px 10px 0;text-align:center;text-decoration:none}
+.doc-send-address{font-size:13px;color:var(--muted);margin:4px 0 14px}
+.doc-whatsapp-btn{background:#25D366!important;color:#fff!important;border:none!important}
+.doc-send-box small{display:block;color:var(--muted);font-size:11px;margin-top:8px}
+@media(max-width:700px){.doc-send-btn{display:block;width:100%;margin:0 0 10px}}
+</style>
 <link href="site.webmanifest" rel="manifest"/>
 <meta content="website" property="og:type"/>
 <meta content="CM Consulting" property="og:site_name"/>
 <meta content="it_IT" property="og:locale"/>
 <link href="assets/v9-final.css" rel="stylesheet"/><link href="favicon.ico" rel="icon" sizes="any"/><link href="assets/images/logo-cm-symbol.png" rel="icon" sizes="512x512" type="image/png"/><link href="assets/apple-touch-icon.png" rel="apple-touch-icon"/></head><body>
 <header class="header"><div class="wrap nav"><a class="brand" href="/"><img alt="CM Consulting" decoding="async" height="559" src="assets/images/logo-cm-consulting.webp" width="1494"/></a><button aria-label="Menu" class="menu" id="menu">☰</button><nav class="links" id="links"><a href="/">HOME</a><a href="/fideiussioni">FIDEIUSSIONI</a><a href="/capacita-finanziaria">CAPACITÀ FINANZIARIA</a><a href="/#metodo">CHI SIAMO</a><a href="/#servizi">SERVIZI</a><a href="/contatti">CONTATTI</a><a class="nav-generic-cta" href="/richiedi-preventivo?esigenza=generica">NON SAI QUALE GARANZIA?</a></nav><a class="header-cta" href="/richiedi-preventivo">RICHIEDI PREVENTIVO</a></div></header>
-<section class="page-hero"><div class="wrap"><div class="crumb"><a href="/">Home</a> / Richiesta</div><div class="eyebrow">Valutazione della richiesta</div><h1>Raccontaci cosa ti serve.</h1><p>Se non sai quale garanzia occorre, puoi descrivere liberamente il caso e inviare la documentazione in tuo possesso. Valuteremo il percorso più adatto.</p></div></section>
+<section class="page-hero"><div class="wrap"><div class="crumb"><a href="/">Home</a> / Richiesta</div><div class="eyebrow">Valutazione della richiesta</div><h1>Raccontaci cosa ti serve.</h1><p>Se non sai quale garanzia occorre, puoi descrivere liberamente il caso. Ti indicheremo quali documenti servono e potrai inviarceli comodamente via email o WhatsApp. Valuteremo il percorso più adatto.</p></div></section>
 <section class="section"><div class="wrap request-shell"><div class="progressbar"><span class="on" id="bar1"></span><span id="bar2"></span><span id="bar3"></span><span id="bar4"></span></div>
 <div class="request-card">
-<div class="step active" id="step1"><div class="eyebrow">01 · Tipologia</div><h2>Di cosa hai bisogno?</h2><p class="intro">Scegli l'area più vicina alla tua esigenza. Se non sai quale sia, puoi caricare la richiesta del beneficiario.</p><div class="choice-grid">
+<div class="step active" id="step1"><div class="eyebrow">01 · Tipologia</div><h2>Di cosa hai bisogno?</h2><p class="intro">Scegli l'area più vicina alla tua esigenza. Se non sai quale sia, puoi descrivere la richiesta del beneficiario.</p><div class="choice-grid">
 <button class="big-choice" onclick="setType('appalti','Appalti pubblici')">🏗️ <b>Appalti pubblici</b><span>Gare, garanzie contrattuali e altre richieste.</span></button>
 <button class="big-choice" onclick="setType('locazioni','Locazioni')">🏠 <b>Locazioni</b><span>Garanzie richieste per contratti o preliminari.</span></button>
 <button class="big-choice" onclick="setType('trasporti','Trasporti')">🚛 <b>Trasporti</b><span>Garanzie per il comparto trasporto.</span></button>
@@ -45,11 +55,11 @@
 <button class="big-choice" onclick="setType('contributi','Contributi e agevolazioni')">💶 <b>Contributi e agevolazioni</b><span>Garanzie richieste da enti o programmi.</span></button>
 <button class="big-choice" onclick="setType('urbanistica','Urbanistica ed edilizia')">🏢 <b>Urbanistica ed edilizia</b><span>Convenzioni, oneri e altre garanzie richieste.</span></button>
 <button class="big-choice" onclick="setType('fiscali','Garanzie fiscali')">🧾 <b>Garanzie fiscali</b><span>Richieste fiscali da valutare caso per caso.</span></button>
-<button class="big-choice" onclick="setType('altro','Altra fideiussione')">❓ <b>Non trovo la mia esigenza</b><span>Raccontala o carica la richiesta del beneficiario.</span></button>
+<button class="big-choice" onclick="setType('altro','Altra fideiussione')">❓ <b>Non trovo la mia esigenza</b><span>Raccontala o descrivi la richiesta del beneficiario.</span></button>
 </div></div>
 <div class="step" id="step2"><div class="eyebrow">02 · Dati della garanzia</div><h2 id="typeTitle">Dati della richiesta</h2><div class="notice">Inserisci i dati che conosci. I campi specifici cambiano in base alla tipologia scelta.</div><div class="form-grid">
 <div class="field full generic-only" id="genericDescriptionField"><label for="genericDescription">Descrivi la tua esigenza <strong>*</strong></label><textarea id="genericDescription" placeholder="Spiega cosa ti viene richiesto, da chi, per quale operazione e quali tempi hai a disposizione." required="" rows="6"></textarea><small>Non serve conoscere il nome della garanzia: descrivi semplicemente il caso nel modo più completo possibile.</small></div>
-<div class="field full generic-only"><div class="generic-orientation">Carica i documenti o la richiesta ricevuta: analizzeremo il tuo caso per verificare la fattibilità della garanzia assicurativa e il percorso più adatto.</div></div>
+<div class="field full generic-only"><div class="generic-orientation">Descrivi la tua esigenza: analizzeremo il tuo caso per verificare la fattibilità della garanzia assicurativa e il percorso più adatto. Allo step successivo trovi come inviarci eventuale documentazione.</div></div>
 <div class="field"><label>Importo della fideiussione</label><input id="amount" inputmode="decimal" placeholder="€"/></div>
 <div class="field"><label>Durata della fideiussione</label><input id="duration" placeholder="es. 12 mesi / fino al ..."/></div>
 <div class="field"><label>Data decorrenza</label><input id="startDate" type="date"/></div>
@@ -62,12 +72,20 @@
 <div class="field"><label>P.IVA / Codice fiscale contraente</label><input id="companyTax"/></div>
 <div class="field full"><label>Oggetto della garanzia</label><textarea id="object" placeholder="Descrivi brevemente cosa deve garantire la fideiussione" rows="3"></textarea></div>
 <div class="field full" id="specificFields"></div>
-<div class="field full"><label>Il beneficiario ti ha fornito un testo, schema, richiesta o delibera?</label><select id="hasBeneficiaryDoc" onchange="toggleBeneficiaryDoc()"><option value="no">No</option><option value="yes">Sì</option><option value="unknown">Non lo so / allego la richiesta che ho ricevuto</option></select></div>
-<div class="field full hidden beneficiary-doc-panel" id="beneficiaryDocArea"><div class="beneficiary-doc-title">TESTO / SCHEMA / RICHIESTA DEL BENEFICIARIO</div><div class="beneficiary-doc-copy">Carica qui il testo della fideiussione o l’allegato ricevuto dal beneficiario.</div><label class="beneficiary-upload-btn" for="beneficiaryDoc">CARICA TESTO O ALLEGATO</label><input accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" id="beneficiaryDoc" type="file"/><small>Il documento verrà utilizzato per la verifica della richiesta.</small></div>
+<div class="field full"><label>Il beneficiario ti ha fornito un testo, schema, richiesta o delibera?</label><select id="hasBeneficiaryDoc" onchange="toggleBeneficiaryDoc()"><option value="no">No</option><option value="yes">Sì</option><option value="unknown">Non lo so / lo invierò insieme agli altri documenti</option></select></div>
+<div class="field full hidden beneficiary-doc-panel" id="beneficiaryDocArea"><div class="beneficiary-doc-title">TESTO / SCHEMA / RICHIESTA DEL BENEFICIARIO</div><div class="beneficiary-doc-copy">Potrai inviarci il testo della fideiussione o l'allegato ricevuto dal beneficiario insieme agli altri documenti, via email o WhatsApp, allo step successivo.</div></div>
 </div><div class="nav-actions"><button class="btn outline" onclick="go(1)">← INDIETRO</button><button class="btn gold" onclick="go(3)">CONTINUA →</button></div></div>
-<div class="step" id="step3"><div class="eyebrow">03 · Documentazione</div><h2>Documenti per istruire la pratica</h2><p class="intro">Carica la richiesta ricevuta, una bozza di contratto, un bando o altra documentazione utile. Puoi selezionare più file dal computer o dallo smartphone.</p><div aria-live="polite" class="cm-document-analysis" id="documentAnalysis" role="status"><span aria-hidden="true" class="cm-analysis-dot"></span><span id="documentAnalysisText">Preparazione dell'analisi preliminare della documentazione…</span></div><div class="uploads" id="docList"></div><div class="field" style="margin-top:14px"><label>Altra documentazione utile</label><input accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp,.xls,.xlsx" id="otherDocs" multiple="" type="file"/><small>PDF, immagini, DOC/DOCX, XLS/XLSX e altri documenti ammessi. Puoi selezionare più file.</small></div><div class="nav-actions"><button class="btn outline" onclick="go(2)">← INDIETRO</button><button class="btn gold" onclick="go(4)">CONTINUA →</button></div></div>
-<div class="step" id="step4"><div class="eyebrow">04 · Invio</div><h2>Controlla la richiesta</h2><div class="summary" id="summary"></div><div class="notice">La documentazione sarà ricevuta da CM Consulting per la verifica della richiesta. Il testo o lo schema fornito dal beneficiario sarà controllato nell'ambito dell'istruttoria.</div><div class="form-grid"><div class="field"><label>Nome e cognome referente</label><input id="contactName"/></div><div class="field"><label>Email</label><input id="contactEmail" type="email"/></div><div class="field"><label>Telefono</label><input id="contactPhone"/></div><div class="field"><label>Note</label><input id="notes"/></div></div><label class="privacy-check" style="display:flex;gap:10px;align-items:flex-start;margin:18px 0;font-size:13px"><input id="privacyAccepted" required="" type="checkbox"/> <span>Ho letto l’<a href="#privacy-modal" id="privacyInfoLink">informativa privacy</a> e accetto il trattamento dei dati necessario alla gestione della richiesta.</span></label><div aria-hidden="true" aria-labelledby="privacyModalTitle" aria-modal="true" class="privacy-modal" id="privacyModal" role="dialog"><div class="privacy-modal-backdrop" data-privacy-close=""></div><div class="privacy-modal-card" role="document"><div class="privacy-modal-head"><h3 id="privacyModalTitle">Informativa privacy</h3><button class="privacy-modal-close" data-privacy-close="" type="button">CHIUDI</button></div><div class="privacy-modal-body"><p>Prima di inviare la richiesta, puoi consultare qui l’informativa privacy di CM Consulting relativa al trattamento dei dati necessari alla gestione della richiesta.</p><p><a href="/privacy" rel="noopener" target="_blank">Apri l’informativa completa</a></p></div></div></div><div class="notice hidden" id="submitError" role="alert"></div><div class="nav-actions"><button class="btn outline" onclick="go(3)">← INDIETRO</button><button class="btn gold" onclick="submitRequest()">INVIA RICHIESTA →</button></div></div>
-<div class="success" id="success"><div class="eyebrow">Richiesta ricevuta</div><h2>Perfetto, abbiamo ricevuto la tua richiesta.</h2><p class="intro" style="margin:auto">CM Consulting verificherà le informazioni e la documentazione inviata e ti contatterà per i prossimi passaggi.</p><div class="cm-missing-docs" id="missingDocsNotice">Richiesta inviata. Per velocizzare l’istruttoria puoi inviarci i documenti via email o WhatsApp.</div><div class="cm-success-actions"><a class="btn gold" href="/">TORNA ALLA HOME</a><a class="btn cm-whatsapp-btn" href="#" id="successWhatsapp" rel="noopener noreferrer" target="_blank">Invia notifica prioritaria su WhatsApp</a></div></div>
+<div class="step" id="step3"><div class="eyebrow">03 · Documentazione</div><h2>Documenti utili per la pratica</h2><p class="intro">Questi sono i documenti utili per la tua richiesta. Non è necessario allegarli qui: puoi inviarceli comodamente via email o WhatsApp, anche subito dopo aver completato questa richiesta.</p><div class="doc-info-list" id="docInfoList"></div>
+<div class="doc-send-box">
+<div class="doc-send-title">Invia i documenti a CM Consulting</div>
+<a class="btn gold doc-send-btn" href="#" id="docMailtoBtn">📧 Invia via email</a>
+<div class="doc-send-address">info@cm-consulting.info</div>
+<a class="btn doc-send-btn doc-whatsapp-btn" href="#" id="docWhatsappBtn" rel="noopener noreferrer" target="_blank">💬 Invia via WhatsApp</a>
+<small>Se preferisci, puoi inviarci i documenti anche in un secondo momento: la tua richiesta resta comunque valida e verrà comunque valutata.</small>
+</div>
+<div class="nav-actions"><button class="btn outline" onclick="go(2)">← INDIETRO</button><button class="btn gold" onclick="go(4)">CONTINUA →</button></div></div>
+<div class="step" id="step4"><div class="eyebrow">04 · Invio</div><h2>Controlla la richiesta</h2><div class="summary" id="summary"></div><div class="notice">CM Consulting riceverà i dati della tua richiesta per avviare la verifica. Se non hai ancora inviato i documenti via email o WhatsApp, potrai farlo subito dopo, anche dalla pagina di conferma.</div><div class="form-grid"><div class="field"><label>Nome e cognome referente</label><input id="contactName"/></div><div class="field"><label>Email</label><input id="contactEmail" type="email"/></div><div class="field"><label>Telefono</label><input id="contactPhone"/></div><div class="field"><label>Note</label><input id="notes"/></div></div><label class="privacy-check" style="display:flex;gap:10px;align-items:flex-start;margin:18px 0;font-size:13px"><input id="privacyAccepted" required="" type="checkbox"/> <span>Ho letto l'<a href="#privacy-modal" id="privacyInfoLink">informativa privacy</a> e accetto il trattamento dei dati necessario alla gestione della richiesta.</span></label><div aria-hidden="true" aria-labelledby="privacyModalTitle" aria-modal="true" class="privacy-modal" id="privacyModal" role="dialog"><div class="privacy-modal-backdrop" data-privacy-close=""></div><div class="privacy-modal-card" role="document"><div class="privacy-modal-head"><h3 id="privacyModalTitle">Informativa privacy</h3><button class="privacy-modal-close" data-privacy-close="" type="button">CHIUDI</button></div><div class="privacy-modal-body"><p>Prima di inviare la richiesta, puoi consultare qui l'informativa privacy di CM Consulting relativa al trattamento dei dati necessari alla gestione della richiesta.</p><p><a href="/privacy" rel="noopener" target="_blank">Apri l'informativa completa</a></p></div></div></div><div class="notice hidden" id="submitError" role="alert"></div><div class="nav-actions"><button class="btn outline" onclick="go(3)">← INDIETRO</button><button class="btn gold" onclick="submitRequest()">INVIA RICHIESTA →</button></div></div>
+<div class="success" id="success"><div class="eyebrow">Richiesta ricevuta</div><h2>Perfetto, abbiamo ricevuto la tua richiesta.</h2><p class="intro" style="margin:auto">CM Consulting verificherà le informazioni inviate e ti contatterà per i prossimi passaggi.</p><div class="cm-missing-docs" id="missingDocsNotice">Se non hai ancora inviato i documenti, puoi farlo ora via email o WhatsApp — bastano pochi secondi.</div><div class="cm-success-actions"><a class="btn gold" href="/">TORNA ALLA HOME</a><a class="btn cm-whatsapp-btn" href="#" id="successWhatsapp" rel="noopener noreferrer" target="_blank">Invia i documenti su WhatsApp</a><a class="btn" href="#" id="successMailto">Invia i documenti via email</a></div></div>
 </div></div></section>
 <script>
 const qs=new URLSearchParams(location.search);
@@ -75,6 +93,10 @@ const genericMode=qs.get('esigenza')==='generica';
 let type=genericMode?'generica':(qs.get('tipo')||'');
 let typeName=genericMode?'Valutazione generica':'';
 let request={};
+
+// TODO: sostituire con il nuovo numero eSIM dedicato a CM Consulting prima della pubblicazione.
+// Formato internazionale senza "+" né spazi, es. per 320 1234567 scrivere "393201234567".
+const CM_WHATSAPP_NUMBER = 'XXXXXXXXXXX';
 
 function initGenericRequest(){
   if(!genericMode) return;
@@ -86,21 +108,6 @@ function initGenericRequest(){
     sessionStorage.removeItem('cm_voice_request');
   }
 }
-
-function updateDocumentAnalysis(files){
-  const badge=document.getElementById('documentAnalysis');
-  const text=document.getElementById('documentAnalysisText');
-  if(!badge || !files.length) return;
-  badge.classList.add('show');
-  badge.classList.remove('done');
-  if(text) text.textContent='Analisi preliminare della documentazione in preparazione…';
-  window.clearTimeout(updateDocumentAnalysis.timer);
-  updateDocumentAnalysis.timer=window.setTimeout(()=>{
-    badge.classList.add('done');
-    if(text) text.textContent=`Documentazione acquisita: ${files.length} file pronti per la valutazione.`;
-  },900);
-}
-
 
 const docs={
   appalti:['Documento/lettera di richiesta della garanzia','Documentazione di gara o contratto, se disponibile','Eventuale testo/schema fornito dal beneficiario'],
@@ -133,7 +140,7 @@ function setType(t,n){
   typeName=n;
   document.getElementById('typeTitle').textContent=n;
   buildSpecific();
-  buildDocs();
+  buildDocInfoList();
   go(2);
 }
 
@@ -147,13 +154,11 @@ function buildSpecific(){
   document.getElementById('specificFields').innerHTML=h;
 }
 
-function buildDocs(){
-  document.getElementById('docList').innerHTML=(docs[type]||docs.altro).map((d,i)=>`
-    <div class="upload-box">
-      <b>${d}${i<1?'':' — se presente'}</b>
-      <input type="file" id="doc${i}" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp">
-      <small>Carica il documento disponibile. Se non lo hai, potrai proseguire e spiegarlo nelle note.</small>
-    </div>`).join('');
+function buildDocInfoList(){
+  document.getElementById('docInfoList').innerHTML =
+    '<ul class="doc-info-ul">' +
+    (docs[type]||docs.altro).map(d=>`<li>${d}</li>`).join('') +
+    '</ul>';
 }
 
 function toggleBeneficiaryDoc(){
@@ -164,42 +169,64 @@ function go(n){
   document.querySelectorAll('.step').forEach(x=>x.classList.remove('active'));
   document.getElementById('step'+n).classList.add('active');
   for(let i=1;i<=4;i++)document.getElementById('bar'+i).classList.toggle('on',i<=n);
+  if(n===3)refreshDocLinks();
   if(n===4)makeSummary();
   window.scrollTo({top:180,behavior:'smooth'});
 }
 
 function val(id){return document.getElementById(id)?.value||''}
 
-function makeSummary(){
-  const rows=[
+function buildSummaryRows(){
+  return [
     ['Tipologia',typeName],
     ...(genericMode ? [['Descrizione esigenza',val('genericDescription')||'—']] : []),
     ['Importo',val('amount')||'—'],
     ['Durata',val('duration')||'—'],
+    ['Beneficiario',val('beneficiary')||'—'],
+    ['Contraente',val('company')||'—']
+  ];
+}
+
+function buildMailto(){
+  const subject=encodeURIComponent(`Documenti richiesta preventivo — ${typeName||'esigenza generica'}`);
+  const rows=buildSummaryRows();
+  const body=encodeURIComponent(
+    'Buongiorno,\n\nIn allegato i documenti relativi alla mia richiesta di preventivo.\n\nRiepilogo richiesta:\n'+
+    rows.map(r=>`${r[0]}: ${r[1]}`).join('\n')+
+    '\n\nCordiali saluti'
+  );
+  return `mailto:info@cm-consulting.info?subject=${subject}&body=${body}`;
+}
+
+function buildWhatsAppLink(){
+  const lines=[
+    `Ciao, vi invio i documenti per la richiesta di preventivo (${typeName||'esigenza generica'}).`,
+    val('beneficiary') ? `Beneficiario: ${val('beneficiary')}` : '',
+    val('amount') ? `Importo: ${val('amount')}` : '',
+    val('contactName') ? `Referente: ${val('contactName')}` : ''
+  ].filter(Boolean);
+  const text=encodeURIComponent(lines.join('\n'));
+  return `https://wa.me/${CM_WHATSAPP_NUMBER}?text=${text}`;
+}
+
+function refreshDocLinks(){
+  const mailBtn=document.getElementById('docMailtoBtn');
+  const waBtn=document.getElementById('docWhatsappBtn');
+  if(mailBtn) mailBtn.href=buildMailto();
+  if(waBtn) waBtn.href=buildWhatsAppLink();
+}
+
+function makeSummary(){
+  const rows=[
+    ...buildSummaryRows(),
     ['Decorrenza',val('startDate')||'—'],
     ['Scadenza',val('endDate')||'—'],
-    ['Beneficiario',val('beneficiary')||'—'],
     ['P.IVA/C.F. beneficiario',val('beneficiaryTax')||'—'],
     ['PEC beneficiario',val('beneficiaryPec')||'—'],
-    ['Contraente',val('company')||'—'],
     ['Oggetto',val('object')||'—'],
     ['Testo/schema beneficiario',document.getElementById('hasBeneficiaryDoc').value==='yes'?'Sì':'No / non indicato']
   ];
   document.getElementById('summary').innerHTML=rows.map(r=>`<div><span>${r[0]}</span><b>${r[1]}</b></div>`).join('');
-}
-
-function fileToBase64(file){
-  return new Promise((resolve,reject)=>{
-    const reader=new FileReader();
-    reader.onload=()=>resolve(String(reader.result).split(',')[1]||'');
-    reader.onerror=reject;
-    reader.readAsDataURL(file);
-  });
-}
-
-function mimeFromName(name){
-  const ext=String(name||'').toLowerCase().split('.').pop();
-  return ({pdf:'application/pdf',jpg:'image/jpeg',jpeg:'image/jpeg',png:'image/png',webp:'image/webp',doc:'application/msword',docx:'application/vnd.openxmlformats-officedocument.wordprocessingml.document',xls:'application/vnd.ms-excel',xlsx:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})[ext]||'application/octet-stream';
 }
 
 async function submitRequest(){
@@ -230,70 +257,6 @@ async function submitRequest(){
     return;
   }
 
-  const selected=[];
-  document.querySelectorAll('input[type=file]').forEach(input=>{
-    [...input.files].forEach(file=>selected.push(file));
-  });
-
-  let total=0;
-  for(const file of selected){
-    if(file.size>5*1024*1024){
-      errorBox.textContent=`Il file "${file.name}" supera il limite di 5 MB.`;
-      errorBox.classList.remove('hidden');
-      return;
-    }
-    total+=file.size;
-    if(total>10*1024*1024){
-      errorBox.textContent='La dimensione complessiva degli allegati supera 10 MB.';
-      errorBox.classList.remove('hidden');
-      return;
-    }
-  }
-
-  const attachments=[];
-  for(const file of selected){
-    try{
-      const uploadResponse=await fetch('/api/attachment-upload-url',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({
-          filename:file.name,
-          contentType:file.type||mimeFromName(file.name),
-          size:file.size
-        })
-      });
-
-      const uploadResult=await uploadResponse.json().catch(()=>({}));
-
-      if(!uploadResponse.ok || !uploadResult.uploadUrl || !uploadResult.pathname){
-        throw new Error(uploadResult.error||'Impossibile preparare il caricamento dell’allegato.');
-      }
-
-      const putResponse=await fetch(uploadResult.uploadUrl,{
-        method:'PUT',
-        headers:{
-          'Content-Type':file.type||mimeFromName(file.name)
-        },
-        body:file
-      });
-
-      if(!putResponse.ok){
-        throw new Error('Caricamento dell’allegato non riuscito.');
-      }
-
-      attachments.push({
-        filename:file.name,
-        contentType:file.type||mimeFromName(file.name),
-        size:file.size,
-        pathname:uploadResult.pathname
-      });
-    }catch(error){
-      errorBox.textContent=error.message||'Non è stato possibile caricare un allegato. Riprova.';
-      errorBox.classList.remove('hidden');
-      return;
-    }
-  }
-
   const fields={
     type,typeName,amount:val('amount'),duration:val('duration'),start:val('startDate'),end:val('endDate'),
     beneficiary:val('beneficiary'),beneficiaryTax:val('beneficiaryTax'),beneficiaryPec:val('beneficiaryPec'),
@@ -322,8 +285,7 @@ async function submitRequest(){
         phone:val('contactPhone'),
         requestType:type,
         requestTypeName:typeName,
-        privacyAccepted:true,
-        attachments
+        privacyAccepted:true
       })
     });
 
@@ -335,12 +297,11 @@ async function submitRequest(){
     document.getElementById('success').classList.add('show');
     document.querySelector('.progressbar').style.display='none';
     const missingNotice=document.getElementById('missingDocsNotice');
-    if(missingNotice) missingNotice.classList.toggle('show', attachments.length===0);
+    if(missingNotice) missingNotice.classList.add('show');
     const wa=document.getElementById('successWhatsapp');
-    if(wa){
-      const message=`Ho appena inviato una richiesta di valutazione dal sito a nome di ${name}`;
-      wa.href=`https://wa.me/393286382612?text=${encodeURIComponent(message)}`;
-    }
+    if(wa) wa.href=buildWhatsAppLink();
+    const mailBtn=document.getElementById('successMailto');
+    if(mailBtn) mailBtn.href=buildMailto();
     window.scrollTo({top:180,behavior:'smooth'});
   }catch(error){
     errorBox.textContent=error.message||'Non è stato possibile inviare la richiesta. Riprova.';
@@ -350,24 +311,16 @@ async function submitRequest(){
   }
 }
 
-document.querySelectorAll('input[type=file]').forEach(input=>{
-  input.addEventListener('change',()=>{
-    const files=[];
-    document.querySelectorAll('input[type=file]').forEach(el=>files.push(...el.files));
-    updateDocumentAnalysis(files);
-  });
-});
-
 initGenericRequest();
 
 if(type&&labels[type]){
   typeName=labels[type];
   document.getElementById('typeTitle').textContent=typeName;
   buildSpecific();
-  buildDocs();
+  buildDocInfoList();
   go(2);
 }else{
-  buildDocs();
+  buildDocInfoList();
 }
 </script><div class="ai-panel" id="aiPanel"><div class="ai-head"><b>ASSISTENTE CM</b><button class="close" onclick="closeAI()">×</button></div><div class="ai-content" id="aiContent"><div class="bubble ai"><b>Ciao, sono l'Assistente CM.</b><br/>Ti accompagno passo passo e ti aiuto a non dimenticare nulla.</div><button class="choice" onclick="startAI()">Inizia →</button></div><div class="ai-note">Assistente digitale di orientamento.</div></div>
 <script src="assets/app.js"></script>
@@ -396,10 +349,10 @@ if(type&&labels[type]){
   document.querySelector('#step1')?.classList.remove('active');
   document.querySelector('#step2')?.classList.add('active');
   for(let i=1;i<=4;i++)document.getElementById('bar'+i)?.classList.toggle('on',i<=2);
-  buildDocs();
+  buildDocInfoList();
   document.getElementById('typeTitle').textContent='Valutazione generica della tua esigenza';
   document.querySelector('.page-hero h1').textContent='Raccontaci la tua esigenza, anche se non sai quale garanzia ti serve.';
-  document.querySelector('.page-hero p').textContent='Descrivi il caso e carica la documentazione che hai ricevuto: valuteremo la fattibilità della garanzia assicurativa e il percorso più adatto.';
+  document.querySelector('.page-hero p').textContent='Descrivi il caso: valuteremo la fattibilità della garanzia assicurativa e il percorso più adatto, e ti indicheremo come inviarci la documentazione utile.';
 }
 (function(){
   const link=document.getElementById('privacyInfoLink');
@@ -412,11 +365,4 @@ if(type&&labels[type]){
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.classList.contains('is-open')) close();});
 })();
 </script>
-
-<!-- CM GLOBAL ASSISTANT — persistent on every page -->
-<button id="cm-ai-fab" class="cm-ai-fab" type="button" aria-label="Apri Assistente CM" title="Apri Assistente CM" onclick="openAI()">
-  <span class="cm-ai-fab-logo" aria-hidden="true"><img src="assets/assistente-cm-retina-768.webp" alt="Assistente CM"></span>
-  <span class="cm-ai-fab-copy"><strong>Assistente CM</strong><small>Posso aiutarti?</small></span>
-  <span class="cm-ai-fab-arrow" aria-hidden="true">→</span>
-</button>
 </body></html>
