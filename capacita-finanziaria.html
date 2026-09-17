@@ -34,19 +34,19 @@
 .choice-radio input:checked+label{border-color:var(--gold);background:#fffbef}
 
 .side-box{position:sticky;top:20px;display:grid;gap:16px}
-.doc-box,.summary-box,.send-box{border:1px solid var(--line);border-radius:14px;padding:18px;background:#f8fafb}
-.doc-box h4,.summary-box h4,.send-box h4{margin:0 0 10px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--blue)}
-.doc-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
-.doc-list li{font-size:13px;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:#fff}
+.summary-box,.action-box{border:1px solid var(--line);border-radius:14px;padding:18px}
+.summary-box h4,.action-box h4{margin:0 0 10px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--blue)}
+.action-doc-list{list-style:none;margin:0 0 16px;padding:0;display:grid;gap:8px}
+.action-doc-list li{font-size:13px;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:#fff}
 .summary-box{background:#fff}
 .summary-row{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:12.5px}
 .summary-row:last-child{border:0}
 .summary-row span{color:var(--muted)}.summary-row b{color:var(--ink);text-align:right}
 .summary-empty{color:var(--muted);font-size:12px}
-.send-box{background:linear-gradient(135deg,#f7fbfc,#fff);border-color:rgba(221,178,63,.4)}
-.send-box a.btn{width:100%;text-align:center;margin-bottom:8px}
-.send-box small{display:block;color:var(--muted);font-size:11px}
-.privacy-check{display:flex;gap:10px;align-items:flex-start;margin:22px 0;font-size:13px;color:var(--ink)}
+.action-box{background:linear-gradient(135deg,#f7fbfc,#fff);border-color:rgba(221,178,63,.4)}
+.action-box .btn{width:100%;text-align:center;margin-bottom:8px}
+.action-box small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.privacy-check{display:flex;gap:9px;align-items:flex-start;margin:0 0 16px;font-size:12.5px;color:var(--ink)}
 .privacy-check a{color:var(--ink);font-weight:800;text-decoration:underline}
 .success-box{display:none;text-align:center;padding:40px}
 .success-box.show{display:block}
@@ -91,30 +91,27 @@
   </div>
 
   <div class="side-box">
-    <div class="doc-box">
-      <h4>Documenti utili</h4>
-      <ul class="doc-list">
-        <li>Bilancio aggiornato, se la tua impresa lo redige</li>
-        <li>Modello IDOFIN compilato e firmato (quello vigente e pertinente alla pratica)</li>
-        <li>Altra documentazione utile alla valutazione, se disponibile</li>
-      </ul>
-    </div>
     <div class="summary-box">
       <h4>Riepilogo</h4>
       <div id="summaryContent"><span class="summary-empty">Inizia a compilare i campi qui a fianco.</span></div>
     </div>
-    <div class="send-box">
-      <h4>Documenti</h4>
-      <small style="margin-bottom:10px">Quando invii la richiesta qui sotto, si aprirà automaticamente la tua email già pronta: dovrai solo allegare i documenti e premere invia.</small>
-      <a class="btn outline" href="#" id="sendEmailBtn" style="margin-top:6px">📧 Non si è aperta? Apri qui l'email</a>
+    <div class="action-box">
+      <h4>Documenti necessari e invio</h4>
+      <ul class="action-doc-list">
+        <li>Bilancio aggiornato, se la tua impresa lo redige</li>
+        <li>Modello IDOFIN compilato e firmato (quello vigente e pertinente alla pratica)</li>
+        <li>Altra documentazione utile alla valutazione, se disponibile</li>
+      </ul>
+      <label class="privacy-check"><input id="privacyAccepted" type="checkbox"/> <span>Ho letto l'<a href="/privacy" rel="noopener" target="_blank">informativa privacy</a> e accetto il trattamento dei dati.</span></label>
+      <div class="notice hidden" id="submitError" role="alert"></div>
+      <button class="btn gold" id="submitBtn" onclick="submitCapacity()" type="button">INVIA RICHIESTA E ALLEGA I DOCUMENTI →</button>
+      <small>Cliccando, la richiesta viene registrata e si apre subito la tua email già pronta per allegare i documenti.</small>
+      <a class="btn outline" href="#" id="sendEmailBtn" style="margin-top:10px">📧 Non si è aperta? Apri qui l'email</a>
     </div>
   </div>
 </div>
 
 <div class="notice" style="margin-top:20px">La documentazione e le modalità applicabili possono dipendere dalla situazione dell'impresa e dalle istruzioni dell'ufficio competente. Il sito non sostituisce la verifica della pratica.</div>
-<label class="privacy-check"><input id="privacyAccepted" type="checkbox"/> <span>Ho letto l'<a href="/privacy" rel="noopener" target="_blank">informativa privacy</a> e accetto il trattamento dei dati necessario alla gestione della richiesta.</span></label>
-<div class="notice hidden" id="submitError" role="alert"></div>
-<div style="display:flex;justify-content:flex-end;margin-top:10px"><button class="btn gold" id="submitBtn" onclick="submitCapacity()" type="button">INVIA RICHIESTA E ALLEGA I DOCUMENTI →</button></div>
 </div>
 
 <div class="success-box" id="successBox">

@@ -11,11 +11,14 @@
 .big-choice b{display:block}.big-choice span{font-size:12px;color:var(--muted)}
 .hidden{display:none!important}
 .notice{padding:13px 15px;background:#fff8e8;border-left:4px solid var(--gold);border-radius:8px;font-size:12px;color:#5b4a20;margin:15px 0}
-.nav-actions{display:flex;justify-content:space-between;gap:10px;margin-top:22px}
-.btn.outline{color:var(--ink)!important;border:1px solid #b7c8d3!important;background:#fff!important;font-weight:900!important;min-width:110px;text-align:center}
+.btn.outline{color:var(--ink)!important;border:1px solid #b7c8d3!important;background:#fff!important;font-weight:900!important;text-align:center}
 .btn.outline:hover{background:#f7fafb!important}
-@media(max-width:700px){.choice-grid{grid-template-columns:1fr}.request-card{padding:20px}.nav-actions{flex-direction:column}.nav-actions .btn{width:100%}}
+.back-link{background:none;border:none;color:var(--muted);font-size:13px;font-weight:800;cursor:pointer;padding:0;margin-bottom:14px;display:inline-block}
+.back-link:hover{color:var(--ink)}
+@media(max-width:700px){.choice-grid{grid-template-columns:1fr}.request-card{padding:20px}}
 
+.type-hero{border-radius:16px;overflow:hidden;margin-bottom:20px;aspect-ratio:21/9;background:#eaf6fa}
+.type-hero img{width:100%;height:100%;object-fit:cover;display:block}
 .type-explain{padding:20px 22px;border:1px solid #cfe3ea;border-left:4px solid var(--gold);border-radius:12px;background:#eef7fa;color:#17344e;font-size:14px;line-height:1.6;margin-bottom:24px}
 .type-explain strong{display:block;margin-bottom:6px;font-size:15px}
 .simplify-grid{display:grid;grid-template-columns:1.35fr .95fr;gap:26px;align-items:start}
@@ -40,20 +43,21 @@
 .advanced-body input,.advanced-body select,.advanced-body textarea{width:100%;padding:12px;border:1px solid var(--line);border-radius:9px;font-size:14px;background:#fff;color:var(--ink)}
 
 .side-box{position:sticky;top:20px;display:grid;gap:16px}
-.doc-box,.summary-box,.send-box{border:1px solid var(--line);border-radius:14px;padding:18px;background:#f8fafb}
-.doc-box h4,.summary-box h4,.send-box h4{margin:0 0 10px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--blue)}
-.doc-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
-.doc-list li{font-size:13px;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:#fff}
+.summary-box,.action-box{border:1px solid var(--line);border-radius:14px;padding:18px}
 .summary-box{background:#fff}
+.summary-box h4{margin:0 0 10px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--blue)}
 .summary-row{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:12.5px}
 .summary-row:last-child{border:0}
 .summary-row span{color:var(--muted)}.summary-row b{color:var(--ink);text-align:right}
 .summary-empty{color:var(--muted);font-size:12px}
-.send-box{background:linear-gradient(135deg,#f7fbfc,#fff);border-color:rgba(221,178,63,.4)}
-.send-box a.btn{width:100%;text-align:center;margin-bottom:8px}
-.send-box small{display:block;color:var(--muted);font-size:11px}
-.privacy-check{display:flex;gap:10px;align-items:flex-start;margin:22px 0;font-size:13px;color:var(--ink)}
+.action-box{background:linear-gradient(135deg,#f7fbfc,#fff);border-color:rgba(221,178,63,.4)}
+.action-box h4{margin:0 0 10px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--blue)}
+.action-doc-list{list-style:none;margin:0 0 16px;padding:0;display:grid;gap:8px}
+.action-doc-list li{font-size:13px;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:#fff}
+.privacy-check{display:flex;gap:9px;align-items:flex-start;margin:0 0 16px;font-size:12.5px;color:var(--ink)}
 .privacy-check a{color:var(--ink);font-weight:800;text-decoration:underline}
+.action-box .btn{width:100%;text-align:center;margin-bottom:8px}
+.action-box small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
 .success{display:none;text-align:center;padding:45px}.success.show{display:block}
 .cm-missing-docs{margin:18px auto 0;max-width:720px;padding:13px 15px;border-left:4px solid #d6aa45;border-radius:9px;background:#fff8e8;color:#5b4a20;font-size:12px;line-height:1.5;text-align:left}
 </style>
@@ -84,7 +88,8 @@
 </div></div>
 
 <div class="step" id="step2">
-<div class="eyebrow">02 · La tua richiesta</div>
+<button class="back-link" onclick="go(1)" type="button">← Cambia tipologia</button>
+<div class="type-hero" id="typeHero"><img alt="" id="typeHeroImg" src=""/></div>
 <h2 id="typeTitle">—</h2>
 <div class="type-explain" id="typeExplain"></div>
 
@@ -154,26 +159,24 @@
   </div>
 
   <div class="side-box">
-    <div class="doc-box">
-      <h4>Documenti utili</h4>
-      <ul class="doc-list" id="docList"></ul>
-    </div>
     <div class="summary-box">
       <h4>Riepilogo</h4>
       <div id="summaryContent"><span class="summary-empty">Inizia a compilare i campi qui a fianco.</span></div>
     </div>
-    <div class="send-box">
-      <h4>Documenti</h4>
-      <small style="margin-bottom:10px">Quando invii la richiesta qui sotto, si aprirà automaticamente la tua email già pronta: dovrai solo allegare i documenti e premere invia.</small>
-      <a class="btn outline" href="#" id="docMailtoBtn" style="margin-top:6px">📧 Non si è aperta? Apri qui l'email</a>
+
+    <div class="action-box">
+      <h4>Documenti necessari e invio</h4>
+      <ul class="action-doc-list" id="docList"></ul>
+      <label class="privacy-check"><input id="privacyAccepted" type="checkbox"/> <span>Ho letto l'<a href="#privacy-modal" id="privacyInfoLink">informativa privacy</a> e accetto il trattamento dei dati.</span></label>
+      <div class="notice hidden" id="submitError" role="alert"></div>
+      <button class="btn gold" onclick="submitRequest()" type="button">INVIA RICHIESTA E ALLEGA I DOCUMENTI →</button>
+      <small>Cliccando, la richiesta viene registrata e si apre subito la tua email già pronta per allegare i documenti.</small>
+      <a class="btn outline" href="#" id="docMailtoBtn" style="margin-top:10px">📧 Non si è aperta? Apri qui l'email</a>
     </div>
   </div>
 </div>
 
-<label class="privacy-check"><input id="privacyAccepted" type="checkbox"/> <span>Ho letto l'<a href="#privacy-modal" id="privacyInfoLink">informativa privacy</a> e accetto il trattamento dei dati necessario alla gestione della richiesta.</span></label>
 <div aria-hidden="true" aria-labelledby="privacyModalTitle" aria-modal="true" class="privacy-modal" id="privacyModal" role="dialog"><div class="privacy-modal-backdrop" data-privacy-close=""></div><div class="privacy-modal-card" role="document"><div class="privacy-modal-head"><h3 id="privacyModalTitle">Informativa privacy</h3><button class="privacy-modal-close" data-privacy-close="" type="button">CHIUDI</button></div><div class="privacy-modal-body"><p>Prima di inviare la richiesta, puoi consultare qui l'informativa privacy di CM Consulting relativa al trattamento dei dati necessari alla gestione della richiesta.</p><p><a href="/privacy" rel="noopener" target="_blank">Apri l'informativa completa</a></p></div></div></div>
-<div class="notice hidden" id="submitError" role="alert"></div>
-<div class="nav-actions"><button class="btn outline" onclick="go(1)">← INDIETRO</button><button class="btn gold" onclick="submitRequest()">INVIA RICHIESTA E ALLEGA I DOCUMENTI →</button></div>
 </div>
 
 <div class="success" id="success">
@@ -192,12 +195,25 @@
 let type='';
 let genericMode=false;
 
+const typeImages={
+  locazioni:'assets/locazioni-retina-1920.webp',
+  appalti:'assets/appalti-retina-1920.webp',
+  dogane:'assets/altre-esigenze-retina-1920.webp',
+  ambiente:'assets/ambiente-retina-1920.webp',
+  trasporti:'assets/altre-esigenze-retina-1920.webp',
+  contributi:'assets/altre-esigenze-retina-1920.webp',
+  urbanistica:'assets/altre-esigenze-retina-1920.webp',
+  fiscali:'assets/altre-esigenze-retina-1920.webp',
+  altro:'assets/altre-esigenze-retina-1920.webp',
+  generica:'assets/altre-esigenze-retina-1920.webp'
+};
+
 const explanations={
-  appalti:"<strong>Fideiussione per appalti pubblici</strong>Se partecipi a una gara d'appalto pubblico o devi eseguire un contratto con la pubblica amministrazione, l'ente richiede una garanzia (provvisoria o definitiva) che assicuri il rispetto degli impegni presi. Ti aiutiamo a ottenerla nei tempi richiesti dal bando.",
+  appalti:"<strong>Fideiussione per appalti pubblici</strong>La garanzia da presentare dipende dalla fase della procedura — provvisoria, definitiva, per anticipazione o per rata di saldo — e da quanto richiesto negli atti di gara o nel contratto. Analizziamo la documentazione disponibile e ti aiutiamo a individuare la soluzione corretta.",
   locazioni:"<strong>Fideiussione per la locazione</strong>Se il locatore (proprietario) ti richiede una garanzia sul contratto d'affitto — uso abitativo o commerciale — possiamo aiutarti a ottenerla al posto del classico deposito cauzionale in contanti. La garanzia può coprire il mancato pagamento dei canoni, gli oneri accessori (es. spese condominiali) e altri obblighi del contratto, come eventuali danni all'immobile. A seconda del caso può essere rilasciata da una banca, da una compagnia assicurativa o da un altro soggetto garante.",
   trasporti:"<strong>Garanzie per il trasporto</strong>Se operi nel settore dell'autotrasporto, alcuni enti o committenti possono richiederti una garanzia specifica legata alla tua attività. Valutiamo insieme la soluzione più adatta alla richiesta che hai ricevuto.",
-  dogane:"<strong>Garanzie doganali</strong>Se la tua attività prevede operazioni di import/export, depositi o transito di merci, l'Agenzia delle Dogane può richiedere una garanzia a tutela del pagamento dei diritti doganali dovuti.",
-  ambiente:"<strong>Garanzie ambientali</strong>Alcune attività soggette ad autorizzazione ambientale (es. gestione rifiuti, bonifiche) richiedono una garanzia finanziaria a tutela del corretto adempimento degli obblighi previsti dalla normativa.",
+  dogane:"<strong>Garanzie doganali</strong>Le garanzie doganali possono essere collegate a specifici regimi e adempimenti, come il transito merci. La soluzione va individuata sulla base della procedura, dell'obbligo richiesto e della documentazione dell'autorità competente.",
+  ambiente:"<strong>Garanzie ambientali</strong>In ambito ambientale possono essere richieste garanzie finanziarie in relazione a specifiche attività, autorizzazioni o obblighi — ad esempio gestione rifiuti o obblighi di ripristino. La verifica parte dalla richiesta dell'ente e dalla disciplina applicabile al caso concreto.",
   contributi:"<strong>Garanzie su contributi e agevolazioni</strong>Se hai ottenuto o stai richiedendo un contributo pubblico, l'ente erogatore può richiedere una garanzia a tutela della corretta restituzione delle somme in caso di mancato rispetto delle condizioni previste.",
   urbanistica:"<strong>Garanzie urbanistiche ed edilizie</strong>Nell'ambito di convenzioni urbanistiche, permessi di costruire o opere di urbanizzazione, il Comune può richiedere una garanzia a tutela della corretta esecuzione degli interventi previsti.",
   fiscali:"<strong>Garanzie fiscali</strong>In alcuni casi l'Agenzia delle Entrate o altri enti fiscali possono richiedere una garanzia a fronte di rimborsi, sospensioni o rateizzazioni. Valutiamo il caso specifico per individuare la soluzione più adatta.",
@@ -248,6 +264,10 @@ function applyType(){
   document.getElementById('typeExplain').innerHTML=explanations[type]||explanations.altro;
   document.getElementById('docList').innerHTML=(docs[type]||docs.altro).map(d=>`<li>${d}</li>`).join('');
   document.getElementById('specificFieldWrap').innerHTML=specificFields[type]||'';
+
+  const img=document.getElementById('typeHeroImg');
+  img.src=typeImages[type]||typeImages.altro;
+  img.alt=labels[type]||'CM Consulting';
 
   const fl=fieldLabels[type]||fieldLabels.default;
   document.getElementById('beneficiaryLabel').innerHTML=fl.beneficiary+' <strong>*</strong>';
@@ -347,7 +367,7 @@ function submitRequest(){
   const rows=currentRows();
   const text=rows.map(r=>`${r[0]}: ${r[1]}`).join('\n');
 
-  const button=document.querySelector('#step2 .nav-actions button.btn.gold');
+  const button=document.querySelector('.action-box button.btn.gold');
   button.disabled=true;
   button.textContent='INVIO IN CORSO…';
 
@@ -371,13 +391,13 @@ function submitRequest(){
     document.querySelectorAll('.step').forEach(x=>x.classList.remove('active'));
     document.getElementById('success').classList.add('show');
     document.querySelector('.progressbar').style.display='none';
-    const successMail=document.getElementById('successMailto');
     const mailtoLink=buildMailto();
+    const successMail=document.getElementById('successMailto');
     if(successMail) successMail.href=mailtoLink;
+    window.scrollTo({top:180,behavior:'smooth'});
     // Apre subito il client email del cliente, pronto per allegare i documenti,
     // cosi' non deve tornare qui a cercare il pulsante.
     window.location.href=mailtoLink;
-    window.scrollTo({top:180,behavior:'smooth'});
   }))
   .catch(error=>{
     errorBox.textContent=error.message||'Non è stato possibile inviare la richiesta. Riprova.';
