@@ -46,6 +46,8 @@
 .action-box{background:linear-gradient(135deg,#f7fbfc,#fff);border-color:rgba(221,178,63,.4)}
 .action-box .btn{width:100%;text-align:center;margin-bottom:8px}
 .action-box small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.btn-icon{display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn-icon svg{width:17px;height:17px;flex:none}
 .privacy-check{display:flex;gap:9px;align-items:flex-start;margin:0 0 16px;font-size:12.5px;color:var(--ink)}
 .privacy-check a{color:var(--ink);font-weight:800;text-decoration:underline}
 .success-box{display:none;text-align:center;padding:40px}
@@ -99,14 +101,14 @@
       <h4>Documenti necessari e invio</h4>
       <ul class="action-doc-list">
         <li>Bilancio aggiornato, se la tua impresa lo redige</li>
-        <li>Modello IDOFIN compilato e firmato (quello vigente e pertinente alla pratica)</li>
+        <li>Modello IDOFIN compilato e firmato (quello vigente e pertinente alla pratica) — <a href="https://www.mit.gov.it/normativa/circolare-protocollo-n-4499-del-17022026" rel="noopener" target="_blank" style="color:var(--blue);font-weight:800;text-decoration:underline">scaricalo dalla pagina ufficiale del MIT →</a></li>
         <li>Altra documentazione utile alla valutazione, se disponibile</li>
       </ul>
       <label class="privacy-check"><input id="privacyAccepted" type="checkbox"/> <span>Ho letto l'<a href="/privacy" rel="noopener" target="_blank">informativa privacy</a> e accetto il trattamento dei dati.</span></label>
       <div class="notice hidden" id="submitError" role="alert"></div>
       <button class="btn gold" id="submitBtn" onclick="submitCapacity()" type="button">INVIA RICHIESTA E ALLEGA I DOCUMENTI →</button>
       <small>Cliccando, la richiesta viene registrata e si apre subito la tua email già pronta per allegare i documenti.</small>
-      <a class="btn outline" href="#" id="sendEmailBtn" style="margin-top:10px">📧 Non si è aperta? Apri qui l'email</a>
+      <a class="btn outline btn-icon" href="#" id="sendEmailBtn" style="margin-top:10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6l9 6 9-6"/><rect x="3" y="5" width="18" height="14" rx="2"/></svg> Non si è aperta? Apri qui l'email</a>
     </div>
   </div>
 </div>
@@ -120,7 +122,7 @@
 <div class="notice" style="max-width:600px;margin:16px auto 0;text-align:left">Si è appena aperta la tua app di posta con l'email già pronta: allega la documentazione e invia. Se non si è aperta automaticamente, usa il pulsante qui sotto.</div>
 <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px">
 <a class="btn gold" href="/">TORNA ALLA HOME</a>
-<a class="btn" href="#" id="successMailto">Apri di nuovo l'email per i documenti</a>
+<a class="btn btn-icon" href="#" id="successMailto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6l9 6 9-6"/><rect x="3" y="5" width="18" height="14" rx="2"/></svg> Apri di nuovo l'email per i documenti</a>
 </div>
 </div>
 

@@ -781,7 +781,7 @@ Dopo il primo test dal vivo di Carmelo sono emerse tre correzioni, tutte applica
 
 **Box "Documenti" e box "Invio" uniti in uno solo.** Su segnalazione di Carmelo ("il cliente deve leggere i documenti in un punto e poi cercare il pulsante altrove"), i due riquadri sono stati fusi in un unico box laterale (sticky) chiamato "Documenti necessari e invio": elenco documenti, checkbox privacy, pulsante di invio e pulsante di backup email, tutti nello stesso riquadro. Applicato identico su entrambi i file. Il vecchio pulsante "INDIETRO" in `richiedi-preventivo.html` è stato sostituito da un link discreto "← Cambia tipologia" in alto, meno ingombrante.
 
-## Decisione presa, file preparati ma NON ANCORA caricati su GitHub (17 settembre 2026, stesso giorno) — redirect vercel.json
+## Decisione presa e caricata in questo commit — redirect vercel.json (17 settembre 2026, stesso giorno)
 
 Causa reale del problema segnalato da Carmelo ("dopo Fideiussioni/Locazioni ci sono ancora due pagine"): le card di `fideiussioni.html` puntano già correttamente a `/richiedi-preventivo?tipo=X` — il problema era il **footer**, duplicato su ogni pagina del sito, che conteneva ancora i link diretti alle vecchie pagine (`/locazioni`, `/appalti-pubblici`, `/dogane`, `/ambiente`) nella colonna "CM Consulting".
 
@@ -795,18 +795,17 @@ Redirect aggiunti/modificati in `vercel.json`:
 
 In aggiunta, il footer di `richiedi-preventivo.html` e `capacita-finanziaria.html` è stato corretto per puntare direttamente alle destinazioni finali (evita un salto di redirect in più per la navigazione interna da quelle due pagine).
 
-**Stato: `vercel.json` e `capacita-finanziaria.html` sono pronti ma volutamente NON caricati in questo commit** — Carmelo ha chiesto di aspettare e fare altre modifiche prima di caricarli. Il commit del 17 settembre riguarda solo `richiedi-preventivo.html` (vedi sezione successiva) e questo stesso file di registro.
-
-**Non ancora fatto**: il footer di `fideiussioni.html` e di tutte le altre pagine del sito (`404.html`, `contatti.html`, `privacy.html`, ecc.) contiene ancora i vecchi link — restano funzionanti grazie al redirect (una volta caricato), ma con un salto in più. Correggere il footer ovunque è un lavoro a parte, file per file, non urgente dato che il redirect già risolve il problema segnalato.
+**Non ancora fatto**: il footer di `fideiussioni.html` e di tutte le altre pagine del sito (`404.html`, `contatti.html`, `privacy.html`, ecc.) contiene ancora i vecchi link — restano funzionanti grazie al redirect, ma con un salto in più. Correggere il footer ovunque è un lavoro a parte, file per file, non urgente dato che il redirect già risolve il problema segnalato.
 
 **Non ancora deciso**: se eliminare definitivamente i file `locazioni.html`, `appalti-pubblici.html`, `dogane.html`, `ambiente.html` dal repository. Vedi §10 (File orfani) per il protocollo da seguire se si deciderà di eliminarli.
 
 **`capacita-finanziaria.html` non richiedeva questa correzione**: è già una pagina unica dal redesign di questa stessa giornata, non esiste una pagina di marketing separata per la capacità finanziaria.
 
-## Correzione estetica caricata in questo commit — foto e testo Locazioni (17 settembre 2026)
+## Correzioni estetiche caricate in questo commit (17 settembre 2026)
 
-Dopo il primo test visivo di Carmelo su `richiedi-preventivo.html`:
-- **Foto per tipologia troppo grande**: altezza del riquadro `.type-hero` ridotta da un rapporto proporzionale alla larghezza (`aspect-ratio:21/9`, che su schermi larghi diventava enorme) a un'altezza limitata `clamp(150px,20vw,240px)` — resta nitida (`object-fit:cover`) ma molto più contenuta su ogni dimensione di schermo.
-- **Testo Locazioni troppo lungo**: rimossa la frase finale "A seconda del caso può essere rilasciata da una banca, da una compagnia assicurativa o da un altro soggetto garante." dalla spiegazione — resta solo cosa copre la garanzia.
-
-Nessun'altra modifica al file in questo commit.
+Dopo i test visivi di Carmelo su `richiedi-preventivo.html` e `capacita-finanziaria.html`:
+- **Foto per tipologia troppo grande** (`richiedi-preventivo.html`): altezza del riquadro `.type-hero` ridotta da un rapporto proporzionale alla larghezza (`aspect-ratio:21/9`, che su schermi larghi diventava enorme) a un'altezza limitata `clamp(150px,20vw,240px)` — resta nitida (`object-fit:cover`) ma molto più contenuta su ogni dimensione di schermo.
+- **Testo Locazioni troppo lungo** (`richiedi-preventivo.html`): rimossa la frase finale "A seconda del caso può essere rilasciata da una banca, da una compagnia assicurativa o da un altro soggetto garante." dalla spiegazione.
+- **Icona email poco chiara** (entrambi i file): l'emoji 📧, che su alcuni dispositivi si riduce a un quadratino scuro illeggibile, è stata sostituita con un'icona SVG inline a forma di busta — nitida su qualunque dispositivo, in tutti i pulsanti email (primario e di backup).
+- **Spazio verticale eccessivo prima della foto** (`richiedi-preventivo.html`): margine della barra di avanzamento ridotto da `25px` a `14px/18px`. Nota: parte dello spazio residuo deriva da `.page-hero`, uno stile condiviso con tutto il sito — non toccato in questo commit per non avere effetti su altre pagine senza verifica.
+- **Link al modello IDOFIN** (`capacita-finanziaria.html`): aggiunto nel box "Documenti necessari e invio" un link diretto alla pagina ufficiale della circolare MIT (la stessa già linkata in fondo pagina), per chi non sa dove reperire il modulo. Scelta deliberata di non ospitare una copia statica del PDF sul sito, per non doverla mai aggiornare manualmente in caso di revisioni future del modello.
