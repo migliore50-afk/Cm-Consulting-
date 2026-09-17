@@ -294,6 +294,7 @@ function setVoiceState(enabled, button) {
 }
 
 function speakAI(text) {
+  const portrait = document.querySelector('.ai-portrait');
   if (!isVoiceEnabled() || !('speechSynthesis' in window)) return;
   const clean = String(text || '').replace(/\s+/g, ' ').trim();
   if (!clean) return;
@@ -302,6 +303,11 @@ function speakAI(text) {
   utterance.lang = 'it-IT';
   utterance.rate = 0.98;
   utterance.pitch = 1;
+  // Dà un riscontro visivo sul ritratto mentre l'assistente sta parlando
+  // (pulsazione/leggero zoom), cosi' non resta una foto immobile durante l'audio.
+  utterance.onstart = () => portrait?.classList.add('speaking');
+  utterance.onend = () => portrait?.classList.remove('speaking');
+  utterance.onerror = () => portrait?.classList.remove('speaking');
   window.speechSynthesis.speak(utterance);
 }
 
@@ -316,6 +322,7 @@ function closeAI() {
   document.getElementById('aiPanel')?.classList.remove('open');
   document.getElementById('cm-ai-fab')?.classList.remove('hidden');
   if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+  document.querySelector('.ai-portrait')?.classList.remove('speaking');
   stopAssistantRecognition();
 }
 
