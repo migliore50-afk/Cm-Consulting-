@@ -276,6 +276,14 @@ function initAssistantUI() {
   const enabled = localStorage.getItem('cm_ai_voice') === '1';
   setVoiceState(enabled, voiceButton);
   voiceButton?.addEventListener('click', () => setVoiceState(!isVoiceEnabled(), voiceButton));
+
+  // Su alcuni browser l'elenco delle voci e' vuoto finche' non viene richiesto
+  // almeno una volta: lo "scaldiamo" subito, cosi' la prima frase pronunciata
+  // ha gia' a disposizione l'elenco per scegliere una voce italiana.
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.getVoices();
+    window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+  }
 }
 
 function isVoiceEnabled() {
@@ -293,6 +301,16 @@ function setVoiceState(enabled, button) {
   if (!enabled && 'speechSynthesis' in window) window.speechSynthesis.cancel();
 }
 
+function pickItalianVoice() {
+  if (!('speechSynthesis' in window)) return null;
+  const voices = window.speechSynthesis.getVoices();
+  if (!voices.length) return null;
+  const italian = voices.filter(v => /^it([-_]|$)/i.test(v.lang));
+  if (!italian.length) return null;
+  const maleNamePattern = /\b(luca|diego|marco|paolo|alessandro|giorgio|matteo|male|maschile|uomo)\b/i;
+  return italian.find(v => maleNamePattern.test(v.name)) || italian[0];
+}
+
 function speakAI(text) {
   const portrait = document.querySelector('.ai-portrait');
   if (!isVoiceEnabled() || !('speechSynthesis' in window)) return;
@@ -303,8 +321,13 @@ function speakAI(text) {
   utterance.lang = 'it-IT';
   utterance.rate = 0.98;
   utterance.pitch = 1;
+  // Preferisce una voce italiana maschile, se il dispositivo del visitatore ne ha una
+  // installata (varia da dispositivo a dispositivo, non e' garantito su tutti).
+  const preferredVoice = pickItalianVoice();
+  if (preferredVoice) utterance.voice = preferredVoice;
   // Dà un riscontro visivo sul ritratto mentre l'assistente sta parlando
-  // (pulsazione/leggero zoom), cosi' non resta una foto immobile durante l'audio.
+  // (bordo dorato fisso + leggero "respiro" lento), cosi' non resta una foto immobile
+  // durante l'audio, senza pero' un lampeggio che sembri un difetto.
   utterance.onstart = () => portrait?.classList.add('speaking');
   utterance.onend = () => portrait?.classList.remove('speaking');
   utterance.onerror = () => portrait?.classList.remove('speaking');
