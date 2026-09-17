@@ -104,9 +104,9 @@
       <div id="summaryContent"><span class="summary-empty">Inizia a compilare i campi qui a fianco.</span></div>
     </div>
     <div class="send-box">
-      <h4>Invia la documentazione</h4>
-      <a class="btn gold" href="#" id="sendEmailBtn" target="_blank" rel="noopener">📧 Invia via email</a>
-      <small>Il link precompila oggetto e messaggio con il riepilogo della tua richiesta: dovrai solo allegare i file. Puoi farlo anche subito dopo aver inviato questa richiesta.</small>
+      <h4>Documenti</h4>
+      <small style="margin-bottom:10px">Quando invii la richiesta qui sotto, si aprirà automaticamente la tua email già pronta: dovrai solo allegare i documenti e premere invia.</small>
+      <a class="btn outline" href="#" id="sendEmailBtn" style="margin-top:6px">📧 Non si è aperta? Apri qui l'email</a>
     </div>
   </div>
 </div>
@@ -114,14 +114,17 @@
 <div class="notice" style="margin-top:20px">La documentazione e le modalità applicabili possono dipendere dalla situazione dell'impresa e dalle istruzioni dell'ufficio competente. Il sito non sostituisce la verifica della pratica.</div>
 <label class="privacy-check"><input id="privacyAccepted" type="checkbox"/> <span>Ho letto l'<a href="/privacy" rel="noopener" target="_blank">informativa privacy</a> e accetto il trattamento dei dati necessario alla gestione della richiesta.</span></label>
 <div class="notice hidden" id="submitError" role="alert"></div>
-<div style="display:flex;justify-content:flex-end;margin-top:10px"><button class="btn gold" id="submitBtn" onclick="submitCapacity()" type="button">INVIA RICHIESTA →</button></div>
+<div style="display:flex;justify-content:flex-end;margin-top:10px"><button class="btn gold" id="submitBtn" onclick="submitCapacity()" type="button">INVIA RICHIESTA E ALLEGA I DOCUMENTI →</button></div>
 </div>
 
 <div class="success-box" id="successBox">
 <div class="eyebrow">Richiesta ricevuta</div><h2>Perfetto, abbiamo ricevuto la tua richiesta.</h2>
 <p style="max-width:600px;margin:12px auto">La richiesta è stata registrata correttamente. Verrai ricontattato per i prossimi passaggi.</p>
-<div class="notice" style="max-width:600px;margin:16px auto 0;text-align:left">Non dimenticare di inviarci la documentazione via email, se non l'hai già fatto.</div>
-<a class="btn gold" href="/" style="display:inline-block;margin-top:18px">TORNA ALLA HOME</a>
+<div class="notice" style="max-width:600px;margin:16px auto 0;text-align:left">Si è appena aperta la tua app di posta con l'email già pronta: allega la documentazione e invia. Se non si è aperta automaticamente, usa il pulsante qui sotto.</div>
+<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px">
+<a class="btn gold" href="/">TORNA ALLA HOME</a>
+<a class="btn" href="#" id="successMailto">Apri di nuovo l'email per i documenti</a>
+</div>
 </div>
 
 </div></div></section>
@@ -218,12 +221,20 @@ function submitCapacity(){
     document.getElementById('mainForm').classList.add('hidden');
     document.getElementById('successBox').classList.add('show');
     window.scrollTo({top:150,behavior:'smooth'});
+    const mailSubject='Documenti per richiesta capacità finanziaria';
+    const mailBody=`Buongiorno,\n\nin allegato invio la documentazione relativa alla mia richiesta di capacità finanziaria.\n\nRiepilogo richiesta:\n${rows.map(r=>`${r[0]}: ${r[1]}`).join('\n')}\n\nCordiali saluti`;
+    const mailtoLink=`mailto:info@cm-consulting.info?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}`;
+    const successMail=document.getElementById('successMailto');
+    if(successMail) successMail.href=mailtoLink;
+    // Apre subito il client email del cliente, pronto per allegare i documenti,
+    // cosi' non deve tornare qui a cercare il pulsante.
+    window.location.href=mailtoLink;
   }))
   .catch(error=>{
     errorBox.textContent=error.message||'Non è stato possibile inviare la richiesta. Riprova.';
     errorBox.classList.remove('hidden');
     button.disabled=false;
-    button.textContent='INVIA RICHIESTA →';
+    button.textContent='INVIA RICHIESTA E ALLEGA I DOCUMENTI →';
   });
 }
 

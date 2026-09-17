@@ -163,9 +163,9 @@
       <div id="summaryContent"><span class="summary-empty">Inizia a compilare i campi qui a fianco.</span></div>
     </div>
     <div class="send-box">
-      <h4>Invia i documenti</h4>
-      <a class="btn gold" href="#" id="docMailtoBtn">📧 Invia via email</a>
-      <small>Il link precompila oggetto e messaggio con il riepilogo della tua richiesta: dovrai solo allegare i file. Puoi farlo anche subito dopo aver inviato questa richiesta.</small>
+      <h4>Documenti</h4>
+      <small style="margin-bottom:10px">Quando invii la richiesta qui sotto, si aprirà automaticamente la tua email già pronta: dovrai solo allegare i documenti e premere invia.</small>
+      <a class="btn outline" href="#" id="docMailtoBtn" style="margin-top:6px">📧 Non si è aperta? Apri qui l'email</a>
     </div>
   </div>
 </div>
@@ -173,16 +173,16 @@
 <label class="privacy-check"><input id="privacyAccepted" type="checkbox"/> <span>Ho letto l'<a href="#privacy-modal" id="privacyInfoLink">informativa privacy</a> e accetto il trattamento dei dati necessario alla gestione della richiesta.</span></label>
 <div aria-hidden="true" aria-labelledby="privacyModalTitle" aria-modal="true" class="privacy-modal" id="privacyModal" role="dialog"><div class="privacy-modal-backdrop" data-privacy-close=""></div><div class="privacy-modal-card" role="document"><div class="privacy-modal-head"><h3 id="privacyModalTitle">Informativa privacy</h3><button class="privacy-modal-close" data-privacy-close="" type="button">CHIUDI</button></div><div class="privacy-modal-body"><p>Prima di inviare la richiesta, puoi consultare qui l'informativa privacy di CM Consulting relativa al trattamento dei dati necessari alla gestione della richiesta.</p><p><a href="/privacy" rel="noopener" target="_blank">Apri l'informativa completa</a></p></div></div></div>
 <div class="notice hidden" id="submitError" role="alert"></div>
-<div class="nav-actions"><button class="btn outline" onclick="go(1)">← INDIETRO</button><button class="btn gold" onclick="submitRequest()">INVIA RICHIESTA →</button></div>
+<div class="nav-actions"><button class="btn outline" onclick="go(1)">← INDIETRO</button><button class="btn gold" onclick="submitRequest()">INVIA RICHIESTA E ALLEGA I DOCUMENTI →</button></div>
 </div>
 
 <div class="success" id="success">
 <div class="eyebrow">Richiesta ricevuta</div><h2>Perfetto, abbiamo ricevuto la tua richiesta.</h2>
 <p class="intro" style="margin:auto">CM Consulting verificherà le informazioni inviate e ti contatterà per i prossimi passaggi.</p>
-<div class="cm-missing-docs" id="missingDocsNotice">Se non hai ancora inviato i documenti, puoi farlo ora via email — basta un attimo.</div>
+<div class="cm-missing-docs" id="missingDocsNotice">Si è appena aperta la tua app di posta con l'email già pronta: allega i documenti e invia. Se non si è aperta automaticamente, usa il pulsante qui sotto.</div>
 <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px">
 <a class="btn gold" href="/">TORNA ALLA HOME</a>
-<a class="btn" href="#" id="successMailto">Invia i documenti via email</a>
+<a class="btn" href="#" id="successMailto">Apri di nuovo l'email per i documenti</a>
 </div>
 </div>
 
@@ -372,14 +372,18 @@ function submitRequest(){
     document.getElementById('success').classList.add('show');
     document.querySelector('.progressbar').style.display='none';
     const successMail=document.getElementById('successMailto');
-    if(successMail) successMail.href=buildMailto();
+    const mailtoLink=buildMailto();
+    if(successMail) successMail.href=mailtoLink;
+    // Apre subito il client email del cliente, pronto per allegare i documenti,
+    // cosi' non deve tornare qui a cercare il pulsante.
+    window.location.href=mailtoLink;
     window.scrollTo({top:180,behavior:'smooth'});
   }))
   .catch(error=>{
     errorBox.textContent=error.message||'Non è stato possibile inviare la richiesta. Riprova.';
     errorBox.classList.remove('hidden');
     button.disabled=false;
-    button.textContent='INVIA RICHIESTA →';
+    button.textContent='INVIA RICHIESTA E ALLEGA I DOCUMENTI →';
   });
 }
 
