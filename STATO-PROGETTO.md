@@ -781,7 +781,7 @@ Dopo il primo test dal vivo di Carmelo sono emerse tre correzioni, tutte applica
 
 **Box "Documenti" e box "Invio" uniti in uno solo.** Su segnalazione di Carmelo ("il cliente deve leggere i documenti in un punto e poi cercare il pulsante altrove"), i due riquadri sono stati fusi in un unico box laterale (sticky) chiamato "Documenti necessari e invio": elenco documenti, checkbox privacy, pulsante di invio e pulsante di backup email, tutti nello stesso riquadro. Applicato identico su entrambi i file. Il vecchio pulsante "INDIETRO" in `richiedi-preventivo.html` è stato sostituito da un link discreto "← Cambia tipologia" in alto, meno ingombrante.
 
-## Decisione presa e implementata (17 settembre 2026, stesso giorno) — redirect vercel.json
+## Decisione presa, file preparati ma NON ANCORA caricati su GitHub (17 settembre 2026, stesso giorno) — redirect vercel.json
 
 Causa reale del problema segnalato da Carmelo ("dopo Fideiussioni/Locazioni ci sono ancora due pagine"): le card di `fideiussioni.html` puntano già correttamente a `/richiedi-preventivo?tipo=X` — il problema era il **footer**, duplicato su ogni pagina del sito, che conteneva ancora i link diretti alle vecchie pagine (`/locazioni`, `/appalti-pubblici`, `/dogane`, `/ambiente`) nella colonna "CM Consulting".
 
@@ -795,8 +795,18 @@ Redirect aggiunti/modificati in `vercel.json`:
 
 In aggiunta, il footer di `richiedi-preventivo.html` e `capacita-finanziaria.html` è stato corretto per puntare direttamente alle destinazioni finali (evita un salto di redirect in più per la navigazione interna da quelle due pagine).
 
-**Non ancora fatto**: il footer di `fideiussioni.html` e di tutte le altre pagine del sito (`404.html`, `contatti.html`, `privacy.html`, ecc.) contiene ancora i vecchi link — restano funzionanti grazie al redirect, ma con un salto in più. Correggere il footer ovunque è un lavoro a parte, file per file, non urgente dato che il redirect già risolve il problema segnalato.
+**Stato: `vercel.json` e `capacita-finanziaria.html` sono pronti ma volutamente NON caricati in questo commit** — Carmelo ha chiesto di aspettare e fare altre modifiche prima di caricarli. Il commit del 17 settembre riguarda solo `richiedi-preventivo.html` (vedi sezione successiva) e questo stesso file di registro.
 
-**Non ancora deciso**: se eliminare definitivamente i file `locazioni.html`, `appalti-pubblici.html`, `dogane.html`, `ambiente.html` dal repository. Restano presenti ma irraggiungibili tramite navigazione normale (solo il redirect li intercetta prima che vengano serviti). Vedi §10 (File orfani) per il protocollo da seguire se si deciderà di eliminarli.
+**Non ancora fatto**: il footer di `fideiussioni.html` e di tutte le altre pagine del sito (`404.html`, `contatti.html`, `privacy.html`, ecc.) contiene ancora i vecchi link — restano funzionanti grazie al redirect (una volta caricato), ma con un salto in più. Correggere il footer ovunque è un lavoro a parte, file per file, non urgente dato che il redirect già risolve il problema segnalato.
+
+**Non ancora deciso**: se eliminare definitivamente i file `locazioni.html`, `appalti-pubblici.html`, `dogane.html`, `ambiente.html` dal repository. Vedi §10 (File orfani) per il protocollo da seguire se si deciderà di eliminarli.
 
 **`capacita-finanziaria.html` non richiedeva questa correzione**: è già una pagina unica dal redesign di questa stessa giornata, non esiste una pagina di marketing separata per la capacità finanziaria.
+
+## Correzione estetica caricata in questo commit — foto e testo Locazioni (17 settembre 2026)
+
+Dopo il primo test visivo di Carmelo su `richiedi-preventivo.html`:
+- **Foto per tipologia troppo grande**: altezza del riquadro `.type-hero` ridotta da un rapporto proporzionale alla larghezza (`aspect-ratio:21/9`, che su schermi larghi diventava enorme) a un'altezza limitata `clamp(150px,20vw,240px)` — resta nitida (`object-fit:cover`) ma molto più contenuta su ogni dimensione di schermo.
+- **Testo Locazioni troppo lungo**: rimossa la frase finale "A seconda del caso può essere rilasciata da una banca, da una compagnia assicurativa o da un altro soggetto garante." dalla spiegazione — resta solo cosa copre la garanzia.
+
+Nessun'altra modifica al file in questo commit.
