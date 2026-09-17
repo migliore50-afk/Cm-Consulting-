@@ -20,27 +20,47 @@
     },
     {
       "source": "/dogane.html",
-      "destination": "/dogane",
+      "destination": "/richiedi-preventivo?tipo=dogane",
+      "statusCode": 301
+    },
+    {
+      "source": "/dogane",
+      "destination": "/richiedi-preventivo?tipo=dogane",
       "statusCode": 301
     },
     {
       "source": "/locazioni.html",
-      "destination": "/locazioni",
+      "destination": "/richiedi-preventivo?tipo=locazioni",
+      "statusCode": 301
+    },
+    {
+      "source": "/locazioni",
+      "destination": "/richiedi-preventivo?tipo=locazioni",
       "statusCode": 301
     },
     {
       "source": "/appalti.html",
-      "destination": "/appalti-pubblici",
+      "destination": "/richiedi-preventivo?tipo=appalti",
       "statusCode": 301
     },
     {
       "source": "/appalti-pubblici.html",
-      "destination": "/appalti-pubblici",
+      "destination": "/richiedi-preventivo?tipo=appalti",
+      "statusCode": 301
+    },
+    {
+      "source": "/appalti-pubblici",
+      "destination": "/richiedi-preventivo?tipo=appalti",
       "statusCode": 301
     },
     {
       "source": "/ambiente.html",
-      "destination": "/ambiente",
+      "destination": "/richiedi-preventivo?tipo=ambiente",
+      "statusCode": 301
+    },
+    {
+      "source": "/ambiente",
+      "destination": "/richiedi-preventivo?tipo=ambiente",
       "statusCode": 301
     },
     {

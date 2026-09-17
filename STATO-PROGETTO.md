@@ -781,6 +781,22 @@ Dopo il primo test dal vivo di Carmelo sono emerse tre correzioni, tutte applica
 
 **Box "Documenti" e box "Invio" uniti in uno solo.** Su segnalazione di Carmelo ("il cliente deve leggere i documenti in un punto e poi cercare il pulsante altrove"), i due riquadri sono stati fusi in un unico box laterale (sticky) chiamato "Documenti necessari e invio": elenco documenti, checkbox privacy, pulsante di invio e pulsante di backup email, tutti nello stesso riquadro. Applicato identico su entrambi i file. Il vecchio pulsante "INDIETRO" in `richiedi-preventivo.html` è stato sostituito da un link discreto "← Cambia tipologia" in alto, meno ingombrante.
 
-## Decisione ancora aperta, non affrontata in questa iterazione
+## Decisione presa e implementata (17 settembre 2026, stesso giorno) — redirect vercel.json
 
-Carmelo ha proposto di eliminare il passaggio intermedio delle pagine dedicate per tipologia (`locazioni.html`, `appalti-pubblici.html`, `dogane.html`, `ambiente.html`), facendo puntare i link della pagina hub `fideiussioni.html` direttamente a `richiedi-preventivo.html?tipo=X`, dato che la spiegazione ora presente nello step 2 rende quelle pagine ridondanti. Non ancora implementato: cambiare quei link è una modifica distinta con conseguenze su indicizzazione Google e su altri link interni che puntano alle pagine dedicate (ognuna ha già i propri `<link rel="canonical">`, meta description, e collegamenti di navigazione tra servizi `cm-service-nav` verso le pagine vicine). Prima di procedere va deciso con Carmelo se: (a) lasciare le vecchie pagine raggiungibili solo da link diretti/Google senza più linkarle dal menu, oppure (b) reindirizzarle con redirect lato Vercel verso `richiedi-preventivo.html?tipo=X`, oppure (c) eliminarle definitivamente. Nessuna delle tre è stata scelta.
+Causa reale del problema segnalato da Carmelo ("dopo Fideiussioni/Locazioni ci sono ancora due pagine"): le card di `fideiussioni.html` puntano già correttamente a `/richiedi-preventivo?tipo=X` — il problema era il **footer**, duplicato su ogni pagina del sito, che conteneva ancora i link diretti alle vecchie pagine (`/locazioni`, `/appalti-pubblici`, `/dogane`, `/ambiente`) nella colonna "CM Consulting".
+
+**Soluzione scelta**: redirect permanenti (301) in `vercel.json` per tutte le vecchie pagine, verso `/richiedi-preventivo?tipo=X` — non modifiche a `fideiussioni.html`, non eliminazione dei file `locazioni.html`/`appalti-pubblici.html`/`dogane.html`/`ambiente.html`. Questo intercetta qualunque punto di ingresso (footer di qualsiasi pagina, bookmark, link esterni, risultati Google già indicizzati) senza dover modificare il footer su ogni singolo file del sito.
+
+Redirect aggiunti/modificati in `vercel.json`:
+- `/locazioni.html` e `/locazioni` → `/richiedi-preventivo?tipo=locazioni`
+- `/appalti.html`, `/appalti-pubblici.html` e `/appalti-pubblici` → `/richiedi-preventivo?tipo=appalti`
+- `/dogane.html` e `/dogane` → `/richiedi-preventivo?tipo=dogane`
+- `/ambiente.html` e `/ambiente` → `/richiedi-preventivo?tipo=ambiente`
+
+In aggiunta, il footer di `richiedi-preventivo.html` e `capacita-finanziaria.html` è stato corretto per puntare direttamente alle destinazioni finali (evita un salto di redirect in più per la navigazione interna da quelle due pagine).
+
+**Non ancora fatto**: il footer di `fideiussioni.html` e di tutte le altre pagine del sito (`404.html`, `contatti.html`, `privacy.html`, ecc.) contiene ancora i vecchi link — restano funzionanti grazie al redirect, ma con un salto in più. Correggere il footer ovunque è un lavoro a parte, file per file, non urgente dato che il redirect già risolve il problema segnalato.
+
+**Non ancora deciso**: se eliminare definitivamente i file `locazioni.html`, `appalti-pubblici.html`, `dogane.html`, `ambiente.html` dal repository. Restano presenti ma irraggiungibili tramite navigazione normale (solo il redirect li intercetta prima che vengano serviti). Vedi §10 (File orfani) per il protocollo da seguire se si deciderà di eliminarli.
+
+**`capacita-finanziaria.html` non richiedeva questa correzione**: è già una pagina unica dal redesign di questa stessa giornata, non esiste una pagina di marketing separata per la capacità finanziaria.
