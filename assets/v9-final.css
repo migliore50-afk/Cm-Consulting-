@@ -476,3 +476,7 @@ body.privacy-modal-open{overflow:hidden}
   box-sizing:border-box!important;
 }
 .cm-footer-legalbar h3{text-align:center!important}
+
+/* 18 settembre 2026 — "Dati societari": una colonna sola invece di griglia multi-colonna,
+   evita il disallineamento quando le righe hanno lunghezze diverse */
+.cm-footer-legalbar{grid-template-columns:1fr!important;gap:9px 0!important;max-width:560px!important}

@@ -577,6 +577,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const t=p.textContent.trim();
       if(t==='Telefono:' || t==='Email:' || t==='PEC:') p.remove();
     });
+    document.querySelectorAll('.cm-footer-bottom p').forEach(p=>{
+      if(p.textContent.trim()==='Registro Unico degli Intermediari — IVASS') p.remove();
+    });
     const anchor=[...links].find(a=>a.textContent.trim().toUpperCase()==='SERVIZI');
     if(!anchor || anchor.closest('.nav-fideiussioni')) return;
     const wrap=document.createElement('div');
