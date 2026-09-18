@@ -15,10 +15,14 @@
 .fq-cat h2{font-size:23px;color:var(--ink,#102a43);margin:0 0 4px}
 .fq-cat-link{display:inline-block;margin-bottom:16px;font-size:13.5px;font-weight:700;color:#8b6a22;text-decoration:none}
 .fq-cat-link:hover{text-decoration:underline}
-.fq-list{display:grid;gap:12px}
-.fq-item{padding:16px 18px;border:1px solid var(--line,#dce5ea);border-radius:12px;background:#fff}
-.fq-item h3{margin:0 0 6px;font-size:15px;color:var(--ink,#102a43)}
-.fq-item p{margin:0;font-size:14px;color:var(--muted,#526778);line-height:1.6}
+.fq-list{display:grid;gap:10px}
+.fq-item{border:1px solid var(--line,#dce5ea);border-radius:12px;background:#fff;overflow:hidden}
+.fq-item summary{padding:15px 18px;font-size:14.5px;font-weight:700;color:var(--ink,#102a43);cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:14px}
+.fq-item summary::-webkit-details-marker{display:none}
+.fq-item summary::after{content:'+';font-size:21px;font-weight:400;color:#8b6a22;flex:none;line-height:1}
+.fq-item[open] summary::after{content:'−'}
+.fq-item[open] summary{border-bottom:1px solid var(--line,#dce5ea)}
+.fq-item p{margin:0;padding:14px 18px 16px;font-size:14px;color:var(--muted,#526778);line-height:1.6}
 .fq-cta{margin-top:44px;padding:32px;border-radius:16px;background:#092b43;color:#fff;text-align:center}
 .fq-cta h2{color:#fff;margin-top:0}
 .fq-cta p{color:#c8d5df}
@@ -46,9 +50,9 @@
 <h2>Appalti Pubblici</h2>
 <a class="fq-cat-link" href="/appalti-pubblici">Vai alla pagina completa →</a>
 <div class="fq-list">
-<div class="fq-item"><h3>La cauzione provvisoria è obbligatoria per tutte le gare?</h3><p>Sì, salvo i casi di esonero espressamente previsti dal bando. È normalmente pari al 2% dell'importo a base d'asta.</p></div>
-<div class="fq-item"><h3>Posso richiederla con tempi stretti prima della scadenza del bando?</h3><p>Sì, verifichiamo subito la fattibilità: più tempo hai a disposizione, più ampia è la scelta delle compagnie disponibili.</p></div>
-<div class="fq-item"><h3>Cosa succede se non presento la cauzione definitiva dopo l'aggiudicazione?</h3><p>La stazione appaltante può revocare l'aggiudicazione ed escutere la cauzione provvisoria — per questo è importante attivarsi appena arriva la comunicazione.</p></div>
+<details class="fq-item"><summary>La cauzione provvisoria è obbligatoria per tutte le gare?</summary><p>Sì, salvo i casi di esonero espressamente previsti dal bando. È normalmente pari al 2% dell'importo a base d'asta.</p></details>
+<details class="fq-item"><summary>Posso richiederla con tempi stretti prima della scadenza del bando?</summary><p>Sì, verifichiamo subito la fattibilità: più tempo hai a disposizione, più ampia è la scelta delle compagnie disponibili.</p></details>
+<details class="fq-item"><summary>Cosa succede se non presento la cauzione definitiva dopo l'aggiudicazione?</summary><p>La stazione appaltante può revocare l'aggiudicazione ed escutere la cauzione provvisoria — per questo è importante attivarsi appena arriva la comunicazione.</p></details>
 </div>
 </div>
 
@@ -56,8 +60,8 @@
 <h2>Contratti Privati</h2>
 <a class="fq-cat-link" href="/fideiussioni-contratti-privati">Vai alla pagina completa →</a>
 <div class="fq-list">
-<div class="fq-item"><h3>Come si determina l'importo da garantire?</h3><p>Di norma corrisponde all'importo dell'acconto, della fornitura o dell'obbligo specifico indicato nel contratto o nella richiesta del beneficiario.</p></div>
-<div class="fq-item"><h3>Serve un contratto scritto e firmato per richiedere la fideiussione?</h3><p>È preferibile, anche solo in bozza — ci permette di individuare correttamente l'obbligo da garantire prima dell'emissione.</p></div>
+<details class="fq-item"><summary>Come si determina l'importo da garantire?</summary><p>Di norma corrisponde all'importo dell'acconto, della fornitura o dell'obbligo specifico indicato nel contratto o nella richiesta del beneficiario.</p></details>
+<details class="fq-item"><summary>Serve un contratto scritto e firmato per richiedere la fideiussione?</summary><p>È preferibile, anche solo in bozza — ci permette di individuare correttamente l'obbligo da garantire prima dell'emissione.</p></details>
 </div>
 </div>
 
@@ -65,8 +69,8 @@
 <h2>Dogane</h2>
 <a class="fq-cat-link" href="/dogane">Vai alla pagina completa →</a>
 <div class="fq-list">
-<div class="fq-item"><h3>La garanzia AEO è obbligatoria per tutti gli operatori?</h3><p>No, è necessaria solo per chi richiede lo status di Operatore Economico Autorizzato o specifiche semplificazioni doganali.</p></div>
-<div class="fq-item"><h3>Quanto dura una garanzia per deposito fiscale?</h3><p>Solitamente è correlata alla durata dell'autorizzazione concessa dall'Agenzia delle Dogane, con rinnovo alla scadenza.</p></div>
+<details class="fq-item"><summary>La garanzia AEO è obbligatoria per tutti gli operatori?</summary><p>No, è necessaria solo per chi richiede lo status di Operatore Economico Autorizzato o specifiche semplificazioni doganali.</p></details>
+<details class="fq-item"><summary>Quanto dura una garanzia per deposito fiscale?</summary><p>Solitamente è correlata alla durata dell'autorizzazione concessa dall'Agenzia delle Dogane, con rinnovo alla scadenza.</p></details>
 </div>
 </div>
 
@@ -74,8 +78,8 @@
 <h2>Beneficiari Pubblici</h2>
 <a class="fq-cat-link" href="/ambiente">Vai alla pagina completa →</a>
 <div class="fq-list">
-<div class="fq-item"><h3>L'iscrizione all'Albo Gestori Ambientali richiede sempre una garanzia finanziaria?</h3><p>Per alcune categorie sì, in base ai criteri fissati dal Comitato Nazionale — lo verifichiamo insieme alla tua categoria specifica.</p></div>
-<div class="fq-item"><h3>La cauzione per concessione edilizia copre anche eventuali danni a terzi?</h3><p>Dipende dai termini richiesti dal Comune nel provvedimento — lo verifichiamo leggendo la richiesta specifica.</p></div>
+<details class="fq-item"><summary>L'iscrizione all'Albo Gestori Ambientali richiede sempre una garanzia finanziaria?</summary><p>Per alcune categorie sì, in base ai criteri fissati dal Comitato Nazionale — lo verifichiamo insieme alla tua categoria specifica.</p></details>
+<details class="fq-item"><summary>La cauzione per concessione edilizia copre anche eventuali danni a terzi?</summary><p>Dipende dai termini richiesti dal Comune nel provvedimento — lo verifichiamo leggendo la richiesta specifica.</p></details>
 </div>
 </div>
 
@@ -83,9 +87,9 @@
 <h2>Affitti fra Privati</h2>
 <a class="fq-cat-link" href="/locazioni">Vai alla pagina completa →</a>
 <div class="fq-list">
-<div class="fq-item"><h3>La fideiussione sostituisce completamente il deposito cauzionale?</h3><p>Sì, è pensata proprio come alternativa al deposito in contanti, garantendo lo stesso tipo di tutela al proprietario.</p></div>
-<div class="fq-item"><h3>Chi paga il costo della fideiussione, io o il proprietario?</h3><p>Di norma il costo è a carico del conduttore, ma può essere concordato diversamente tra le parti.</p></div>
-<div class="fq-item"><h3>Cosa succede se il conduttore non paga il canone?</h3><p>Il proprietario può rivolgersi alla compagnia garante per ottenere quanto dovuto, nei limiti dell'importo garantito.</p></div>
+<details class="fq-item"><summary>La fideiussione sostituisce completamente il deposito cauzionale?</summary><p>Sì, è pensata proprio come alternativa al deposito in contanti, garantendo lo stesso tipo di tutela al proprietario.</p></details>
+<details class="fq-item"><summary>Chi paga il costo della fideiussione, io o il proprietario?</summary><p>Di norma il costo è a carico del conduttore, ma può essere concordato diversamente tra le parti.</p></details>
+<details class="fq-item"><summary>Cosa succede se il conduttore non paga il canone?</summary><p>Il proprietario può rivolgersi alla compagnia garante per ottenere quanto dovuto, nei limiti dell'importo garantito.</p></details>
 </div>
 </div>
 
@@ -93,8 +97,8 @@
 <h2>Affitti Commerciali</h2>
 <a class="fq-cat-link" href="/affitti-commerciali">Vai alla pagina completa →</a>
 <div class="fq-list">
-<div class="fq-item"><h3>Posso richiederla anche per un contratto già in corso?</h3><p>Sì, è possibile attivarla anche durante il rapporto, non solo alla firma del contratto.</p></div>
-<div class="fq-item"><h3>La garanzia copre anche eventuali danni all'immobile?</h3><p>Dipende dai termini concordati con il locatore — lo definiamo insieme in fase di richiesta.</p></div>
+<details class="fq-item"><summary>Posso richiederla anche per un contratto già in corso?</summary><p>Sì, è possibile attivarla anche durante il rapporto, non solo alla firma del contratto.</p></details>
+<details class="fq-item"><summary>La garanzia copre anche eventuali danni all'immobile?</summary><p>Dipende dai termini concordati con il locatore — lo definiamo insieme in fase di richiesta.</p></details>
 </div>
 </div>
 
@@ -102,8 +106,8 @@
 <h2>Rami d'Azienda</h2>
 <a class="fq-cat-link" href="/affitti-rami-azienda">Vai alla pagina completa →</a>
 <div class="fq-list">
-<div class="fq-item"><h3>Serve una perizia per determinare l'importo da garantire?</h3><p>Non sempre: dipende dalla complessità dell'operazione e da quanto richiesto dalle parti nel contratto.</p></div>
-<div class="fq-item"><h3>La fideiussione copre anche obblighi diversi dal pagamento dell'affitto?</h3><p>Può coprire anche il rispetto di altri obblighi contrattuali specifici, se espressamente previsti nel contratto di affitto del ramo.</p></div>
+<details class="fq-item"><summary>Serve una perizia per determinare l'importo da garantire?</summary><p>Non sempre: dipende dalla complessità dell'operazione e da quanto richiesto dalle parti nel contratto.</p></details>
+<details class="fq-item"><summary>La fideiussione copre anche obblighi diversi dal pagamento dell'affitto?</summary><p>Può coprire anche il rispetto di altri obblighi contrattuali specifici, se espressamente previsti nel contratto di affitto del ramo.</p></details>
 </div>
 </div>
 
