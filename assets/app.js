@@ -511,6 +511,21 @@ function initBasicFormValidation() {
   });
 }
 
+function initBackToTop() {
+  if (document.getElementById('cm-back-top')) return;
+  const btn = document.createElement('button');
+  btn.id = 'cm-back-top';
+  btn.type = 'button';
+  btn.setAttribute('aria-label', 'Torna in cima alla pagina');
+  btn.title = 'Torna su';
+  btn.textContent = '↑';
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+  document.body.appendChild(btn);
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('show', window.scrollY > 400);
+  }, { passive: true });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   initMenu();
   initSlider();
@@ -519,6 +534,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initAssistantFabFooterHide();
   initClickableCards();
   initBasicFormValidation();
+  initBackToTop();
 });
 
 
@@ -543,6 +559,15 @@ document.addEventListener('DOMContentLoaded', () => {
       faqLink.href='/faq';
       faqLink.textContent='FAQ';
       contattiLink.parentElement.insertBefore(faqLink,contattiLink);
+    }
+    const hasGenericCta=[...links].some(a=>a.textContent.trim().toUpperCase()==='NON SAI QUALE GARANZIA?');
+    const navEl=document.querySelector('.links');
+    if(!hasGenericCta && navEl){
+      const genericLink=document.createElement('a');
+      genericLink.href='/richiedi-preventivo?esigenza=generica';
+      genericLink.className='nav-generic-cta';
+      genericLink.textContent='NON SAI QUALE GARANZIA?';
+      navEl.appendChild(genericLink);
     }
     document.querySelectorAll('a[href^="tel:+393286382612"]').forEach(a=>{
       const line=a.closest('.contact-line') || a.closest('p') || a;

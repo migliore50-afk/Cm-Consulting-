@@ -430,3 +430,9 @@ body.privacy-modal-open{overflow:hidden}
 @media(prefers-reduced-motion:reduce){
   .ai-portrait.speaking img{animation:none}
 }
+
+/* 18 settembre 2026 — pulsante "torna su", visibile dopo un po' di scroll su ogni pagina */
+#cm-back-top{position:fixed;left:22px;bottom:20px;width:48px;height:48px;border-radius:50%;border:1px solid rgba(16,42,67,.15);background:#fff;color:#102a43;font-size:20px;line-height:1;display:flex;align-items:center;justify-content:center;box-shadow:0 12px 30px rgba(16,42,67,.18);cursor:pointer;z-index:999;opacity:0;pointer-events:none;transform:translateY(8px);transition:opacity .2s ease,transform .2s ease}
+#cm-back-top.show{opacity:1;pointer-events:auto;transform:none}
+#cm-back-top:hover{background:var(--gold,#d6aa45);color:#102a43}
+@media(max-width:640px){#cm-back-top{left:12px;bottom:12px;width:44px;height:44px;font-size:18px}}
