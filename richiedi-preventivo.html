@@ -18,13 +18,13 @@
 @media(max-width:700px){.choice-grid{grid-template-columns:1fr}.request-card{padding:20px}}
 
 .type-hero{border-radius:16px;overflow:hidden;margin-bottom:20px;height:clamp(150px,20vw,240px);background:#eaf6fa}
+.type-hero img{width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.08)}
 .btn-icon{display:inline-flex;align-items:center;justify-content:center;gap:8px}
 .btn-icon svg{width:17px;height:17px;flex:none}
-.type-hero img{width:100%;height:100%;object-fit:cover;display:block}
 .type-explain{padding:20px 22px;border:1px solid #cfe3ea;border-left:4px solid var(--gold);border-radius:12px;background:#eef7fa;color:#17344e;font-size:14px;line-height:1.6;margin-bottom:24px}
 .type-explain strong{display:block;margin-bottom:6px;font-size:15px}
 .simplify-grid{display:grid;grid-template-columns:1.35fr .95fr;gap:26px;align-items:start}
-@media(max-width:860px){.simplify-grid{grid-template-columns:1fr}}
+@media(max-width:860px){.simplify-grid{grid-template-columns:1fr}.side-box{position:static}}
 .essential-field{display:grid;gap:7px;margin-bottom:16px}
 .essential-field label{font-size:13px;font-weight:900;color:var(--ink)}
 .essential-field input,.essential-field textarea{width:100%;padding:14px;border:1px solid var(--line);border-radius:10px;font-size:15px;background:#fff;color:var(--ink)}
@@ -87,6 +87,7 @@
 <button class="big-choice" onclick="setType('urbanistica')">🏢 <b>Urbanistica ed edilizia</b><span>Convenzioni, oneri e altre garanzie richieste.</span></button>
 <button class="big-choice" onclick="setType('fiscali')">🧾 <b>Garanzie fiscali</b><span>Richieste fiscali da valutare caso per caso.</span></button>
 <button class="big-choice" onclick="setType('altro')">❓ <b>Non trovo la mia esigenza</b><span>Raccontala liberamente qui sotto.</span></button>
+<button class="big-choice" onclick="setType('contratti-privati')">🤝 <b>Contratti privati</b><span>Acconti, transazioni, prestazioni continuative tra privati o aziende.</span></button>
 </div></div>
 
 <div class="step" id="step2">
@@ -207,6 +208,7 @@ const typeImages={
   urbanistica:'assets/altre-esigenze-retina-1920.webp',
   fiscali:'assets/altre-esigenze-retina-1920.webp',
   altro:'assets/altre-esigenze-retina-1920.webp',
+  'contratti-privati':'assets/altre-esigenze-retina-1920.webp',
   generica:'assets/altre-esigenze-retina-1920.webp'
 };
 
@@ -220,6 +222,7 @@ const explanations={
   urbanistica:"<strong>Garanzie urbanistiche ed edilizie</strong>Nell'ambito di convenzioni urbanistiche, permessi di costruire o opere di urbanizzazione, il Comune può richiedere una garanzia a tutela della corretta esecuzione degli interventi previsti.",
   fiscali:"<strong>Garanzie fiscali</strong>In alcuni casi l'Agenzia delle Entrate o altri enti fiscali possono richiedere una garanzia a fronte di rimborsi, sospensioni o rateizzazioni. Valutiamo il caso specifico per individuare la soluzione più adatta.",
   altro:"<strong>Descrivici la tua esigenza</strong>Non è un problema se non sai esattamente quale garanzia ti serve — raccontaci il caso qui sotto e ti indicheremo il percorso giusto.",
+  'contratti-privati':"<strong>Fideiussione per contratti privati</strong>Se un contratto tra privati o tra aziende prevede una garanzia — un acconto, una fornitura, una prestazione continuativa — possiamo aiutarti a ottenerla senza immobilizzare liquidità. Copre casi come appalti tra privati, garanzia sugli acconti, transazioni, prestazioni continuative di servizi, concessione di licenze e mandati, rata a saldo o anticipazione.",
   generica:"<strong>Descrivici la tua esigenza</strong>Non è un problema se non sai esattamente quale garanzia ti serve — raccontaci il caso qui sotto e ti indicheremo il percorso giusto."
 };
 
@@ -233,6 +236,7 @@ const docs={
   urbanistica:["Convenzione, atto o richiesta dell'ente"],
   fiscali:["Richiesta o provvedimento dell'ente"],
   altro:['Richiesta del beneficiario o documento che descrive la garanzia, se disponibile'],
+  'contratti-privati':['Contratto o capitolato tra le parti (anche in bozza)','Richiesta del beneficiario, con importo e durata, se disponibile','Documentazione che attesti la solidità del contraente (bilanci e visura camerale per un\u2019azienda, documento d\u2019identità e documentazione reddituale per un privato)'],
   generica:['Richiesta ricevuta, bozza di contratto, bando o altro documento disponibile']
 };
 
@@ -247,7 +251,7 @@ const specificFields={
 const labels={
   appalti:'Appalti pubblici', locazioni:'Locazioni', trasporti:'Trasporti', dogane:'Dogane',
   ambiente:'Ambiente', contributi:'Contributi e agevolazioni', urbanistica:'Urbanistica ed edilizia',
-  fiscali:'Garanzie fiscali', altro:'Altra fideiussione', generica:'Valutazione generica'
+  fiscali:'Garanzie fiscali', altro:'Altra fideiussione', generica:'Valutazione generica', 'contratti-privati':'Contratti privati'
 };
 
 const fieldLabels={
