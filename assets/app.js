@@ -532,6 +532,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const links=document.querySelectorAll('.links a');
     const fidLink=[...links].find(a=>a.textContent.trim().toUpperCase()==='FIDEIUSSIONI' && (a.getAttribute('href')||'').replace(/\/$/,'')==='/fideiussioni');
     if(fidLink) fidLink.remove();
+    const capLink=[...links].find(a=>a.textContent.trim().toUpperCase()==='CAPACITÀ FINANZIARIA' && (a.getAttribute('href')||'').replace(/\/$/,'')==='/capacita-finanziaria');
+    if(capLink) capLink.remove();
     const anchor=[...links].find(a=>a.textContent.trim().toUpperCase()==='SERVIZI');
     if(!anchor || anchor.closest('.nav-fideiussioni')) return;
     const wrap=document.createElement('div');
