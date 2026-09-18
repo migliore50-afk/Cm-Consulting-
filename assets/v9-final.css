@@ -446,3 +446,33 @@ body.privacy-modal-open{overflow:hidden}
 .cm-footer-legalbar{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))!important;gap:10px 26px!important}
 .cm-footer-legalbar h3{grid-column:1/-1!important;margin:0 0 4px!important}
 .cm-footer-legalbar p{display:block!important;margin:0!important;padding:0!important}
+
+/* 18 settembre 2026 — pulsante torna-su ridisegnato: ovale con scritta, centrato in basso
+   (non più cerchio in un angolo) */
+#cm-back-top{
+  position:fixed!important;left:50%!important;right:auto!important;bottom:20px!important;
+  width:auto!important;height:44px!important;padding:0 22px!important;
+  border-radius:999px!important;
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;
+  background:var(--gold,#d6aa45)!important;border:1px solid var(--gold,#d6aa45)!important;color:#102a43!important;
+  font-size:13px!important;font-weight:900!important;letter-spacing:.02em!important;white-space:nowrap;
+  transform:translateX(-50%) translateY(8px)!important;
+  transition:opacity .2s ease,transform .2s ease,background .2s ease,color .2s ease!important;
+}
+#cm-back-top.show{transform:translateX(-50%) translateY(0)!important}
+#cm-back-top:hover{background:#102a43!important;border-color:#102a43!important;color:#fff!important}
+@media(max-width:640px){#cm-back-top{height:40px;padding:0 17px;font-size:12px;bottom:12px}}
+
+/* 18 settembre 2026 — riquadro "Dati societari" centrato, non più a tutta larghezza
+   (evita che il testo finisca sotto il widget Assistente CM in basso a destra) */
+.cm-footer-legalbar{
+  text-align:center!important;
+  justify-items:center!important;
+  max-width:920px!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  padding-left:24px!important;
+  padding-right:24px!important;
+  box-sizing:border-box!important;
+}
+.cm-footer-legalbar h3{text-align:center!important}

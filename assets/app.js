@@ -518,7 +518,7 @@ function initBackToTop() {
   btn.type = 'button';
   btn.setAttribute('aria-label', 'Torna in cima alla pagina');
   btn.title = 'Torna su';
-  btn.textContent = '↑';
+  btn.innerHTML = '↑ <span>Torna su</span>';
   btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
   document.body.appendChild(btn);
   window.addEventListener('scroll', () => {
