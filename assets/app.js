@@ -522,40 +522,54 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-/* UX BATCH — FIDEIUSSIONI dropdown */
-(function initFideiussioniDropdown(){
+/* UX BATCH — SERVIZI dropdown (17 settembre 2026: sostituisce il precedente dropdown
+   agganciato alla voce "FIDEIUSSIONI". Ora si aggancia alla voce "SERVIZI" del menu:
+   il testo resta un link vero verso /fideiussioni (la pagina generale con tutte le
+   tipologie), e in piu' rivela un sottomenu al passaggio del mouse — niente piu'
+   pulsante che blocca la navigazione diretta. */
+(function initServiziDropdown(){
   function init(){
     const links=document.querySelectorAll('.links a');
-    const anchor=[...links].find(a=>a.textContent.trim().toUpperCase()==='FIDEIUSSIONI');
+    const anchor=[...links].find(a=>a.textContent.trim().toUpperCase()==='SERVIZI');
     if(!anchor || anchor.closest('.nav-fideiussioni')) return;
     const wrap=document.createElement('div');
     wrap.className='nav-fideiussioni';
-    const trigger=document.createElement('button');
-    trigger.type='button';
+    const trigger=document.createElement('a');
+    trigger.href='/fideiussioni';
     trigger.className='nav-fideiussioni-trigger';
     trigger.setAttribute('aria-haspopup','true');
     trigger.setAttribute('aria-expanded','false');
-    trigger.textContent='FIDEIUSSIONI';
+    trigger.textContent='SERVIZI';
     const menu=document.createElement('div');
     menu.className='nav-fideiussioni-menu';
     menu.setAttribute('role','menu');
     const heading=document.createElement('div');
     heading.className='nav-fideiussioni-heading';
-    heading.textContent='Soluzioni di garanzia';
+    heading.textContent='Le nostre garanzie';
     const subheading=document.createElement('div');
     subheading.className='nav-fideiussioni-subheading';
-    subheading.textContent='Scegli la tipologia di fideiussione che ti interessa.';
+    subheading.textContent='Scegli la tipologia che ti interessa, o vai alla pagina generale.';
     menu.append(heading,subheading);
     const items=[
-      ['Appalti pubblici','/appalti-pubblici'],['Locazioni','/locazioni'],['Trasporti','/richiedi-preventivo?tipo=trasporti'],['Dogane','/dogane'],['Ambiente','/ambiente'],['Contributi e agevolazioni','/richiedi-preventivo?tipo=contributi'],['Urbanistica ed edilizia','/richiedi-preventivo?tipo=urbanistica'],['Garanzie fiscali','/richiedi-preventivo?tipo=fiscali'],['Altra fideiussione','/richiedi-preventivo?tipo=altra']
+      ['Tutte le garanzie →','/fideiussioni'],
+      ['Appalti pubblici','/appalti-pubblici'],
+      ['Contratti privati','/fideiussioni-contratti-privati'],
+      ['Affitti fra privati','/locazioni'],
+      ['Affitti commerciali','/affitti-commerciali'],
+      ["Rami d'azienda",'/affitti-rami-azienda'],
+      ['Dogane','/dogane'],
+      ['Beneficiari pubblici','/ambiente'],
+      ['Capacità finanziaria','/capacita-finanziaria']
     ];
     items.forEach(([label,href])=>{const a=document.createElement('a');a.href=href;a.textContent=label;a.setAttribute('role','menuitem');menu.appendChild(a);});
     wrap.append(trigger,menu);
     anchor.replaceWith(wrap);
     const close=()=>{wrap.classList.remove('open');trigger.setAttribute('aria-expanded','false');};
-    trigger.addEventListener('click',e=>{e.stopPropagation();const open=!wrap.classList.contains('open');document.querySelectorAll('.nav-fideiussioni.open').forEach(x=>x.classList.remove('open'));wrap.classList.toggle('open',open);trigger.setAttribute('aria-expanded',String(open));});
-    wrap.addEventListener('mouseenter',()=>wrap.classList.add('open'));
+    const open=()=>{document.querySelectorAll('.nav-fideiussioni.open').forEach(x=>x.classList.remove('open'));wrap.classList.add('open');trigger.setAttribute('aria-expanded','true');};
+    wrap.addEventListener('mouseenter',open);
     wrap.addEventListener('mouseleave',close);
+    wrap.addEventListener('focusin',open);
+    wrap.addEventListener('focusout',e=>{if(!wrap.contains(e.relatedTarget))close();});
     document.addEventListener('click',e=>{if(!wrap.contains(e.target))close();});
     document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
   }
