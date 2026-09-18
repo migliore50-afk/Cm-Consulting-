@@ -534,6 +534,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if(fidLink) fidLink.remove();
     const capLink=[...links].find(a=>a.textContent.trim().toUpperCase()==='CAPACITÀ FINANZIARIA' && (a.getAttribute('href')||'').replace(/\/$/,'')==='/capacita-finanziaria');
     if(capLink) capLink.remove();
+    const chiSiamoLink=[...links].find(a=>a.textContent.trim().toUpperCase()==='CHI SIAMO');
+    if(chiSiamoLink) chiSiamoLink.setAttribute('href','/chi-siamo');
     const anchor=[...links].find(a=>a.textContent.trim().toUpperCase()==='SERVIZI');
     if(!anchor || anchor.closest('.nav-fideiussioni')) return;
     const wrap=document.createElement('div');
