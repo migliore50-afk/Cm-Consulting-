@@ -11,9 +11,10 @@
 .cd-content h2{font-size:26px;color:var(--ink,#102a43);margin:40px 0 16px}
 .cd-content h2:first-child{margin-top:0}
 .cd-content p{color:var(--muted,#526778);line-height:1.7;font-size:16px}
-.cd-cover-list{list-style:none;margin:18px 0;padding:0;display:grid;gap:10px}
-.cd-cover-list li{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border:1px solid var(--line,#dce5ea);border-radius:12px;background:#f8fafb;font-size:15px;color:var(--ink,#102a43)}
-.cd-cover-list li svg{flex:none;width:20px;height:20px;color:#2f9e59;margin-top:1px}
+.cd-cover-list{list-style:none;margin:14px 0 10px;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:5px 22px}
+.cd-cover-list li{display:flex;gap:8px;align-items:flex-start;padding:4px 0;font-size:14px;color:var(--ink,#102a43)}
+.cd-cover-list li svg{flex:none;width:16px;height:16px;color:#2f9e59;margin-top:2px}
+@media(max-width:640px){.cd-cover-list{grid-template-columns:1fr}}
 .cd-doc-box{margin-top:14px;padding:24px;border:1px solid rgba(221,178,63,.4);border-radius:14px;background:linear-gradient(135deg,#f7fbfc,#fff)}
 .cd-doc-box ul{margin:14px 0 0;padding:0;list-style:none;display:grid;gap:10px}
 .cd-doc-box li{padding:13px 15px;border:1px solid var(--line,#dce5ea);border-radius:10px;background:#fff;font-size:14.5px;color:var(--ink,#102a43)}
@@ -35,7 +36,6 @@
 <section class="section"><div class="wrap cd-content">
 
 <h2>Cosa può coprire questa garanzia</h2>
-<p>A seconda del contratto e di cosa richiede la controparte, la fideiussione per contratti privati può riguardare situazioni diverse:</p>
 <ul class="cd-cover-list">
 <li><svg fill="none" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Fideiussioni per appalti tra privati</li>
 <li><svg fill="none" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Fideiussioni a garanzia degli acconti (art. 210/2023)</li>
@@ -48,13 +48,11 @@
 </ul>
 
 <h2>Documenti necessari per l'istruttoria</h2>
-<p>L'elenco esatto dipende dal contratto specifico, ma questi sono i documenti che servono nella maggior parte dei casi:</p>
 <div class="cd-doc-box">
 <ul>
 <li>Il contratto o capitolato tra le parti (anche in bozza), da cui risulti l'obbligo da garantire</li>
 <li>La richiesta del beneficiario, con indicazione di importo e durata della garanzia, se disponibile</li>
 <li>Documentazione che attesti la solidità del contraente: per un'azienda, bilanci e visura camerale; per un privato, documento d'identità e documentazione reddituale</li>
-<li>Eventuale testo o schema della fideiussione fornito dal beneficiario</li>
 </ul>
 <div class="cd-notice">Se la controparte ha già indicato una clausola specifica (es. pagamento "a prima richiesta"), verificheremo insieme il testo ricevuto in fase di istruttoria — non serve che tu la interpreti da solo.</div>
 </div>
@@ -84,8 +82,8 @@
 </div>
 <div class="cm-footer-column"><h3>CM Consulting</h3><ul>
 <li><a href="/">Home</a></li><li><a href="/fideiussioni">Fideiussioni</a></li>
-<li><a href="/capacita-finanziaria">Capacità finanziaria</a></li><li><a href="/richiedi-preventivo?tipo=appalti">Appalti pubblici</a></li>
-<li><a href="/richiedi-preventivo?tipo=locazioni">Locazioni</a></li><li><a href="/richiedi-preventivo?tipo=dogane">Dogane</a></li><li><a href="/richiedi-preventivo?tipo=ambiente">Ambiente</a></li>
+<li><a href="/capacita-finanziaria">Capacità finanziaria</a></li><li><a href="/appalti-pubblici">Appalti pubblici</a></li>
+<li><a href="/locazioni">Locazioni</a></li><li><a href="/dogane">Dogane</a></li><li><a href="/ambiente">Ambiente</a></li>
 </ul></div>
 <div class="cm-footer-column"><h3>Informazioni</h3><ul>
 <li><a href="/trasparenza">Trasparenza</a></li><li><a href="/privacy">Privacy</a></li>
