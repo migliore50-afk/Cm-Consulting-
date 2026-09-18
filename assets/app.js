@@ -530,6 +530,8 @@ document.addEventListener('DOMContentLoaded', () => {
 (function initServiziDropdown(){
   function init(){
     const links=document.querySelectorAll('.links a');
+    const fidLink=[...links].find(a=>a.textContent.trim().toUpperCase()==='FIDEIUSSIONI' && (a.getAttribute('href')||'').replace(/\/$/,'')==='/fideiussioni');
+    if(fidLink) fidLink.remove();
     const anchor=[...links].find(a=>a.textContent.trim().toUpperCase()==='SERVIZI');
     if(!anchor || anchor.closest('.nav-fideiussioni')) return;
     const wrap=document.createElement('div');
