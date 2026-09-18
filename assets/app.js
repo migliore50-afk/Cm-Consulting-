@@ -573,6 +573,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const line=a.closest('.contact-line') || a.closest('p') || a;
       line.remove();
     });
+    document.querySelectorAll('.cm-footer-legalbar p').forEach(p=>{
+      const t=p.textContent.trim();
+      if(t==='Telefono:' || t==='Email:' || t==='PEC:') p.remove();
+    });
     const anchor=[...links].find(a=>a.textContent.trim().toUpperCase()==='SERVIZI');
     if(!anchor || anchor.closest('.nav-fideiussioni')) return;
     const wrap=document.createElement('div');

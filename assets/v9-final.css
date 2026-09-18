@@ -436,3 +436,13 @@ body.privacy-modal-open{overflow:hidden}
 #cm-back-top.show{opacity:1;pointer-events:auto;transform:none}
 #cm-back-top:hover{background:var(--gold,#d6aa45);color:#102a43}
 @media(max-width:640px){#cm-back-top{left:12px;bottom:12px;width:44px;height:44px;font-size:18px}}
+
+/* 18 settembre 2026 — pulsante torna-su più evidente (bordo/sfondo dorato) */
+#cm-back-top{background:var(--gold,#d6aa45)!important;border-color:var(--gold,#d6aa45)!important;color:#102a43!important;font-weight:900;box-shadow:0 14px 32px rgba(16,42,67,.28)!important}
+#cm-back-top:hover{background:#102a43!important;color:#fff!important}
+
+/* 18 settembre 2026 — riquadro "Dati societari e iscrizione" riorganizzato a griglia,
+   non piu' un unico blocco di testo che scorre (si sovrapponeva al widget Assistente CM) */
+.cm-footer-legalbar{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))!important;gap:10px 26px!important}
+.cm-footer-legalbar h3{grid-column:1/-1!important;margin:0 0 4px!important}
+.cm-footer-legalbar p{display:block!important;margin:0!important;padding:0!important}
