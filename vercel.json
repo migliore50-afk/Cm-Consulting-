@@ -19,16 +19,6 @@
       "statusCode": 301
     },
     {
-      "source": "/locazioni.html",
-      "destination": "/richiedi-preventivo?tipo=locazioni",
-      "statusCode": 301
-    },
-    {
-      "source": "/locazioni",
-      "destination": "/richiedi-preventivo?tipo=locazioni",
-      "statusCode": 301
-    },
-    {
       "source": "/appalti.html",
       "destination": "/appalti-pubblici",
       "statusCode": 301
@@ -41,6 +31,11 @@
     {
       "source": "/dogane.html",
       "destination": "/dogane",
+      "statusCode": 301
+    },
+    {
+      "source": "/locazioni.html",
+      "destination": "/locazioni",
       "statusCode": 301
     },
     {

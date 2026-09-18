@@ -29,7 +29,7 @@
 .essential-field label{font-size:13px;font-weight:900;color:var(--ink)}
 .essential-field input,.essential-field textarea{width:100%;padding:14px;border:1px solid var(--line);border-radius:10px;font-size:15px;background:#fff;color:var(--ink)}
 .essential-field small{color:var(--muted);font-size:11px}
-.lease-choice{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.lease-choice{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
 .lease-choice label{display:block;border:1px solid var(--line);padding:12px;border-radius:9px;cursor:pointer;text-align:center;font-size:13px;font-weight:800}
 .lease-choice input{position:absolute;opacity:0}
 .lease-choice input:checked+label{border-color:var(--gold);background:#fffbef}
@@ -108,6 +108,7 @@
       <div class="lease-choice">
         <div style="position:relative"><input id="leaseAbitativo" name="leaseType" type="radio" value="abitativo" onchange="refreshAll()"><label for="leaseAbitativo">Uso abitativo</label></div>
         <div style="position:relative"><input id="leaseCommerciale" name="leaseType" type="radio" value="commerciale" onchange="refreshAll()"><label for="leaseCommerciale">Uso commerciale</label></div>
+        <div style="position:relative"><input id="leaseRamiAzienda" name="leaseType" type="radio" value="rami-azienda" onchange="refreshAll()"><label for="leaseRamiAzienda">Ramo d'azienda</label></div>
       </div>
     </div>
 
@@ -308,7 +309,7 @@ function currentRows(){
   return [
     ['Tipologia',labels[type]||'Valutazione generica'],
     ['Descrizione esigenza',val('genericDescription')],
-    ['Tipo di locazione',type==='locazioni'?(leaseType==='abitativo'?'Uso abitativo':leaseType==='commerciale'?'Uso commerciale':''):''],
+    ['Tipo di locazione',type==='locazioni'?(leaseType==='abitativo'?'Uso abitativo':leaseType==='commerciale'?'Uso commerciale':leaseType==='rami-azienda'?"Ramo d'azienda":''):''],
     [fl.beneficiary,val('beneficiary')],
     [type==='locazioni'?'Conduttore':'Contraente',val('company')],
     ['Importo',val('amount')],
