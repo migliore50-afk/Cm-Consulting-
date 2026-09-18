@@ -536,6 +536,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if(capLink) capLink.remove();
     const chiSiamoLink=[...links].find(a=>a.textContent.trim().toUpperCase()==='CHI SIAMO');
     if(chiSiamoLink) chiSiamoLink.setAttribute('href','/chi-siamo');
+    const hasFaq=[...links].some(a=>a.textContent.trim().toUpperCase()==='FAQ');
+    const contattiLink=[...links].find(a=>a.textContent.trim().toUpperCase()==='CONTATTI');
+    if(!hasFaq && contattiLink){
+      const faqLink=document.createElement('a');
+      faqLink.href='/faq';
+      faqLink.textContent='FAQ';
+      contattiLink.parentElement.insertBefore(faqLink,contattiLink);
+    }
     const anchor=[...links].find(a=>a.textContent.trim().toUpperCase()==='SERVIZI');
     if(!anchor || anchor.closest('.nav-fideiussioni')) return;
     const wrap=document.createElement('div');
