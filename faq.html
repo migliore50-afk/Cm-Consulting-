@@ -7,22 +7,22 @@
 <meta content="CM Consulting" property="og:site_name"/>
 <meta content="it_IT" property="og:locale"/>
 <style>
-.fq-content{max-width:880px;margin:0 auto;padding:50px 0}
-.fq-jump{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:40px}
-.fq-jump a{padding:9px 15px;border:1px solid var(--line,#dce5ea);border-radius:20px;color:var(--ink,#102a43);font-size:13.5px;font-weight:700;text-decoration:none}
-.fq-jump a:hover{border-color:var(--gold,#d6aa45);color:#8b6a22}
-.fq-cat{margin-bottom:44px;scroll-margin-top:90px}
-.fq-cat h2{font-size:23px;color:var(--ink,#102a43);margin:0 0 4px}
-.fq-cat-link{display:inline-block;margin-bottom:16px;font-size:13.5px;font-weight:700;color:#8b6a22;text-decoration:none}
+.fq-content{max-width:1180px;margin:0 auto;padding:50px 0}
+.fq-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+@media(max-width:980px){.fq-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){.fq-grid{grid-template-columns:1fr}}
+.fq-card{border:1px solid var(--line,#dce5ea);border-radius:16px;background:#fff;padding:24px;box-shadow:0 10px 28px rgba(16,42,67,.06);display:flex;flex-direction:column}
+.fq-card h2{font-size:19px;color:var(--ink,#102a43);margin:0 0 4px}
+.fq-cat-link{display:inline-block;margin-bottom:14px;font-size:13px;font-weight:700;color:#8b6a22;text-decoration:none}
 .fq-cat-link:hover{text-decoration:underline}
-.fq-list{display:grid;gap:10px}
-.fq-item{border:1px solid var(--line,#dce5ea);border-radius:12px;background:#fff;overflow:hidden}
-.fq-item summary{padding:15px 18px;font-size:14.5px;font-weight:700;color:var(--ink,#102a43);cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:14px}
+.fq-list{display:flex;flex-direction:column}
+.fq-item{border-top:1px solid var(--line,#dce5ea)}
+.fq-item:first-child{border-top:0}
+.fq-item summary{padding:13px 2px;font-size:14px;font-weight:700;color:var(--ink,#102a43);cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px}
 .fq-item summary::-webkit-details-marker{display:none}
-.fq-item summary::after{content:'+';font-size:21px;font-weight:400;color:#8b6a22;flex:none;line-height:1}
+.fq-item summary::after{content:'+';font-size:19px;font-weight:400;color:#8b6a22;flex:none;line-height:1}
 .fq-item[open] summary::after{content:'−'}
-.fq-item[open] summary{border-bottom:1px solid var(--line,#dce5ea)}
-.fq-item p{margin:0;padding:14px 18px 16px;font-size:14px;color:var(--muted,#526778);line-height:1.6}
+.fq-item p{margin:0;padding:0 2px 13px;font-size:13.5px;color:var(--muted,#526778);line-height:1.55}
 .fq-cta{margin-top:44px;padding:32px;border-radius:16px;background:#092b43;color:#fff;text-align:center}
 .fq-cta h2{color:#fff;margin-top:0}
 .fq-cta p{color:#c8d5df}
@@ -35,18 +35,9 @@
 <section class="page-hero"><div class="wrap"><div class="crumb"><a href="/">Home</a> / FAQ</div><div class="eyebrow">Domande frequenti</div><h1>Domande Frequenti</h1><p>Le risposte più utili raccolte per tipologia di garanzia. Se non trovi quello che cerchi, raccontaci la tua esigenza direttamente.</p></div></section>
 
 <section class="section"><div class="wrap fq-content">
+<div class="fq-grid">
 
-<div class="fq-jump">
-<a href="#appalti">Appalti Pubblici</a>
-<a href="#contratti-privati">Contratti Privati</a>
-<a href="#dogane">Dogane</a>
-<a href="#beneficiari-pubblici">Beneficiari Pubblici</a>
-<a href="#affitti-privati">Affitti fra Privati</a>
-<a href="#affitti-commerciali">Affitti Commerciali</a>
-<a href="#rami-azienda">Rami d'Azienda</a>
-</div>
-
-<div class="fq-cat" id="appalti">
+<div class="fq-card">
 <h2>Appalti Pubblici</h2>
 <a class="fq-cat-link" href="/appalti-pubblici">Vai alla pagina completa →</a>
 <div class="fq-list">
@@ -56,7 +47,7 @@
 </div>
 </div>
 
-<div class="fq-cat" id="contratti-privati">
+<div class="fq-card">
 <h2>Contratti Privati</h2>
 <a class="fq-cat-link" href="/fideiussioni-contratti-privati">Vai alla pagina completa →</a>
 <div class="fq-list">
@@ -65,7 +56,7 @@
 </div>
 </div>
 
-<div class="fq-cat" id="dogane">
+<div class="fq-card">
 <h2>Dogane</h2>
 <a class="fq-cat-link" href="/dogane">Vai alla pagina completa →</a>
 <div class="fq-list">
@@ -74,7 +65,7 @@
 </div>
 </div>
 
-<div class="fq-cat" id="beneficiari-pubblici">
+<div class="fq-card">
 <h2>Beneficiari Pubblici</h2>
 <a class="fq-cat-link" href="/ambiente">Vai alla pagina completa →</a>
 <div class="fq-list">
@@ -83,7 +74,7 @@
 </div>
 </div>
 
-<div class="fq-cat" id="affitti-privati">
+<div class="fq-card">
 <h2>Affitti fra Privati</h2>
 <a class="fq-cat-link" href="/locazioni">Vai alla pagina completa →</a>
 <div class="fq-list">
@@ -93,7 +84,7 @@
 </div>
 </div>
 
-<div class="fq-cat" id="affitti-commerciali">
+<div class="fq-card">
 <h2>Affitti Commerciali</h2>
 <a class="fq-cat-link" href="/affitti-commerciali">Vai alla pagina completa →</a>
 <div class="fq-list">
@@ -102,13 +93,15 @@
 </div>
 </div>
 
-<div class="fq-cat" id="rami-azienda">
+<div class="fq-card">
 <h2>Rami d'Azienda</h2>
 <a class="fq-cat-link" href="/affitti-rami-azienda">Vai alla pagina completa →</a>
 <div class="fq-list">
 <details class="fq-item"><summary>Serve una perizia per determinare l'importo da garantire?</summary><p>Non sempre: dipende dalla complessità dell'operazione e da quanto richiesto dalle parti nel contratto.</p></details>
 <details class="fq-item"><summary>La fideiussione copre anche obblighi diversi dal pagamento dell'affitto?</summary><p>Può coprire anche il rispetto di altri obblighi contrattuali specifici, se espressamente previsti nel contratto di affitto del ramo.</p></details>
 </div>
+</div>
+
 </div>
 
 <div class="fq-cta">
