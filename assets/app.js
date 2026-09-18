@@ -544,6 +544,10 @@ document.addEventListener('DOMContentLoaded', () => {
       faqLink.textContent='FAQ';
       contattiLink.parentElement.insertBefore(faqLink,contattiLink);
     }
+    document.querySelectorAll('a[href^="tel:+393286382612"]').forEach(a=>{
+      const line=a.closest('.contact-line') || a.closest('p') || a;
+      line.remove();
+    });
     const anchor=[...links].find(a=>a.textContent.trim().toUpperCase()==='SERVIZI');
     if(!anchor || anchor.closest('.nav-fideiussioni')) return;
     const wrap=document.createElement('div');
