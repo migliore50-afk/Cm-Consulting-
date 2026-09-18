@@ -49,7 +49,7 @@ img{display:block;max-width:100%;height:auto}
 .product-card.card-clickable:hover .product-body span,.product-card.card-clickable:hover .product-body a{color:var(--gold);transform:translateX(2px)}
 .product-body a,.product-body span{font-size:clamp(13px,1vw,15px);font-weight:950;letter-spacing:.1px;transition:.2s}
 .product-card picture{display:block}
-.product-card picture img{display:block;width:100%;height:100%;object-fit:cover}
+.product-card picture img{display:block;width:100%;height:100%;object-fit:cover;transform:scale(1.06)}
 
 /* CM CONSULTING — OFFICIAL LOGO HD / SHINE */
 .brand{
@@ -324,6 +324,7 @@ body.privacy-modal-open{overflow:hidden}
   height:100%!important;
   max-width:none!important;
   object-fit:cover!important;
+  transform:scale(1.07)!important;
 }
 
 /* Footer: ordinary navigation links are text, not outlined buttons. */
