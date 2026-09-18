@@ -19,16 +19,6 @@
       "statusCode": 301
     },
     {
-      "source": "/dogane.html",
-      "destination": "/richiedi-preventivo?tipo=dogane",
-      "statusCode": 301
-    },
-    {
-      "source": "/dogane",
-      "destination": "/richiedi-preventivo?tipo=dogane",
-      "statusCode": 301
-    },
-    {
       "source": "/locazioni.html",
       "destination": "/richiedi-preventivo?tipo=locazioni",
       "statusCode": 301
@@ -40,32 +30,27 @@
     },
     {
       "source": "/appalti.html",
-      "destination": "/richiedi-preventivo?tipo=appalti",
-      "statusCode": 301
-    },
-    {
-      "source": "/appalti-pubblici.html",
-      "destination": "/richiedi-preventivo?tipo=appalti",
-      "statusCode": 301
-    },
-    {
-      "source": "/appalti-pubblici",
-      "destination": "/richiedi-preventivo?tipo=appalti",
-      "statusCode": 301
-    },
-    {
-      "source": "/ambiente.html",
-      "destination": "/richiedi-preventivo?tipo=ambiente",
-      "statusCode": 301
-    },
-    {
-      "source": "/ambiente",
-      "destination": "/richiedi-preventivo?tipo=ambiente",
+      "destination": "/appalti-pubblici",
       "statusCode": 301
     },
     {
       "source": "/altre-esigenze.html",
       "destination": "/altre-esigenze",
+      "statusCode": 301
+    },
+    {
+      "source": "/dogane.html",
+      "destination": "/dogane",
+      "statusCode": 301
+    },
+    {
+      "source": "/appalti-pubblici.html",
+      "destination": "/appalti-pubblici",
+      "statusCode": 301
+    },
+    {
+      "source": "/ambiente.html",
+      "destination": "/ambiente",
       "statusCode": 301
     },
     {
