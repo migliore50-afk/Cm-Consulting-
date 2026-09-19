@@ -526,6 +526,26 @@ function initBackToTop() {
   }, { passive: true });
 }
 
+// 19 settembre 2026 — riquadro "Dati societari e iscrizione" nel footer, restyle su
+// richiesta di Carmelo ispirato al footer di un competitor (fideiussioni.online):
+// da blocco centrato/impilato a riga unica compatta, allineata a sinistra, con
+// separatori "·" e link "Verificabile su IVASS". Applicato via JS su ogni pagina
+// (stesso approccio delle altre correzioni footer), cosi' non serve toccare i
+// singoli file HTML. Usa cssText con !important per avere la priorita' sulle regole
+// storiche di v9-final.css (centrato/grid/max-width), senza doverle rimuovere.
+function simplifyLegalBar() {
+  document.querySelectorAll('.cm-footer-legalbar').forEach(bar => {
+    if (bar.dataset.cmCompact === '1') return;
+    bar.innerHTML = '<p>CM Consulting di Carmelo Migliore &ndash; P.IVA/C.F. 14416401009 / MGLCML71M25L219S &middot; REA RM &ndash; 1519347 &middot; Carmelo Migliore, R.U.I. Sezione E n. E000437237 dal 24/01/2013 &middot; <a href="https://www.ivass.it/consumatori/rui/index.html" target="_blank" rel="noopener noreferrer">Verificabile su IVASS</a></p>';
+    bar.style.cssText = 'display:block!important;text-align:left!important;justify-items:normal!important;grid-template-columns:none!important;max-width:none!important;margin:28px 0 0!important;padding:16px 24px!important;border-top:1px solid rgba(255,255,255,.15)!important;box-sizing:border-box!important';
+    const p = bar.querySelector('p');
+    if (p) p.style.cssText = 'margin:0!important;color:#8fa2b3!important;font-size:11.5px!important;line-height:1.6!important';
+    const a = bar.querySelector('a');
+    if (a) a.style.cssText = 'color:#e0b84e!important;text-decoration:none!important;font-weight:700!important';
+    bar.dataset.cmCompact = '1';
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   initMenu();
   initSlider();
@@ -535,6 +555,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initClickableCards();
   initBasicFormValidation();
   initBackToTop();
+  simplifyLegalBar();
 });
 
 
