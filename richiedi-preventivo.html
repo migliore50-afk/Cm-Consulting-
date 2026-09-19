@@ -80,7 +80,6 @@
 <div class="choice-grid">
 <button class="big-choice" onclick="setType('appalti')">🏗️ <b>Appalti pubblici</b><span>Gare, garanzie contrattuali e altre richieste.</span></button>
 <button class="big-choice" onclick="setType('locazioni')">🏠 <b>Locazioni</b><span>Garanzie richieste per contratti o preliminari.</span></button>
-<button class="big-choice" onclick="setType('trasporti')">🚛 <b>Trasporti</b><span>Garanzie per il comparto trasporto.</span></button>
 <button class="big-choice" onclick="setType('dogane')">🛃 <b>Dogane</b><span>Obblighi e adempimenti doganali.</span></button>
 <button class="big-choice" onclick="setType('ambiente')">🌱 <b>Ambiente</b><span>Garanzie per specifiche attività e obblighi.</span></button>
 <button class="big-choice" onclick="setType('contributi')">💶 <b>Contributi e agevolazioni</b><span>Garanzie richieste da enti o programmi.</span></button>
@@ -202,21 +201,19 @@ let genericMode=false;
 const typeImages={
   locazioni:'assets/locazioni-retina-1920.webp',
   appalti:'assets/appalti-retina-1920.webp',
-  dogane:'assets/altre-esigenze-retina-1920.webp',
+  dogane:'assets/dogane-retina-1920.webp',
   ambiente:'assets/ambiente-retina-1920.webp',
-  trasporti:'assets/altre-esigenze-retina-1920.webp',
   contributi:'assets/altre-esigenze-retina-1920.webp',
   urbanistica:'assets/altre-esigenze-retina-1920.webp',
   fiscali:'assets/altre-esigenze-retina-1920.webp',
   altro:'assets/altre-esigenze-retina-1920.webp',
-  'contratti-privati':'assets/altre-esigenze-retina-1920.webp',
+  'contratti-privati':'assets/contratti-privati-retina-1920.webp',
   generica:'assets/altre-esigenze-retina-1920.webp'
 };
 
 const explanations={
   appalti:"<strong>Fideiussione per appalti pubblici</strong>La garanzia da presentare dipende dalla fase della procedura — provvisoria, definitiva, per anticipazione o per rata di saldo — e da quanto richiesto negli atti di gara o nel contratto. Analizziamo la documentazione disponibile e ti aiutiamo a individuare la soluzione corretta.",
   locazioni:"<strong>Fideiussione per la locazione</strong>Se il locatore (proprietario) ti richiede una garanzia sul contratto d'affitto — uso abitativo o commerciale — possiamo aiutarti a ottenerla al posto del classico deposito cauzionale in contanti. La garanzia può coprire il mancato pagamento dei canoni, gli oneri accessori (es. spese condominiali) e altri obblighi del contratto, come eventuali danni all'immobile.",
-  trasporti:"<strong>Garanzie per il trasporto</strong>Se operi nel settore dell'autotrasporto, alcuni enti o committenti possono richiederti una garanzia specifica legata alla tua attività. Valutiamo insieme la soluzione più adatta alla richiesta che hai ricevuto.",
   dogane:"<strong>Garanzie doganali</strong>Le garanzie doganali possono essere collegate a specifici regimi e adempimenti, come il transito merci. La soluzione va individuata sulla base della procedura, dell'obbligo richiesto e della documentazione dell'autorità competente.",
   ambiente:"<strong>Garanzie ambientali</strong>In ambito ambientale possono essere richieste garanzie finanziarie in relazione a specifiche attività, autorizzazioni o obblighi — ad esempio gestione rifiuti o obblighi di ripristino. La verifica parte dalla richiesta dell'ente e dalla disciplina applicabile al caso concreto.",
   contributi:"<strong>Garanzie su contributi e agevolazioni</strong>Se hai ottenuto o stai richiedendo un contributo pubblico, l'ente erogatore può richiedere una garanzia a tutela della corretta restituzione delle somme in caso di mancato rispetto delle condizioni previste.",
@@ -230,7 +227,6 @@ const explanations={
 const docs={
   appalti:['Documento/lettera di richiesta della garanzia','Documentazione di gara o contratto, se disponibile'],
   locazioni:["Contratto di locazione tra le parti (anche in bozza)","Documentazione reddituale del conduttore (buste paga, CUD/730, oppure bilanci e visura camerale se il conduttore è un'azienda)"],
-  trasporti:['Richiesta del beneficiario o documento relativo alla garanzia'],
   dogane:['Richiesta o documentazione doganale'],
   ambiente:["Richiesta dell'ente o documentazione dell'obbligo"],
   contributi:["Provvedimento, bando o richiesta dell'ente"],
@@ -250,7 +246,7 @@ const specificFields={
 };
 
 const labels={
-  appalti:'Appalti pubblici', locazioni:'Locazioni', trasporti:'Trasporti', dogane:'Dogane',
+  appalti:'Appalti pubblici', locazioni:'Locazioni', dogane:'Dogane',
   ambiente:'Ambiente', contributi:'Contributi e agevolazioni', urbanistica:'Urbanistica ed edilizia',
   fiscali:'Garanzie fiscali', altro:'Altra fideiussione', generica:'Valutazione generica', 'contratti-privati':'Contratti privati'
 };
@@ -416,6 +412,12 @@ function submitRequest(){
 
 (function init(){
   const qs=new URLSearchParams(location.search);
+  if(qs.get('tipo')==='trasporti'){
+    // "Trasporti" e' stato ritirato come step generico: il bisogno reale
+    // (idoneita' finanziaria per l'autotrasporto) ha gia' una pagina dedicata.
+    window.location.replace('/capacita-finanziaria');
+    return;
+  }
   if(qs.get('esigenza')==='generica'){
     type='generica';
     genericMode=true;
