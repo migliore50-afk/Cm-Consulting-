@@ -546,22 +546,6 @@ function simplifyLegalBar() {
   });
 }
 
-// 19 settembre 2026 — nuovo logo nel footer (sfondo blu), su richiesta di Carmelo:
-// immagine generata con Gemini, colore di sfondo praticamente identico al blu del
-// sito (nessun bordo visibile). Sostituisce SOLO il logo nel footer via JS — non
-// tocca l'header (sfondo bianco), che resta con il logo attuale perche' l'immagine
-// nuova ha proporzioni verticali e sfondo blu non adatti a quella barra orizzontale
-// chiara. Stesso approccio degli altri interventi sul footer: nessun file HTML
-// toccato uno per uno.
-function swapFooterLogo() {
-  document.querySelectorAll('.cm-footer-brand img').forEach(img => {
-    img.src = 'assets/images/logo-cm-consulting-footer.webp';
-    img.removeAttribute('width');
-    img.removeAttribute('height');
-    img.style.cssText = 'width:150px;height:auto;display:block';
-  });
-}
-
 document.addEventListener('DOMContentLoaded', () => {
   initMenu();
   initSlider();
@@ -572,7 +556,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initBasicFormValidation();
   initBackToTop();
   simplifyLegalBar();
-  swapFooterLogo();
 });
 
 
