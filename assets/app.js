@@ -546,6 +546,16 @@ function simplifyLegalBar() {
   });
 }
 
+// 20 settembre 2026 — rimozione dei due pulsanti arancioni ridondanti nella colonna
+// "Contatti" del footer ("Verifica iscrizione RUI", "Reclami e Arbitro Assicurativo").
+// Non sono richiesti in quella forma dalla normativa IVASS: entrambe le informazioni
+// restano comunque accessibili altrove (link "Verificabile su IVASS" nella riga
+// compatta del footer, voce "Reclami e Arbitro Assicurativo" nella colonna
+// "Informazioni" dello stesso footer). Rimozione via JS, non tocca l'HTML statico.
+function removeRedundantFooterButtons() {
+  document.querySelectorAll('.cm-footer-contact .cm-rui-link').forEach(a => a.remove());
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   initMenu();
   initSlider();
@@ -556,6 +566,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initBasicFormValidation();
   initBackToTop();
   simplifyLegalBar();
+  removeRedundantFooterButtons();
 });
 
 
