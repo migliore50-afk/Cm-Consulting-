@@ -1,11 +1,11 @@
 # STATO-PROGETTO.md
 ## CM Consulting — Registro tecnico ufficiale
 
-**Ultimo aggiornamento:** 19 settembre 2026  
+**Ultimo aggiornamento:** 19 settembre 2026 (sera)  
 **Repository:** `migliore50-afk/Cm-Consulting-`  
 **Branch:** `main`  
 **Deploy:** Vercel — Production  
-**Stato:** progetto attivo. Vedi §21 per il lavoro più recente (pagine di tipologia, navigazione, pagine Chi Siamo/FAQ, pulizia footer). Il punto aperto 2 (marchio registrato) è stato chiuso il 19 settembre 2026. Resta aperto solo il punto 1 (foto pagine di tipologia), in lavorazione — vedi aggiornamento in fondo a §21.
+**Stato:** progetto attivo. Tutti i punti aperti storici di §21 sono chiusi. Vedi §22 per il lavoro della sera del 19 settembre (correzione Trasporti, footer, tentativo di nuovo logo poi annullato). Unico punto realmente aperto: nuovo logo per header, affidato a un grafico esterno (Fiverr), in attesa dei file — vedi §22.
 
 ---
 
@@ -35,6 +35,8 @@ Ogni correzione indipendente deve avere un commit separato.
 
 Se il RAW GitHub è troncato, non ricostruire il file alla cieca: recuperare il contenuto necessario oppure chiedere il file completo.
 
+**Attenzione per chi riprende**: questo registro ha già avuto almeno un caso di "punto chiuso riproposto come aperto" per non aver riletto §18 con attenzione (vedi nota in fondo a §18). Prima di segnalare un punto come "ancora da fare", verificare sempre se esiste già una sezione che lo chiude.
+
 ---
 
 ## 2. PROCEDURA CONCORDATA
@@ -59,7 +61,7 @@ Copia di sicurezza sul PC:
 
 `Sito cm consulting with CHATGPT`
 
-**Regola di lavoro permanente (dal 19 settembre 2026, valida per tutte le sessioni)**: Claude fornisce sempre i file da caricare come download (non solo testo incollato in chat), Carmelo li carica lui su GitHub (root o `assets`) via drag & drop, e Claude indica sempre il messaggio di commit esatto da usare.
+**Regola di lavoro permanente (dal 19 settembre 2026, valida per tutte le sessioni)**: Claude fornisce sempre i file da caricare come download (non solo testo incollato in chat), Carmelo li carica lui su GitHub (root o `assets`) via drag & drop, e Claude indica sempre il messaggio di commit esatto da usare — nel formato "Dove caricarlo: <link diretto /upload/main/...>" + "Commit message: <tipo>: <descrizione>".
 
 ---
 
@@ -86,7 +88,8 @@ Attività: intermediazione assicurativa, con particolare attenzione a fideiussio
 - mantenere impostazione moderna e professionale;
 - rispettare gli obblighi IVASS;
 - non modificare parti non richieste;
-- **non dichiarare numeri di esperienza, volumi di pratiche, recensioni o marchi registrati non veritieri — vedi §20 e §21**.
+- **non dichiarare numeri di esperienza, volumi di pratiche, recensioni o marchi registrati non veritieri — vedi §20 e §21**;
+- **non introdurre servizi/infrastrutture di terzi che richiedano dati di una carta di debito/credito, anche se il piano è "gratuito"** — vedi §18, motivazione esplicita.
 
 ---
 
@@ -151,9 +154,11 @@ File storici già eliminati: `assets/cm-assistant-v7.css`, `assets/cm-assistant.
 
 `appalti.html`: non referenziato da nessuna pagina attiva; redirect in `vercel.json` verso `/appalti-pubblici`. Prima di un'eventuale eliminazione, nuova ricerca completa delle referenze sul branch `main`.
 
+**Nuovo candidato orfano (19 settembre 2026 sera)**: `assets/images/logo-cm-consulting-footer.webp` — caricato durante un tentativo di nuovo logo poi annullato (vedi §22), non più referenziato da nessuna pagina. Non urgente da rimuovere.
+
 ---
 
-# 11. FILE IMPORTANTI (aggiornato al 18 settembre 2026)
+# 11. FILE IMPORTANTI (aggiornato al 19 settembre 2026 sera)
 
 ## HTML — pagine principali
 `index.html`, `fideiussioni.html` (hub tipologie), `capacita-finanziaria.html`, `contatti.html`, `chi-siamo.html`, `faq.html`, `richiedi-preventivo.html`, `reclami-e-arbitro-assicurativo.html`, `privacy.html`, `cookie.html`, `trasparenza.html`, `404.html`
@@ -162,10 +167,13 @@ File storici già eliminati: `assets/cm-assistant-v7.css`, `assets/cm-assistant.
 `appalti-pubblici.html`, `dogane.html`, `ambiente.html` ("Beneficiari Pubblici"), `locazioni.html` ("Affitti fra Privati"), `affitti-commerciali.html`, `affitti-rami-azienda.html`, `fideiussioni-contratti-privati.html`
 
 ## JavaScript
-`assets/app.js` — contiene sia la logica applicativa (carousel, Assistente CM, form) sia diverse funzioni di correzione automatica del menu/footer eseguite a runtime su ogni pagina (vedi §21). Leggere sempre il RAW prima di aggiungere nuova logica simile, per non duplicarla.
+`assets/app.js` — contiene sia la logica applicativa (carousel, Assistente CM, form) sia diverse funzioni di correzione automatica del menu/footer eseguite a runtime su ogni pagina (vedi §21 e §22). Leggere sempre il RAW prima di aggiungere nuova logica simile, per non duplicarla. Funzioni runtime attive nel blocco `DOMContentLoaded`: `initMenu`, `initSlider`, `initAssistantUI`, `initAssistantFab`, `initAssistantFabFooterHide`, `initClickableCards`, `initBasicFormValidation`, `initBackToTop`, `simplifyLegalBar`, più l'IIFE `initServiziDropdown` in fondo al file (menu SERVIZI, pulizia telefono/RUI). **Nessuna funzione di sostituzione logo attiva** (rimossa la sera del 19 settembre, vedi §22).
 
 ## CSS
 `assets/style.css` (base), `assets/v9-final.css` (attivo, tutte le correzioni successive)
+
+## Immagini (aggiornato al 19 settembre 2026 sera — vedi §21 punto 1 e §22 per la storia completa)
+Ogni asset segue lo schema `<stem>-retina-<768|1280|1920|2560|3840>.webp`. Stem attivi: `appalti`, `autotrasportatori`, `capacita`, `ambiente`, `altre-esigenze` (condiviso solo da "Altre Fideiussioni", scelta voluta), `locazioni`, `affitti-commerciali`, `affitti-rami-azienda`, `dogane`, `contratti-privati`. Foto generate con Gemini (Nano Banana Pro/2), non foto stock. Logo: `assets/images/logo-cm-consulting.webp` (attuale, header e footer, invariato) — un tentativo di sostituirlo nel solo footer è stato fatto e annullato, vedi §22.
 
 ## Configurazione
 `vercel.json` — redirect delle vecchie URL; aggiornato il 18 settembre 2026 quando le pagine di tipologia sono state riattivate (vedi §21)
@@ -192,13 +200,19 @@ Corretta su `index.html` e `capacita-finanziaria.html`: vecchio indirizzo di Bei
 
 # 18. UPLOAD DIRETTO E ANTIVIRUS CLAMAV — PERCORSO ARCHIVIATO (16 settembre 2026)
 
-**Stato: CHIUSO.** Il sito non usa più upload diretti di file in nessuna pagina — sostituito da invio documentazione via email dal cliente. Codice backend (`api/_security.js`, `api/attachment-upload-url.js`) non toccato, resta nel repository ma non più richiamato da nessuna pagina HTML.
+**Stato: CHIUSO E DEFINITIVO — non riaprire senza una richiesta esplicita e nuova di Carmelo.**
+
+Il sito non usa più upload diretti di file in nessuna pagina — sostituito da invio documentazione via email dal cliente. Codice backend (`api/_security.js`, `api/attachment-upload-url.js`) non toccato, resta nel repository ma non più richiamato da nessuna pagina HTML.
+
+**Motivazione esplicita (confermata da Carmelo il 19 settembre 2026, non era scritta chiaramente qui prima d'ora)**: l'ipotesi era ospitare un antivirus ClamAV reale su un server Oracle Cloud a livello gratuito ("Always Free"). Oracle richiede comunque i dati di una carta di debito/credito anche per il piano gratuito. Carmelo ha deciso di non procedere per il rischio concreto che, se in futuro Oracle cambiasse le condizioni del piano gratuito, la carta collegata potrebbe subire addebiti senza un'azione esplicita da parte sua. Si è quindi scelto di eliminare l'esigenza stessa (niente upload diretto sul sito, quindi niente bisogno di un antivirus) invece di accettare quel rischio finanziario per una funzione non essenziale al business.
+
+**Nota di continuità**: in una sessione precedente (inizio del 19 settembre) questo punto era stato erroneamente reintrodotto come "ancora da verificare" — era già chiuso da tre giorni. Non ripetere l'errore: se emerge di nuovo il tema "antivirus" o "upload diretto", il punto di partenza è questa sezione, chiusa, non una nuova valutazione da zero.
 
 ---
 
 # 19. REDESIGN UX — richiedi-preventivo.html E capacita-finanziaria.html (17 settembre 2026)
 
-**Stato: caricato su `main`, verificato.**
+**Stato: caricato su `main`, verificato.** Vedi anche §22 per un'ulteriore correzione a `richiedi-preventivo.html` (rimozione opzione "Trasporti") fatta il 19 settembre sera.
 
 Da 4 step a 2 (`richiedi-preventivo.html`) e da 3 step a 1 (`capacita-finanziaria.html`): spiegazione in linguaggio semplice, campi essenziali sempre visibili, dettagli tecnici in sezione facoltativa, box unico "Documenti necessari e invio" con un solo pulsante che registra la richiesta e apre l'email precompilata. WhatsApp rimosso definitivamente dal flusso documenti (rimandato a quando sarà attiva un'eSIM dedicata). Foto dinamica per tipologia aggiunta. Contenuti di Locazioni verificati con ricerca mirata (garante bancario/assicurativo/altro, distinzione locatore/conduttore, clausola "a prima richiesta" verificata in istruttoria, non chiesta al cliente).
 
@@ -219,7 +233,7 @@ Categoria identificata per espansione futura, non ancora implementata: "Fideiuss
 
 # 21. LAVORO DEL 18 SETTEMBRE 2026 — pagine di tipologia, navigazione, pagine nuove, pulizia footer
 
-**Stato generale: la maggior parte è confermata live (verificata via RAW GitHub durante la sessione).**
+**Stato generale: tutto confermato live. Entrambi i punti aperti storici di questa sezione sono CHIUSI (vedi in fondo).**
 
 ## Sette pagine di tipologia — contenuto reale, documenti, FAQ, step personalizzati
 
@@ -230,15 +244,15 @@ Confermato live via RAW GitHub:
 - `locazioni.html` — riattivata come **"Affitti fra Privati"**
 - `affitti-commerciali.html` — nuova
 - `affitti-rami-azienda.html` — nuova
-- `fideiussioni-contratti-privati.html` — nuova (categoria interamente nuova, nessuna vecchia pagina da recuperare)
+- `fideiussioni-contratti-privati.html` — nuova (categoria interamente nuova, nessuna vecchia pagina da recuperare; non ha mai avuto un riquadro hero-image, solo la card sulla pagina hub)
 
 Ogni pagina ha: H1/H2 per SEO, elenco "Cosa può coprire" (checklist compatta a due colonne, non più box singoli), box "Documenti necessari" (verificati con ricerca mirata, non copiati dai competitor), 4 step "Come funziona la richiesta" personalizzati per tipologia (non più testo generico ripetuto), 2-3 FAQ verificate per categoria, CTA finale verso `/richiedi-preventivo?tipo=X`.
 
 **Conseguenza su `vercel.json`**: tolti i redirect per `appalti-pubblici`, `dogane`, `ambiente`, `locazioni` (avevano senso quando quelle pagine erano solo marketing vuoto duplicato dal form — ora hanno contenuto reale, si sono "riguadagnate" il diritto di esistere). Aggiunti redirect puliti `.html` → versione senza estensione per le stesse quattro pagine e per `appalti.html` → `/appalti-pubblici`.
 
-**`richiedi-preventivo.html`**: aggiunta la tipologia "Contratti privati" (spiegazione, documenti, pulsante nella schermata di scelta) e una terza opzione "Ramo d'azienda" nel toggle di Locazioni (prima solo abitativo/commerciale).
+**`richiedi-preventivo.html`**: aggiunta la tipologia "Contratti privati" (spiegazione, documenti, pulsante nella schermata di scelta) e una terza opzione "Ramo d'azienda" nel toggle di Locazioni (prima solo abitativo/commerciale). **Aggiornamento 19 settembre sera**: l'opzione "Trasporti" è stata rimossa da qui — vedi §22.
 
-**`fideiussioni.html`** (pagina hub): tutte le card ora puntano alle pagine di contenuto reale, non più direttamente al form. Contiene 9 card: Appalti Pubblici, Affitti fra Privati, Affitti Commerciali, Rami d'Azienda, Trasporti (ancora verso il form, nessuna pagina dedicata), Dogane, Beneficiari Pubblici, Contratti Privati, Altre Fideiussioni.
+**`fideiussioni.html`** (pagina hub): tutte le card puntano a pagine di contenuto reale o a `capacita-finanziaria.html`. Contiene 9 card: Appalti Pubblici, Affitti fra Privati, Affitti Commerciali, Rami d'Azienda, **Capacità Finanziaria** (sostituisce "Trasporti", vedi §22), Dogane, Beneficiari Pubblici, Contratti Privati, Altre Fideiussioni.
 
 ## Pagina Reclami — riscritta con struttura a 4 passaggi
 
@@ -246,53 +260,68 @@ Ogni pagina ha: H1/H2 per SEO, elenco "Cosa può coprire" (checklist compatta a 
 
 ## Navigazione — menu a tendina, voci rimosse/aggiunte, tutto via `assets/app.js`
 
-**Scoperta importante di questa sessione**: il menu a tendina sotto "SERVIZI" (con link a tutte le tipologie) **esisteva già**, presumibilmente da un lavoro precedente non documentato in questo registro — trovato leggendo il RAW di `assets/app.js`, commento datato "17 settembre 2026". Non è stato quindi creato da zero in questa sessione, solo completato.
+Tecnica usata per tutte le correzioni al menu: **una sola funzione IIFE in `assets/app.js`** (`initServiziDropdown`) che modifica il DOM del menu a runtime su ogni pagina (nessun file HTML deve essere toccato singolarmente). Include: rimozione voce "FIDEIUSSIONI" separata, rimozione voce "CAPACITÀ FINANZIARIA" separata (resta raggiungibile dal menu a tendina "SERVIZI"), correzione link "CHI SIAMO" (ora punta a `/chi-siamo`), aggiunta automatica voce "FAQ" e "NON SAI QUALE GARANZIA?" su tutte le pagine, pulizia telefono/riga RUI (vedi sotto).
 
-Tecnica usata per tutte le correzioni al menu: **una sola funzione IIFE in `assets/app.js`** che modifica il DOM del menu a runtime su ogni pagina (nessun file HTML deve essere toccato singolarmente). In questa sessione sono state aggiunte, nello stesso blocco:
-- rimozione della voce "FIDEIUSSIONI" separata (restava duplicata col nuovo menu a tendina "SERVIZI")
-- rimozione della voce "CAPACITÀ FINANZIARIA" separata (resta raggiungibile dal menu a tendina "SERVIZI")
-- correzione del link "CHI SIAMO": puntava a `/#metodo` (sezione homepage sul funzionamento dell'Assistente CM, non una vera pagina "chi siamo") — ora punta a `/chi-siamo`
-- aggiunta automatica della voce "FAQ" (se assente) prima di "CONTATTI"
-- aggiunta automatica della voce "NON SAI QUALE GARANZIA?" (se assente) — prima presente solo su `index.html`, ora su tutte le pagine
-
-**Nota per chi riprende**: `assets/app.js` contiene ora diverse funzioni di questo tipo (ricerca testo nel menu → rimuovi/aggiungi/correggi link). Prima di aggiungerne altre, leggere il RAW e capire lo schema esistente invece di duplicare logica.
+**Nota per chi riprende**: `assets/app.js` contiene diverse funzioni di questo tipo (ricerca testo nel menu → rimuovi/aggiungi/correggi link). Prima di aggiungerne altre, leggere il RAW e capire lo schema esistente invece di duplicare logica.
 
 ## Due pagine nuove
 
-- **`chi-siamo.html`** — creata perché il vecchio link "CHI SIAMO" non portava a nessun contenuto reale su Carmelo. Contiene solo dati verificabili (RUI Sezione E n. E000437237, iscritto dal 24/01/2013, sede legale, cosa fa CM Consulting) — **nessun numero di esperienza o cifra inventata**, coerente con il vincolo già impostato in §20 sui competitor.
-- **`faq.html`** — raccoglie le 16 FAQ già scritte sulle 7 pagine di tipologia. Passata per due redesign su richiesta di Carmelo: prima versione a elenco singola colonna con domande sempre visibili (bocciata, "troppo lunga"); poi versione con `<details>/<summary>` a comparsa ma ancora a colonna unica (bocciata, "voglio dei rettangoli come mondocauzioni"); versione finale e attuale: **griglia di box per categoria** (3 colonne desktop, 2 tablet, 1 mobile), con `<details>/<summary>` dentro ogni box per aprire la risposta al click.
+- **`chi-siamo.html`** — dati verificabili (RUI Sezione E n. E000437237, iscritto dal 24/01/2013, sede legale) — nessun numero di esperienza inventato.
+- **`faq.html`** — griglia di box per categoria (3 colonne desktop, 2 tablet, 1 mobile), `<details>/<summary>` per aprire ogni risposta.
 
 ## Pulizia footer e nuovi elementi — via `assets/app.js` e `assets/v9-final.css`
 
-Tutto tramite lo stesso meccanismo automatico (nessun file HTML toccato uno per uno). **Nota tecnica importante (verificata il 19 settembre 2026)**: la rimozione di numero di telefono e riga RUI è fatta interamente **a runtime via JavaScript** (funzione IIFE in `assets/app.js`, blocco `document.querySelectorAll('a[href^="tel:..."]')...remove()` ecc.) — l'HTML statico di ogni pagina *contiene ancora* quelle righe nel markup sorgente, ma vengono rimosse dal DOM ad ogni caricamento pagina, prima che l'utente le veda (effetto collaterale minore: un flash impercettibile, visibile solo con JS disattivato o a un crawler che non esegue JS — non è un bug, è la soluzione scelta per evitare di editare ogni file HTML singolarmente). **Non scambiare "presente nell'HTML sorgente" per "visibile sul sito live" — verificare sempre `assets/app.js` prima di segnalare un problema di questo tipo.**
+**Nota tecnica importante**: la rimozione di numero di telefono e riga RUI è fatta interamente **a runtime via JavaScript** — l'HTML statico di ogni pagina *contiene ancora* quelle righe nel markup sorgente, ma vengono rimosse dal DOM ad ogni caricamento pagina (flash impercettibile, non un bug). **Non scambiare "presente nell'HTML sorgente" per "visibile sul sito live".**
 
-- **Numero di cellulare personale (328 6382612) rimosso da tutto il sito** — su richiesta esplicita di Carmelo, decisione motivata: non vuole essere chiamato direttamente, il cliente deve usare il form o (in futuro) WhatsApp quando avrà l'eSIM dedicata. Rimosso sia dal footer di ogni pagina sia dal blocco più prominente sulla pagina `/contatti` (struttura HTML diversa, gestita con un secondo selettore).
-- **Pulsante "torna su"** aggiunto su ogni pagina (compare dopo scroll, sparisce in cima) — passato per due redesign su richiesta di Carmelo: prima versione cerchio bianco in basso a sinistra (bocciata, "poco evidente"); versione attuale: **ovale dorato con scritta "↑ Torna su", centrato orizzontalmente in basso**. Implementato in `assets/app.js`, funzione `initBackToTop()` — confermato presente e funzionante.
-- **Riquadro "Dati societari e iscrizione"** (in fondo a ogni pagina): passato da un unico blocco di testo che scorreva in linea (si sovrapponeva al widget Assistente CM) a una griglia, poi centrato, poi — su ulteriore feedback di Carmelo ("confusionario su 3 colonne", righe di lunghezza diversa disallineavano la griglia) — **a colonna singola centrata**, un campo per riga.
-- **Riga "Registro Unico degli Intermediari — IVASS"** rimossa dalla barra finale del footer (sotto il copyright), su richiesta di Carmelo — rimozione a runtime, vedi nota tecnica sopra.
-- **Righe vuote "Telefono:", "Email:", "PEC:"** (residuo, senza valore) rimosse dal riquadro dati societari — rimozione a runtime, vedi nota tecnica sopra.
+- **Numero di cellulare personale (328 6382612) rimosso da tutto il sito** — su richiesta di Carmelo.
+- **Pulsante "torna su"** — ovale dorato "↑ Torna su", centrato in basso. `initBackToTop()`.
+- **Riquadro "Dati societari e iscrizione"** — vedi evoluzione completa in §22 (ulteriore restyle il 19 sera).
+- **Riga "Registro Unico degli Intermediari — IVASS"** rimossa dalla barra finale del footer.
 
-## PUNTI APERTI — non risolti, richiedono azione di Carmelo o una decisione
+## Punti storici — entrambi CHIUSI
 
-### 1. Foto ripetute tra le pagine di tipologia — IN LAVORAZIONE (aggiornato 19 settembre 2026)
+### 1. Foto ripetute tra le pagine di tipologia — CHIUSO IL 19 SETTEMBRE 2026
 
-Verificato con screenshot di Carmelo: la stessa foto (`locazioni-retina-*.webp`, una casa) è usata identica per **tre** card diverse (Affitti fra Privati, Affitti Commerciali, Rami d'Azienda) e la stessa foto (`altre-esigenze-retina-*.webp`, penna su documento) è usata identica per **tre** card diverse (Dogane, Contratti Privati, Altre Fideiussioni).
+Problema originale: `locazioni-retina-*.webp` (una casa) usata identica per 3 card (Affitti fra Privati, Affitti Commerciali, Rami d'Azienda); `altre-esigenze-retina-*.webp` (penna su documento) usata identica per 3 card (Dogane, Contratti Privati, Altre Fideiussioni).
 
-**Causa del blocco iniziale**: Claude non ha accesso di rete per scaricare foto da internet e non può caricare materiale protetto da copyright su un sito commerciale senza licenza. Scartata anche la ricerca di foto stock generiche via web (risultati quasi tutti a pagamento — Alamy/Dreamstime/iStock).
+**Soluzione adottata**: immagini originali generate con Gemini (Nano Banana Pro/2, 21:9, 2K), non foto stock — vincoli espliciti nel prompt (niente volti anche sullo sfondo, niente loghi, niente testo leggibile, niente watermark). ChatGPT/DALL-E scartato all'inizio per risoluzione troppo bassa (826×465px).
 
-**Soluzione in corso**: generazione di immagini con Gemini (Nano Banana Pro/2, formato 21:9, risoluzione 2K), non foto stock — con vincoli espliciti nel prompt (niente volti, niente loghi, niente testo leggibile, niente watermark).
+**Mappatura finale, tutti i file caricati su GitHub e verificati via RAW:**
+- `locazioni-retina-*` (contenuto sostituito, stesso nome file) — consegna chiavi → `locazioni.html`
+- `affitti-rami-azienda-retina-*` — stretta di mano/contratto → `affitti-rami-azienda.html`
+- `affitti-commerciali-retina-*` — edificio commerciale esterno → `affitti-commerciali.html`
+- `dogane-retina-*` — container/porto → `dogane.html` e card corrispondente su `fideiussioni.html`
+- `contratti-privati-retina-*` — firma di documento a scrivania (persona sola, laptop e calcolatrice sullo sfondo) → solo card "Contratti Privati" su `fideiussioni.html`
 
-**Stato dei singoli file, al 19 settembre 2026:**
-- Tentativo iniziale con ChatGPT/DALL-E: risoluzione troppo bassa (826×465px contro i requisiti del sito, 768/1280/1920/2560/3840px) — scartato, si è passati a Gemini.
-- **Stretta di mano/contratto** (Gemini, 1584×672px, 21:9) — **approvata da Carmelo**, destinata a `affitti-rami-azienda.html`.
-- **Consegna chiavi** (Gemini, 1584×672px, 21:9) — **approvata da Carmelo**, destinata a `locazioni.html`.
-- **Edificio commerciale** (tentativo 1, Gemini: mano su planimetrie, 912×1175px verticale, formato sbagliato) — **scartata da Carmelo**, da rigenerare in orizzontale 21:9, destinata a `affitti-commerciali.html`.
-- Foto dogane (dogana/porto container) — non ancora tentata con Gemini.
-
-**Nessun file ancora caricato su GitHub, nessun commit fatto** — tutto fermo alla fase di approvazione delle immagini.
-
-**Nota su una mappatura precedente, ora superata**: un primissimo piano (con i prompt dati a ChatGPT, prima di passare a Gemini) assegnava "stretta di mano" a `fideiussioni-contratti-privati.html` e "consegna chiavi" a `affitti-rami-azienda.html`. **Quella mappatura è superata**: la mappatura valida è quella sopra (verificata via RAW GitHub il 19 settembre e confermata con Carmelo). Resta da decidere cosa usare per `fideiussioni-contratti-privati.html` (nel piano attuale non ha ancora una foto dedicata assegnata).
+`fideiussioni.html` aggiornato di conseguenza. **Scelta esplicita**: la card "Altre Fideiussioni" resta su `altre-esigenze-retina-*` — è la categoria residuale, un'immagine generica lì è accettata, non un problema.
 
 ### 2. Riga "marchio registrato" nel footer — CHIUSO IL 19 SETTEMBRE 2026
 
-Carmelo ha notato che un competitor (mondocauzioni.it) scrive "[Sito] è un marchio registrato di [nome]" in fondo alla pagina. **Confermato: "CM Consulting" NON è registrato come marchio presso l'UIBM** — quella frase esatta non si può scrivere. Tra le tre alternative proposte (nessuna riga / riga ancorata alla RUI / riga di proprietà senza la parola "marchio"), **Carmelo ha scelto: nessuna riga aggiuntiva**. Il footer resta con il solo copyright già presente. **Nessuna modifica al codice necessaria — il footer attuale è già conforme alla decisione.**
+"CM Consulting" NON è registrato come marchio presso l'UIBM. Tra le tre alternative proposte, **Carmelo ha scelto: nessuna riga aggiuntiva**. Footer con solo copyright, nessuna modifica al codice necessaria.
+
+---
+
+# 22. LAVORO DELLA SERA DEL 19 SETTEMBRE 2026 — Trasporti→Capacità Finanziaria, footer, logo
+
+## Card "Trasporti" sostituita con "Capacità Finanziaria" — CHIUSO
+
+Carmelo ha notato due problemi collegati: (1) la card "Trasporti" su `fideiussioni.html` portava a uno step generico del form (`richiedi-preventivo.html?tipo=trasporti`) che di fatto duplicava `capacita-finanziaria.html`, già una pagina reale e completa per lo stesso pubblico (autotrasportatori); (2) l'immagine mostrata in quello step del form era la penna generica (`altre-esigenze-retina`), non il camion.
+
+**Correzioni fatte:**
+- `fideiussioni.html`: card "Trasporti" → **"Capacità Finanziaria"**, `id="capacita-finanziaria"`, punta direttamente a `/capacita-finanziaria`, usa `assets/capacita-retina-*` (stessa foto della pagina di destinazione, il camion).
+- `richiedi-preventivo.html`: rimossa la voce "🚛 Trasporti" dalla schermata di scelta iniziale; aggiunto un redirect automatico (`window.location.replace('/capacita-finanziaria')`) se qualcuno arriva comunque su `?tipo=trasporti` da un link vecchio; corrette anche le mappature immagine rimaste sbagliate per `dogane` (ora `dogane-retina-*`, non più la penna) e `contratti-privati` (ora `contratti-privati-retina-*`) nell'oggetto `typeImages` dello script della pagina.
+
+## Riquadro "Dati societari e iscrizione" — restyle compatto — CHIUSO
+
+Su richiesta di Carmelo, ispirato al footer di un competitor (fideiussioni.online: riga unica, allineata a sinistra, separatori "·"). Implementato in `assets/app.js`, nuova funzione **`simplifyLegalBar()`**, richiamata nel blocco `DOMContentLoaded` insieme alle altre `init*`. Sostituisce l'HTML del blocco `.cm-footer-legalbar` a runtime con un'unica riga: nome azienda, P.IVA/CF, REA, RUI con data, link "Verificabile su IVASS". **Alcuni dati prima presenti nel blocco esteso (Codice Univoco, Sede legale, Sito) non sono più mostrati qui** — restano comunque pubblicati su `/chi-siamo` e `/trasparenza`. Se in futuro serve rimetterli anche nel footer, va riscritta la stringa HTML dentro `simplifyLegalBar()`.
+
+## Tentativo di nuovo logo nel footer — FATTO E ANNULLATO
+
+Carmelo ha esplorato per diverso tempo alternative al logo attuale (non leggibile su sfondo blu senza il suo riquadro bianco), generando varie proposte con Gemini (monogrammi geometrici, un concept a "nodo/infinito" disegnato da Claude in SVG, render fotorealistici argento/oro). **Conclusioni tecniche utili per il futuro, se si riprende il tema:**
+- Le immagini generate da Gemini con effetti fotorealistici (bagliori, 3D, pulviscolo) non reggono a 32px (favicon) e non sono vettoriali — verificato più volte riducendo concretamente le immagini.
+- Claude non ha uno strumento di generazione immagini in questo ambiente, né uno di vettorizzazione/ricalco automatico — può solo scrivere SVG a mano, adatto a forme geometriche semplici, non a stili calligrafici fluidi.
+- Un'immagine che Gemini presenta come "pacchetto di file pronti" (icone .AI/.EPS/.SVG, misure multiple) è comunque una singola immagine PNG/JPEG — quei file vettoriali non esistono davvero, vanno commissionati a un grafico vero.
+
+**Un tentativo concreto è stato caricato sul sito**: `assets/images/logo-cm-consulting-footer.webp` sostituiva il logo **solo nel footer** (sfondo blu, dove il colore di sfondo dell'immagine coincideva quasi esattamente con quello del sito) tramite una funzione `swapFooterLogo()` in `assets/app.js`. **Non piaciuto a Carmelo una volta visto live** (appariva dentro un riquadro bianco esistente nel footer, pensato per il logo attuale) — **annullato la sera del 19 settembre**: `swapFooterLogo()` rimossa da `assets/app.js`, il footer mostra di nuovo il logo originale ovunque. Il file `logo-cm-consulting-footer.webp` resta caricato in `assets/images/` ma non è più referenziato da nessuna pagina (candidato a pulizia futura, non urgente).
+
+**Stato attuale, unico punto aperto reale del progetto**: Carmelo ha deciso di affidare il nuovo logo per l'header a un grafico professionale esterno (contattato su Fiverr, gig `fiverr.com/zubairfb/redesign-your-logo-in-vector`, messaggio con requisiti già inviato). **In attesa dei file di consegna** (preferibilmente `.AI` o `.SVG`). Quando arrivano: verificare che siano vettoriali veri (non immagini rinominate), controllare la leggibilità a 32px, poi integrare nell'header — il logo attuale resta invariato fino ad allora, header e footer.
