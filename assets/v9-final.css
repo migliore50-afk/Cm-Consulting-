@@ -57,7 +57,7 @@ img{display:block;max-width:100%;height:auto}
   display:flex;
   align-items:center;
   width:320px;
-  height:74px;
+  height:100%;
   overflow:hidden;
   isolation:isolate;
   border-radius:8px;
@@ -480,3 +480,40 @@ body.privacy-modal-open{overflow:hidden}
 /* 18 settembre 2026 — "Dati societari": una colonna sola invece di griglia multi-colonna,
    evita il disallineamento quando le righe hanno lunghezze diverse */
 .cm-footer-legalbar{grid-template-columns:1fr!important;gap:9px 0!important;max-width:560px!important}
+
+/* 20 settembre 2026 — due bug segnalati da Carmelo su schermi laptop/finestra ridotta:
+   1) il logo (altezza fissa 74px) poteva superare l'altezza reale dell'header quando
+      questa si restringeva sotto i 74px (clamp minimo 70px), sporgendo nella sezione
+      blu sottostante — corretto sopra, height:100% invece di 74px fisso.
+   2) tra 761px e 1100px di larghezza il menu compariva come ☰ ma cliccandolo non
+      succedeva nulla: la regola che rende visibile ".links.open" esisteva solo per
+      schermi sotto i 760px, non per questa fascia intermedia. Risolto qui sotto
+      spostando la soglia del menu ☰ a 880px (non più 1100px) e aggiungendo la
+      regola ".links.open" mancante per l'intera fascia in cui compare il ☰. */
+@media(min-width:881px) and (max-width:1100px){
+  .links{display:flex!important}
+  .header-cta{display:inline-flex!important}
+  .menu{display:none!important}
+}
+@media(max-width:880px){
+  .links,.header-cta{display:none}
+  .menu{display:block}
+  .links.open{
+    display:flex!important;
+    position:absolute;
+    left:0;right:0;top:100%;
+    background:#fff;
+    box-shadow:0 15px 35px rgba(0,0,0,.15);
+    padding:8px 5%;
+    flex-direction:column;
+    align-items:stretch;
+    z-index:70;
+  }
+  .links.open a{padding:12px}
+  .links.open a:after{display:none}
+}
+
+/* 20 settembre 2026 — sui pulsanti arancioni ridondanti nella colonna Contatti del
+   footer ("Verifica iscrizione RUI", "Reclami e Arbitro Assicurativo"): rimossi via
+   JavaScript in assets/app.js (funzione removeRedundantFooterButtons), non serve
+   nascondere nulla qui — questa nota e' solo per chi legge il CSS in futuro. */
