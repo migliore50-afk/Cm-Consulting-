@@ -590,6 +590,17 @@ document.addEventListener('DOMContentLoaded', () => {
       genericLink.textContent='NON SAI QUALE GARANZIA?';
       navEl.appendChild(genericLink);
     }
+    // 20 settembre 2026 — link "Accedi Area Privata" su richiesta di Carmelo,
+    // ultima voce del menu, verso /admin (login con password + TOTP, area
+    // gia' esistente e funzionante — vedi api/admin.js e cartella admin/).
+    const hasAdminLink=[...links].some(a=>(a.getAttribute('href')||'').replace(/\/$/,'')==='/admin');
+    if(!hasAdminLink && navEl){
+      const adminLink=document.createElement('a');
+      adminLink.href='/admin';
+      adminLink.className='nav-admin-link';
+      adminLink.textContent='ACCEDI AREA PRIVATA';
+      navEl.appendChild(adminLink);
+    }
     document.querySelectorAll('a[href^="tel:+393286382612"]').forEach(a=>{
       const line=a.closest('.contact-line') || a.closest('p') || a;
       line.remove();
