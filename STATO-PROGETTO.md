@@ -1,11 +1,11 @@
 # STATO-PROGETTO.md
 ## CM Consulting — Registro tecnico ufficiale
 
-**Ultimo aggiornamento:** 19 settembre 2026 (sera)  
+**Ultimo aggiornamento:** 20 settembre 2026  
 **Repository:** `migliore50-afk/Cm-Consulting-`  
 **Branch:** `main`  
-**Deploy:** Vercel — Production  
-**Stato:** progetto attivo. Tutti i punti aperti storici di §21 sono chiusi. Vedi §22 per il lavoro della sera del 19 settembre (correzione Trasporti, footer, tentativo di nuovo logo poi annullato). Unico punto realmente aperto: nuovo logo per header, affidato a un grafico esterno (Fiverr), in attesa dei file — vedi §22.
+**Deploy:** Vercel — Production (dominio Aruba non ancora collegato, in attesa — vedi §23)  
+**Stato:** progetto attivo. Vedi §23 per l'audit tecnico completo del 20 settembre (bug menu/logo risolti, riscoperta dell'Area Amministratore già esistente, sitemap da aggiornare, flusso email/allegati da decidere). Punto aperto storico: nuovo logo per header, affidato a un grafico esterno (Fiverr), in attesa dei file — vedi §22.
 
 ---
 
@@ -35,7 +35,7 @@ Ogni correzione indipendente deve avere un commit separato.
 
 Se il RAW GitHub è troncato, non ricostruire il file alla cieca: recuperare il contenuto necessario oppure chiedere il file completo.
 
-**Attenzione per chi riprende**: questo registro ha già avuto almeno un caso di "punto chiuso riproposto come aperto" per non aver riletto §18 con attenzione (vedi nota in fondo a §18). Prima di segnalare un punto come "ancora da fare", verificare sempre se esiste già una sezione che lo chiude.
+**Attenzione per chi riprende**: questo registro ha già avuto almeno un caso di "punto chiuso riproposto come aperto" per non aver riletto §18 con attenzione (vedi nota in fondo a §18). Prima di segnalare un punto come "ancora da fare", verificare sempre se esiste già una sezione che lo chiude. Vedi anche §23 per un secondo caso simile (Area Amministratore esistente ma non documentata).
 
 ---
 
@@ -156,9 +156,11 @@ File storici già eliminati: `assets/cm-assistant-v7.css`, `assets/cm-assistant.
 
 **Nuovo candidato orfano (19 settembre 2026 sera)**: `assets/images/logo-cm-consulting-footer.webp` — caricato durante un tentativo di nuovo logo poi annullato (vedi §22), non più referenziato da nessuna pagina. Non urgente da rimuovere.
 
+**Candidati orfani identificati il 20 settembre 2026 (audit, vedi §23)**: numerosi file di documentazione storica in root (`AUDIT-V12.6-FINALE.md`, `AUDIT-V12.7-FINALE.md`, `README-V12.7.md`, `README-V12.8-SECURITY.md`, `VERSION*.txt`, `ASSET-AUDIT-V11.txt`, `ASSET-RECUPERATI.txt`, `CONTROLLO-TECNICO-V9.txt`, `PUBBLICAZIONE-CHECKLIST.txt`, `AUDIT-ASSISTENTE-V12.6.1.md`) — non causano problemi funzionali ma non sono più il riferimento attivo (quello è questo file). Non eliminarli senza conferma esplicita di Carmelo; considerare di spostarli in `/docs/archivio/`.
+
 ---
 
-# 11. FILE IMPORTANTI (aggiornato al 19 settembre 2026 sera)
+# 11. FILE IMPORTANTI (aggiornato al 20 settembre 2026)
 
 ## HTML — pagine principali
 `index.html`, `fideiussioni.html` (hub tipologie), `capacita-finanziaria.html`, `contatti.html`, `chi-siamo.html`, `faq.html`, `richiedi-preventivo.html`, `reclami-e-arbitro-assicurativo.html`, `privacy.html`, `cookie.html`, `trasparenza.html`, `404.html`
@@ -166,17 +168,23 @@ File storici già eliminati: `assets/cm-assistant-v7.css`, `assets/cm-assistant.
 ## HTML — pagine di tipologia (contenuto reale, vedi §21)
 `appalti-pubblici.html`, `dogane.html`, `ambiente.html` ("Beneficiari Pubblici"), `locazioni.html` ("Affitti fra Privati"), `affitti-commerciali.html`, `affitti-rami-azienda.html`, `fideiussioni-contratti-privati.html`
 
+## Area Amministratore (riscoperta il 20 settembre 2026 — vedi §23)
+`admin/index.html` (login), `admin/reset.html`, `admin/admin.css`, `admin/admin.js` — frontend completo dell'area riservata, servito su `/admin`. `area-cm.html` è solo un redirect verso `/admin`. Backend: `api/admin.js` (login password+TOTP, sessioni Redis, CRUD pratiche/richieste su Supabase). Documentazione architetturale in `SECURITY-V12.8.md` (root). **Login testato e funzionante il 20 settembre 2026** sull'URL stabile `https://cm-consulting-v128-security-vercel.vercel.app/admin` — non funziona sugli URL di preview `-deploy-xxxxx.vercel.app` per via del controllo origine legato a `SITE_URL`, comportamento corretto e voluto.
+
 ## JavaScript
-`assets/app.js` — contiene sia la logica applicativa (carousel, Assistente CM, form) sia diverse funzioni di correzione automatica del menu/footer eseguite a runtime su ogni pagina (vedi §21 e §22). Leggere sempre il RAW prima di aggiungere nuova logica simile, per non duplicarla. Funzioni runtime attive nel blocco `DOMContentLoaded`: `initMenu`, `initSlider`, `initAssistantUI`, `initAssistantFab`, `initAssistantFabFooterHide`, `initClickableCards`, `initBasicFormValidation`, `initBackToTop`, `simplifyLegalBar`, più l'IIFE `initServiziDropdown` in fondo al file (menu SERVIZI, pulizia telefono/RUI). **Nessuna funzione di sostituzione logo attiva** (rimossa la sera del 19 settembre, vedi §22).
+`assets/app.js` — contiene sia la logica applicativa (carousel, Assistente CM, form) sia diverse funzioni di correzione automatica del menu/footer eseguite a runtime su ogni pagina (vedi §21, §22, §23). Leggere sempre il RAW prima di aggiungere nuova logica simile, per non duplicarla. Funzioni runtime attive nel blocco `DOMContentLoaded`: `initMenu`, `initSlider`, `initAssistantUI`, `initAssistantFab`, `initAssistantFabFooterHide`, `initClickableCards`, `initBasicFormValidation`, `initBackToTop`, `simplifyLegalBar`, `removeRedundantFooterButtons`, più l'IIFE `initServiziDropdown` in fondo al file (menu SERVIZI, link "Accedi Area Privata", pulizia telefono/RUI). **Nessuna funzione di sostituzione logo attiva** (rimossa la sera del 19 settembre, vedi §22).
 
 ## CSS
-`assets/style.css` (base), `assets/v9-final.css` (attivo, tutte le correzioni successive)
+`assets/style.css` (base), `assets/v9-final.css` (attivo, tutte le correzioni successive — vedi §23 per gli ultimi fix su logo/menu)
 
-## Immagini (aggiornato al 19 settembre 2026 sera — vedi §21 punto 1 e §22 per la storia completa)
+## Immagini (vedi §21 punto 1 e §22 per la storia completa)
 Ogni asset segue lo schema `<stem>-retina-<768|1280|1920|2560|3840>.webp`. Stem attivi: `appalti`, `autotrasportatori`, `capacita`, `ambiente`, `altre-esigenze` (condiviso solo da "Altre Fideiussioni", scelta voluta), `locazioni`, `affitti-commerciali`, `affitti-rami-azienda`, `dogane`, `contratti-privati`. Foto generate con Gemini (Nano Banana Pro/2), non foto stock. Logo: `assets/images/logo-cm-consulting.webp` (attuale, header e footer, invariato) — un tentativo di sostituirlo nel solo footer è stato fatto e annullato, vedi §22.
 
 ## Configurazione
-`vercel.json` — redirect delle vecchie URL; aggiornato il 18 settembre 2026 quando le pagine di tipologia sono state riattivate (vedi §21)
+`vercel.json` — redirect delle vecchie URL; aggiornato il 18 settembre 2026 quando le pagine di tipologia sono state riattivate (vedi §21). `sitemap.xml` e `robots.txt` in root — **sitemap ferma al 27 agosto 2026, da aggiornare, vedi §23**.
+
+## API backend (`api/`)
+`api/admin.js` (vedi sopra), `api/submit-request.js` (invio richiesta + email via Resend, supporta allegati reali via Vercel Blob con scansione antivirus fail-closed — **non collegato al frontend attuale, vedi §23**), `api/attachment-upload-url.js` (genera URL di upload firmato, non richiamato da nessuna pagina), `api/_security.js` (rate limiting e scansione antivirus condivisi, entrambi fail-closed).
 
 ---
 
@@ -200,19 +208,19 @@ Corretta su `index.html` e `capacita-finanziaria.html`: vecchio indirizzo di Bei
 
 # 18. UPLOAD DIRETTO E ANTIVIRUS CLAMAV — PERCORSO ARCHIVIATO (16 settembre 2026)
 
-**Stato: CHIUSO E DEFINITIVO — non riaprire senza una richiesta esplicita e nuova di Carmelo.**
+**Stato: CHIUSO E DEFINITIVO come scelta Oracle Cloud/ClamAV — ma vedi §23 per un'alternativa a pagamento (Cloudmersive) riemersa il 20 settembre, se Carmelo deciderà di riattivare l'upload con allegati.**
 
-Il sito non usa più upload diretti di file in nessuna pagina — sostituito da invio documentazione via email dal cliente. Codice backend (`api/_security.js`, `api/attachment-upload-url.js`) non toccato, resta nel repository ma non più richiamato da nessuna pagina HTML.
+Il sito non usa più upload diretti di file in nessuna pagina — sostituito da invio documentazione via email dal cliente (flusso a due email separate, vedi §23 punto 3). Codice backend (`api/_security.js`, `api/attachment-upload-url.js`, `api/submit-request.js`) non toccato, resta nel repository completo e funzionante ma non richiamato dal frontend attuale.
 
 **Motivazione esplicita (confermata da Carmelo il 19 settembre 2026, non era scritta chiaramente qui prima d'ora)**: l'ipotesi era ospitare un antivirus ClamAV reale su un server Oracle Cloud a livello gratuito ("Always Free"). Oracle richiede comunque i dati di una carta di debito/credito anche per il piano gratuito. Carmelo ha deciso di non procedere per il rischio concreto che, se in futuro Oracle cambiasse le condizioni del piano gratuito, la carta collegata potrebbe subire addebiti senza un'azione esplicita da parte sua. Si è quindi scelto di eliminare l'esigenza stessa (niente upload diretto sul sito, quindi niente bisogno di un antivirus) invece di accettare quel rischio finanziario per una funzione non essenziale al business.
 
-**Nota di continuità**: in una sessione precedente (inizio del 19 settembre) questo punto era stato erroneamente reintrodotto come "ancora da verificare" — era già chiuso da tre giorni. Non ripetere l'errore: se emerge di nuovo il tema "antivirus" o "upload diretto", il punto di partenza è questa sezione, chiusa, non una nuova valutazione da zero.
+**Nota di continuità**: in una sessione precedente (inizio del 19 settembre) questo punto era stato erroneamente reintrodotto come "ancora da verificare" — era già chiuso da tre giorni. Non ripetere l'errore: se emerge di nuovo il tema "antivirus" o "upload diretto", il punto di partenza è questa sezione e §23, non una nuova valutazione da zero.
 
 ---
 
 # 19. REDESIGN UX — richiedi-preventivo.html E capacita-finanziaria.html (17 settembre 2026)
 
-**Stato: caricato su `main`, verificato.** Vedi anche §22 per un'ulteriore correzione a `richiedi-preventivo.html` (rimozione opzione "Trasporti") fatta il 19 settembre sera.
+**Stato: caricato su `main`, verificato.** Vedi anche §22 per un'ulteriore correzione a `richiedi-preventivo.html` (rimozione opzione "Trasporti") fatta il 19 settembre sera, e §23 per l'analisi del flusso email/allegati.
 
 Da 4 step a 2 (`richiedi-preventivo.html`) e da 3 step a 1 (`capacita-finanziaria.html`): spiegazione in linguaggio semplice, campi essenziali sempre visibili, dettagli tecnici in sezione facoltativa, box unico "Documenti necessari e invio" con un solo pulsante che registra la richiesta e apre l'email precompilata. WhatsApp rimosso definitivamente dal flusso documenti (rimandato a quando sarà attiva un'eSIM dedicata). Foto dinamica per tipologia aggiunta. Contenuti di Locazioni verificati con ricerca mirata (garante bancario/assicurativo/altro, distinzione locatore/conduttore, clausola "a prima richiesta" verificata in istruttoria, non chiesta al cliente).
 
@@ -222,7 +230,7 @@ Da 4 step a 2 (`richiedi-preventivo.html`) e da 3 step a 1 (`capacita-finanziari
 
 # 20. PIANO ELITE — SUPERAMENTO COMPETITOR (17 settembre 2026)
 
-Analisi comparativa di tre competitor (fideiussioni.online, italiafideiussioni.it, mondocauzioni.it) consegnata come documento separato (`PIANO-ELITE-SUPERAMENTO-COMPETITOR.md`, fuori dal repository).
+Analisi comparativa di tre competitor (fideiussioni.online, italiafideiussioni.it, mondocauzioni.it) consegnata come documento separato (`PIANO-ELITE-SUPERAMENTO-COMPETITOR.md`, fuori dal repository). Aggiornamento del 20 settembre in §23 (pubblicazione del MUP come pagina consultabile, pratica diffusa tra intermediari).
 
 **Premessa vincolante, vale per sempre**: CM Consulting non può dichiarare scala/numeri/anni di esperienza/recensioni dei competitor (es. "30+ anni", "2.500+ pratiche") senza violare la trasparenza IVASS — nessuna cifra falsa va introdotta. Vale anche per "marchio registrato" (vedi §21 — chiuso il 19 settembre 2026, nessuna riga aggiunta): si scrive solo ciò che è vero e verificabile.
 
@@ -260,7 +268,7 @@ Ogni pagina ha: H1/H2 per SEO, elenco "Cosa può coprire" (checklist compatta a 
 
 ## Navigazione — menu a tendina, voci rimosse/aggiunte, tutto via `assets/app.js`
 
-Tecnica usata per tutte le correzioni al menu: **una sola funzione IIFE in `assets/app.js`** (`initServiziDropdown`) che modifica il DOM del menu a runtime su ogni pagina (nessun file HTML deve essere toccato singolarmente). Include: rimozione voce "FIDEIUSSIONI" separata, rimozione voce "CAPACITÀ FINANZIARIA" separata (resta raggiungibile dal menu a tendina "SERVIZI"), correzione link "CHI SIAMO" (ora punta a `/chi-siamo`), aggiunta automatica voce "FAQ" e "NON SAI QUALE GARANZIA?" su tutte le pagine, pulizia telefono/riga RUI (vedi sotto).
+Tecnica usata per tutte le correzioni al menu: **una sola funzione IIFE in `assets/app.js`** (`initServiziDropdown`) che modifica il DOM del menu a runtime su ogni pagina (nessun file HTML deve essere toccato singolarmente). Include: rimozione voce "FIDEIUSSIONI" separata, rimozione voce "CAPACITÀ FINANZIARIA" separata (resta raggiungibile dal menu a tendina "SERVIZI"), correzione link "CHI SIAMO" (ora punta a `/chi-siamo`), aggiunta automatica voce "FAQ" e "NON SAI QUALE GARANZIA?" su tutte le pagine, pulizia telefono/riga RUI (vedi sotto). **Aggiornamento 20 settembre**: aggiunta anche la voce "ACCEDI AREA PRIVATA" verso `/admin`, vedi §23.
 
 **Nota per chi riprende**: `assets/app.js` contiene diverse funzioni di questo tipo (ricerca testo nel menu → rimuovi/aggiungi/correggi link). Prima di aggiungerne altre, leggere il RAW e capire lo schema esistente invece di duplicare logica.
 
@@ -325,3 +333,60 @@ Carmelo ha esplorato per diverso tempo alternative al logo attuale (non leggibil
 **Un tentativo concreto è stato caricato sul sito**: `assets/images/logo-cm-consulting-footer.webp` sostituiva il logo **solo nel footer** (sfondo blu, dove il colore di sfondo dell'immagine coincideva quasi esattamente con quello del sito) tramite una funzione `swapFooterLogo()` in `assets/app.js`. **Non piaciuto a Carmelo una volta visto live** (appariva dentro un riquadro bianco esistente nel footer, pensato per il logo attuale) — **annullato la sera del 19 settembre**: `swapFooterLogo()` rimossa da `assets/app.js`, il footer mostra di nuovo il logo originale ovunque. Il file `logo-cm-consulting-footer.webp` resta caricato in `assets/images/` ma non è più referenziato da nessuna pagina (candidato a pulizia futura, non urgente).
 
 **Stato attuale, unico punto aperto reale del progetto**: Carmelo ha deciso di affidare il nuovo logo per l'header a un grafico professionale esterno (contattato su Fiverr, gig `fiverr.com/zubairfb/redesign-your-logo-in-vector`, messaggio con requisiti già inviato). **In attesa dei file di consegna** (preferibilmente `.AI` o `.SVG`). Quando arrivano: verificare che siano vettoriali veri (non immagini rinominate), controllare la leggibilità a 32px, poi integrare nell'header — il logo attuale resta invariato fino ad allora, header e footer.
+
+---
+
+# 23. LAVORO DEL 20 SETTEMBRE 2026 — bug menu/logo, Area Amministratore, audit tecnico completo
+
+## Bug menu ☰ e logo che sborda — CHIUSI
+
+Carmelo, testando il sito sul MacBook, ha segnalato: (1) il logo sbordava visivamente nella fascia blu sotto l'header su certe larghezze di finestra; (2) il menu ☰ non compariva affatto su alcune pagine, e su altre compariva ma cliccandolo non succedeva nulla.
+
+**Diagnosi e correzioni in `assets/v9-final.css`:**
+- Il logo aveva un'altezza fissa (74px) mentre l'header ha altezza fluida (clamp 70-88px) senza `overflow:hidden` (necessario per non tagliare il menu a tendina mobile) — quando l'header scendeva sotto i 74px, il logo sporgeva. **Corretto**: `.brand{height:100%}` invece di `height:74px`, segue sempre l'altezza reale dell'header.
+- Tra 761px e 1100px di larghezza finestra il sito mostrava il ☰ ma la regola CSS che rende visibile `.links.open` esisteva solo per finestre ≤760px, non per questa fascia intermedia — clic registrato, nessun effetto visibile. **Corretto**: soglia del ☰ spostata a 880px, con la regola `.links.open` ora presente su tutta la fascia in cui il ☰ compare.
+
+**Diagnosi e correzioni sui file HTML — header ridotto (solo logo+HOME, nessun menu):**
+Trovate 4 pagine con un header "ridotto" invece di quello standard con menu completo: `privacy.html`, `cookie.html`, `trasparenza.html`, `reclami-e-arbitro-assicurativo.html`. Tutte e 4 corrette con l'header standard (uguale al resto del sito). `404.html` resta intenzionalmente senza header (normale per una pagina di errore, non toccata).
+
+## Pulsanti footer ridondanti rimossi — CHIUSO
+
+I due pulsanti arancioni "Verifica iscrizione RUI" e "Reclami e Arbitro Assicurativo" nella colonna Contatti del footer duplicavano informazioni già presenti altrove nello stesso footer (link "Verificabile su IVASS" nella riga compatta, voce "Reclami e Arbitro Assicurativo" nella colonna Informazioni). Non richiesti in quella forma specifica dalla normativa IVASS — l'obbligo è che l'informazione sia accessibile, non che compaia due volte. Rimossi via nuova funzione `removeRedundantFooterButtons()` in `assets/app.js`.
+
+## Area Amministratore — riscoperta, non era documentata qui — CHIUSO (per oggi)
+
+Carmelo ha chiesto una voce di menu "Accedi area privata". Durante la preparazione è emerso che **esiste già un intero sistema di amministrazione completo e funzionante**, mai documentato in questo registro: login con password + secondo fattore TOTP obbligatorio, sessioni server-side su Redis, gestione pratiche e richieste su database Supabase (`api/admin.js`, cartella `admin/`, documentazione architetturale in `SECURITY-V12.8.md`, root del repo). Il login era bloccato da un controllo di sicurezza legato all'origine della richiesta (variabile `SITE_URL`, impostata correttamente sul dominio Vercel stabile) — il problema era solo che i test venivano fatti su un URL di preview temporaneo (`-deploy-xxxxx.vercel.app`) invece di quello stabile. **Testato e confermato funzionante il 20 settembre** su `https://cm-consulting-v128-security-vercel.vercel.app/admin`.
+
+Aggiunta la voce di menu **"ACCEDI AREA PRIVATA"** (ultima voce, verso `/admin`) in `assets/app.js`, stesso meccanismo delle altre voci di menu.
+
+**Nota di continuità, sullo stesso schema di §18**: come per l'antivirus, un'intera funzionalità completa e testata in passato non era stata scritta in questo registro, causando lavoro di riscoperta. D'ora in poi, ogni volta che si trova un pezzo importante di codice non documentato qui, va aggiunto subito, anche se non richiede modifiche immediate.
+
+## Audit tecnico completo — 20 settembre 2026
+
+Su richiesta di Carmelo, audit approfondito dell'intero progetto (architettura, sicurezza, flusso richieste, conformità IVASS, SEO, concorrenti), consegnato come documento separato `AUDIT-TECNICO-20-SETTEMBRE-2026.md` (fuori dal repository, fornito a Carmelo). Punti aperti emersi, non ancora risolti:
+
+### 1. Flusso email/allegati — DECISIONE DA PRENDERE
+
+Scoperta: `api/submit-request.js` supporta già nativamente allegati reali (upload su Vercel Blob, scansione antivirus fail-closed, invio di un'unica email a Carmelo con dati e allegati veri tramite Resend) — **ma il frontend (`richiedi-preventivo.html`) non usa questa funzione**. Oggi il cliente riceve solo la registrazione testuale della richiesta via `/api/submit-request`, poi deve inviare lui stesso un'email separata (via `mailto:`) con gli allegati — risultato pratico: **due email distinte** per Carmelo invece di una sola completa.
+
+Causa: la scansione antivirus è fail-closed e richiede `CM_ANTIVIRUS_WEBHOOK_URL` configurato (vedi §18) — non configurato per la scelta già presa su Oracle Cloud/ClamAV. Per un'unica email con allegati servirebbe ricollegare il frontend alla funzione già scritta **e** attivare un vero servizio antivirus — possibile alternativa più economica di un server autogestito: un servizio antivirus in cloud a pagamento (es. Cloudmersive, già valutato in una sessione precedente), che evita il problema "carta di credito su piano gratuito" che aveva fatto scartare Oracle. **In attesa della decisione di Carmelo**: tenere il flusso attuale a due email, oppure investire nel ricollegamento + antivirus a pagamento.
+
+### 2. Sitemap.xml da aggiornare
+
+`sitemap.xml` ferma al 27 agosto 2026, mancano `/affitti-commerciali`, `/affitti-rami-azienda`, `/fideiussioni-contratti-privati`, `/chi-siamo`, `/faq` — pagine reali create il 18 settembre. Basso sforzo, da fare appena richiesto.
+
+### 3. Aggiornamento normativo da verificare con un professionista
+
+Trovato che il Modulo Unico Precontrattuale (Allegati 3/4 del Regolamento IVASS 40/2018) è stato aggiornato dal **Provvedimento IVASS n. 147/2024, in vigore dal 1° luglio 2025**. `trasparenza.html` cita solo il Regolamento 40/2018 originale. Da verificare con un consulente compliance/IVASS (fuori dalle competenze di un'IA) se il MUP che Carmelo consegna in pratica ai clienti sia già nel formato aggiornato, e se aggiungere un riferimento esplicito al Provvedimento 147/2024 in `trasparenza.html`.
+
+### 4. Test di sicurezza esterno — raccomandato prima del collegamento Aruba
+
+`SECURITY-V12.8.md` raccomanda esplicitamente un test di sicurezza esterno prima del "deploy definitivo" — non ancora fatto. Da considerare prima di collegare il dominio vero, dato che l'Area Amministratore tratta dati di clienti.
+
+### 5. Dati strutturati Schema.org — miglioramento SEO facoltativo
+
+Assenti (es. `LocalBusiness`/`InsuranceAgency` in home, `FAQPage` in `faq.html`). Migliorerebbero la visibilità nei risultati di ricerca (rich snippet). Non urgente.
+
+### Verifica incrociata con ChatGPT
+
+Consegnato a Carmelo un prompt completo per far verificare in modo indipendente a ChatGPT: conformità IVASS approfondita (in particolare il punto 3 sopra), sicurezza vista da un secondo punto di vista, parole chiave SEO e markup Schema.org pronto da incollare, ricerca di concorrenti Sezione E comparabili. Prompt conservato in `AUDIT-TECNICO-20-SETTEMBRE-2026.md`, sezione finale.
