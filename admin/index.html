@@ -96,7 +96,29 @@
     </div>
   </section>
 </main>
+<div id="mupOpen" class="modal hidden"><div class="modal-card" style="max-width:920px"><button id="mupClose" class="modal-close" aria-label="Chiudi">×</button><h2>Generatore MUP</h2><p class="muted">Pratica: <strong id="mupPracticeTitle">—</strong>. I dati devono corrispondere alla singola distribuzione.</p><div class="form-grid">
+<label>Contraente / cliente<input id="mupClient" required></label>
+<label>Tipologia / prodotto<input id="mupProduct" required></label>
+<label>Scadenza pratica<input id="mupExpiry" type="date" required></label>
+<label>E-mail cliente<input id="mupEmail" type="email"></label>
+<label>Intermediario principale per cui opera la Sezione E<input id="mupMainIntermediary" required></label>
+<label>RUI intermediario principale<input id="mupMainRui" required></label>
+<label>Sezione intermediario principale<input id="mupMainSection" required placeholder="A / B"></label>
+<label>Sede legale intermediario principale<input id="mupMainAddress" required></label>
+<label>Impresa di assicurazione<input id="mupInsurer" required></label>
+<label>Modello di distribuzione<input id="mupDistribution" required placeholder="Descrivere il modello effettivo"></label>
+<label>Consulenza ex art. 119-ter, c.3<input id="mupAdvice" value="NO"></label>
+<label>Analisi imparziale ex art. 119-ter, c.4<input id="mupImpartial" value="NO"></label>
+<label>Distribuzione esclusiva<input id="mupExclusive" value="NO"></label>
+<label>Partecipazioni/conflitti ≥10%<input id="mupConflict" value="NO"></label>
+<label>Collaborazione orizzontale<input id="mupHorizontal" value="NO"></label>
+<label>Remunerazione<input id="mupRemuneration" required placeholder="Dati effettivi"></label>
+<label class="full">Pagamento dei premi<input id="mupPayment" required placeholder="Regime e modalità effettive"></label>
+<label class="full">RC professionale / estremi applicabili<input id="mupRc" required></label>
+<label class="full">Reclami / recapiti / procedura<input id="mupComplaints" required></label>
+</div><div id="mupMsg" class="message" aria-live="polite"></div><div class="actions" style="display:flex;gap:8px;justify-content:flex-end"><button id="mupCancel" class="btn ghost" type="button">ANNULLA</button><button id="mupGenerate" class="btn primary" type="button">GENERA MUP</button></div></div></div>
 <div id="practiceModal" class="modal hidden"><div class="modal-card"><button id="closeModal" class="modal-close" aria-label="Chiudi">×</button><h2>Nuova pratica</h2><form id="practiceForm" class="form-grid"><label>Cliente / ragione sociale<input name="client" required maxlength="180"></label><label>Tipologia<select name="type"><option>Capacità finanziaria</option><option>Fideiussione</option><option>Appalti pubblici</option><option>Locazioni</option><option>Dogane</option><option>Ambiente</option></select></label><label>Data scadenza<input name="expiry" type="date" required></label><label>Email cliente<input name="email" type="email"></label><label>Prezzo cliente — interno<input name="clientPrice" type="number" step="0.01" min="0"></label><label>Costo revisore — interno<input name="reviewerCost" type="number" step="0.01" min="0"></label><label class="full">Note interne<textarea name="notes" rows="4" maxlength="10000"></textarea></label><div class="full actions"><button type="submit" class="btn primary">SALVA</button></div></form><div id="practiceMsg" class="message"></div></div></div><script src="/admin/index-init.js" defer></script>
 <script src="/admin/admin.js" defer></script>
+<script src="/admin/mup.js" defer></script>
 </body>
 </html>
