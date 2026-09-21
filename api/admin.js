@@ -598,6 +598,8 @@ export default async function handler(req, res) {
     });
   }
 
+  let loginStage = 'request';
+
   try {
     if (action === 'public-config' && req.method === 'GET') {
       const { url, key } = supabaseConfig();
@@ -610,7 +612,6 @@ export default async function handler(req, res) {
      * ============================================================
      */
     if (action === 'login' && req.method === 'POST') {
-      let loginStage = 'request';
       const body = req.body || {};
       const email = str(body.email);
       const password = typeof body.password === 'string' ? body.password : '';
