@@ -44,18 +44,24 @@
     set('mupMandate', 'NO');
     set('mupHorizontal', 'NO');
     set('mupHorizontalName', '');
-    set('mupConflict', 'NO');
-    set('mupConflictDetails', '');
+    set('mupConflictA', 'NO');
+    set('mupConflictAName', '');
+    set('mupConflictB', 'NO');
+    set('mupConflictBName', '');
     set('mupAdvice', 'NO');
     set('mupImpartial', 'NO');
     set('mupExclusive', 'NO');
     set('mupNonExclusive', 'SI');
     set('mupBusinessRelationships', '');
+    set('mupTransparency', '');
     set('mupRemuneration', '');
     set('mupClientFee', '');
+    set('mupRcAuto', '');
+    set('mupHorizontalCompensation', '');
     set('mupPayment', '');
     set('mupSegregatedAssets', '');
     set('mupPaymentMethods', '');
+    set('mupSectionBPayment', '');
     set('mupRc', '');
     set('mupComplaints', '');
     set('mupArbitro', '');
@@ -144,16 +150,20 @@
         ['Analisi imparziale e personale ai sensi dell’art. 119-ter, comma 4, CAP', val('mupImpartial')],
         ['Contratto di distribuzione in esclusiva', val('mupExclusive')],
         ['Distribuzione non esclusiva', val('mupNonExclusive')],
-        ['Imprese con cui esistono rapporti di affari', val('mupBusinessRelationships')]
+        ['Imprese con cui esistono rapporti di affari', val('mupBusinessRelationships')],
+        ['Altre informazioni utili alla trasparenza ex art. 119-bis, c.7 CAP', val('mupTransparency')]
       ]) +
       section('5. Informazioni sulle remunerazioni', [
         ['Tipologia e natura della remunerazione', val('mupRemuneration')],
-        ['Eventuale compenso pagato direttamente dal cliente', val('mupClientFee')]
+        ['Eventuale compenso pagato direttamente dal cliente', val('mupClientFee')],
+        ['Provvigioni RC Auto, se applicabile', val('mupRcAuto')],
+        ['Compensi complessivi in caso di collaborazione orizzontale / Sezione E', val('mupHorizontalCompensation')]
       ]) +
       section('6. Informazioni sul pagamento dei premi', [
         ['Regime applicabile', val('mupPayment')],
         ['Gestione separata / garanzia bancaria, se applicabile', val('mupSegregatedAssets')],
-        ['Modalità di pagamento ammesse', val('mupPaymentMethods')]
+        ['Modalità di pagamento ammesse', val('mupPaymentMethods')],
+        ['Pagamento a intermediario Sezione B, se applicabile', val('mupSectionBPayment')]
       ]) +
       section('7. Informazioni sugli strumenti di tutela del contraente', [
         ['Assicurazione RC professionale', val('mupRc')],
