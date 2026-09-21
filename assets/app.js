@@ -521,9 +521,32 @@ function initBackToTop() {
   btn.innerHTML = '↑ <span>Torna su</span>';
   btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
   document.body.appendChild(btn);
+
+  // 20 settembre 2026 — evita la sovrapposizione con il widget "Assistente CM" nel
+  // footer (segnalata da Carmelo): il pulsante ora tiene conto di due condizioni,
+  // scroll sufficiente E footer non visibile, stesso principio gia' usato da
+  // initAssistantFabFooterHide() per il widget dell'assistente.
+  let scrolledEnough = false;
+  let footerVisible = false;
+  const updateVisibility = () => {
+    btn.classList.toggle('show', scrolledEnough && !footerVisible);
+  };
+
   window.addEventListener('scroll', () => {
-    btn.classList.toggle('show', window.scrollY > 400);
+    scrolledEnough = window.scrollY > 400;
+    updateVisibility();
   }, { passive: true });
+
+  const footer = document.querySelector('footer.cm-footer');
+  if (footer && 'IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        footerVisible = entry.isIntersecting;
+        updateVisibility();
+      });
+    }, { rootMargin: '0px 0px -80px 0px', threshold: 0 });
+    observer.observe(footer);
+  }
 }
 
 // 19 settembre 2026 — riquadro "Dati societari e iscrizione" nel footer, restyle su
@@ -556,6 +579,31 @@ function removeRedundantFooterButtons() {
   document.querySelectorAll('.cm-footer-contact .cm-rui-link').forEach(a => a.remove());
 }
 
+// 21 settembre 2026 — barra di navigazione fissa in fondo, solo su mobile, su
+// richiesta di Carmelo (ispirata a un pattern comune nel settore, es.
+// mondocauzioni.it): 5 voci sempre a portata di pollice, con "Preventivo" in
+// evidenza al centro. WhatsApp volutamente assente — nessun numero attivo
+// ancora, vedi registro tecnico (eSIM non ancora attiva).
+function initMobileBottomNav() {
+  if (document.getElementById('cmMobileNav')) return;
+  const nav = document.createElement('nav');
+  nav.id = 'cmMobileNav';
+  nav.className = 'cm-mobile-nav';
+  nav.setAttribute('aria-label', 'Navigazione rapida');
+  nav.innerHTML = `
+    <a href="/" class="cm-mn-item"><span class="cm-mn-icon" aria-hidden="true">🏠</span><span>Home</span></a>
+    <a href="/fideiussioni" class="cm-mn-item"><span class="cm-mn-icon" aria-hidden="true">📋</span><span>Servizi</span></a>
+    <a href="/richiedi-preventivo" class="cm-mn-item cm-mn-cta"><span class="cm-mn-icon" aria-hidden="true">📝</span><span>Preventivo</span></a>
+    <a href="/contatti" class="cm-mn-item"><span class="cm-mn-icon" aria-hidden="true">📞</span><span>Contatti</span></a>
+    <button type="button" class="cm-mn-item" id="cmMobileNavMenu"><span class="cm-mn-icon" aria-hidden="true">☰</span><span>Menu</span></button>
+  `;
+  document.body.appendChild(nav);
+  document.getElementById('cmMobileNavMenu')?.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    document.getElementById('menu')?.click();
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   initMenu();
   initSlider();
@@ -567,6 +615,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initBackToTop();
   simplifyLegalBar();
   removeRedundantFooterButtons();
+  initMobileBottomNav();
 });
 
 
