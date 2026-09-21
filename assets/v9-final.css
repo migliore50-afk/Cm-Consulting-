@@ -575,7 +575,10 @@ body.privacy-modal-open{overflow:hidden}
   /* 21 settembre 2026 — su richiesta di Carmelo: il pallone "Assistente CM"
      fluttuante copriva il contenuto della pagina (segnalato più volte). Su
      mobile è ora sostituito dalla voce "Aiuto" nella barra qui sopra — il
-     pallone va quindi nascosto del tutto qui, non solo sollevato. */
+     pallone va quindi nascosto del tutto qui, non solo sollevato. "Torna su"
+     rimane solo su desktop — su mobile la barra copre già la navigazione
+     principale, e Safari iOS offre comunque la scorciatoia nativa (tocco sulla
+     barra di stato) per tornare in cima alla pagina. */
   #cm-ai-fab,.cm-ai-fab{display:none!important}
-  #cm-back-top{bottom:calc(80px + env(safe-area-inset-bottom,0px))!important}
+  #cm-back-top{display:none!important}
 }
