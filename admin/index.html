@@ -60,28 +60,9 @@
         </div>
 
         <div id="requestsSection" class="hidden">
-          <div class="section-head">
-            <div><div class="eyebrow">AREA INTERNA</div><h1>Richieste ricevute</h1></div>
-          </div>
+          <div class="section-head"><div><div class="eyebrow">AREA INTERNA</div><h1>Richieste ricevute</h1></div></div>
           <div class="security-strip"><strong>Richieste dal sito:</strong> archiviate sul database server-side e accessibili solo dopo autenticazione amministratore.</div>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Data</th>
-                  <th>Cliente</th>
-                  <th>Tipologia</th>
-                  <th>Email</th>
-                  <th>Allegati</th>
-                  <th>Stato</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody id="requestBody">
-                <tr><td colspan="7" style="text-align:center;padding:36px;color:#65717d">Nessuna richiesta visualizzata.</td></tr>
-              </tbody>
-            </table>
-          </div>
+          <div class="table-wrap"><table><thead><tr><th>Data</th><th>Cliente</th><th>Tipologia</th><th>Email</th><th>Allegati</th><th>Stato</th><th></th></tr></thead><tbody id="requestBody"><tr><td colspan="7" style="text-align:center;padding:36px;color:#65717d">Nessuna richiesta visualizzata.</td></tr></tbody></table></div>
           <div id="requestDetail" class="detail hidden"></div>
         </div>
 
@@ -96,28 +77,79 @@
     </div>
   </section>
 </main>
-<div id="mupOpen" class="modal hidden"><div class="modal-card" style="max-width:920px"><button id="mupClose" class="modal-close" aria-label="Chiudi">×</button><h2>Generatore MUP</h2><p class="muted">Pratica: <strong id="mupPracticeTitle">—</strong>. I dati devono corrispondere alla singola distribuzione.</p><div class="form-grid">
-<label>Contraente / cliente<input id="mupClient" required></label>
-<label>Tipologia / prodotto<input id="mupProduct" required></label>
-<label>Scadenza pratica<input id="mupExpiry" type="date" required></label>
-<label>E-mail cliente<input id="mupEmail" type="email"></label>
-<label>Intermediario principale per cui opera la Sezione E<input id="mupMainIntermediary" required></label>
-<label>RUI intermediario principale<input id="mupMainRui" required></label>
-<label>Sezione intermediario principale<input id="mupMainSection" required placeholder="A / B"></label>
-<label>Sede legale intermediario principale<input id="mupMainAddress" required></label>
-<label>Impresa di assicurazione<input id="mupInsurer" required></label>
-<label>Modello di distribuzione<input id="mupDistribution" required placeholder="Descrivere il modello effettivo"></label>
-<label>Consulenza ex art. 119-ter, c.3<input id="mupAdvice" value="NO"></label>
-<label>Analisi imparziale ex art. 119-ter, c.4<input id="mupImpartial" value="NO"></label>
-<label>Distribuzione esclusiva<input id="mupExclusive" value="NO"></label>
-<label>Partecipazioni/conflitti ≥10%<input id="mupConflict" value="NO"></label>
-<label>Collaborazione orizzontale<input id="mupHorizontal" value="NO"></label>
-<label>Remunerazione<input id="mupRemuneration" required placeholder="Dati effettivi"></label>
-<label class="full">Pagamento dei premi<input id="mupPayment" required placeholder="Regime e modalità effettive"></label>
-<label class="full">RC professionale / estremi applicabili<input id="mupRc" required></label>
-<label class="full">Reclami / recapiti / procedura<input id="mupComplaints" required></label>
-</div><div id="mupMsg" class="message" aria-live="polite"></div><div class="actions" style="display:flex;gap:8px;justify-content:flex-end"><button id="mupCancel" class="btn ghost" type="button">ANNULLA</button><button id="mupGenerate" class="btn primary" type="button">GENERA MUP</button></div></div></div>
-<div id="practiceModal" class="modal hidden"><div class="modal-card"><button id="closeModal" class="modal-close" aria-label="Chiudi">×</button><h2>Nuova pratica</h2><form id="practiceForm" class="form-grid"><label>Cliente / ragione sociale<input name="client" required maxlength="180"></label><label>Tipologia<select name="type"><option>Capacità finanziaria</option><option>Fideiussione</option><option>Appalti pubblici</option><option>Locazioni</option><option>Dogane</option><option>Ambiente</option></select></label><label>Data scadenza<input name="expiry" type="date" required></label><label>Email cliente<input name="email" type="email"></label><label>Prezzo cliente — interno<input name="clientPrice" type="number" step="0.01" min="0"></label><label>Costo revisore — interno<input name="reviewerCost" type="number" step="0.01" min="0"></label><label class="full">Note interne<textarea name="notes" rows="4" maxlength="10000"></textarea></label><div class="full actions"><button type="submit" class="btn primary">SALVA</button></div></form><div id="practiceMsg" class="message"></div></div></div><script src="/admin/index-init.js" defer></script>
+
+<div id="mupOpen" class="modal hidden">
+  <div class="modal-card" style="max-width:980px">
+    <button id="mupClose" class="modal-close" aria-label="Chiudi">×</button>
+    <h2>Generatore MUP 2026</h2>
+    <p class="muted">Pratica: <strong id="mupPracticeTitle">—</strong>. Compilare i dati della singola distribuzione; non usare valori inventati o generici.</p>
+    <div class="form-grid">
+      <label>Contraente / cliente<input id="mupClient" required></label>
+      <label>Tipologia / prodotto<input id="mupProduct" required></label>
+      <label>Scadenza pratica<input id="mupExpiry" type="date"></label>
+      <label>E-mail cliente<input id="mupEmail" type="email"></label>
+
+      <label>Nome distributore<input id="mupDistributorName" required></label>
+      <label>RUI distributore<input id="mupDistributorRui" required></label>
+      <label>Data iscrizione RUI<input id="mupDistributorDate" required></label>
+      <label>Sezione RUI<input id="mupDistributorSection" required></label>
+      <label>Ruolo<input id="mupDistributorRole" required></label>
+      <label>Sede legale / domicilio professionale<input id="mupDistributorAddress" required></label>
+      <label>Telefono<input id="mupDistributorPhone"></label>
+      <label>E-mail distributore<input id="mupDistributorEmail" type="email"></label>
+      <label>PEC distributore<input id="mupDistributorPec" type="email"></label>
+      <label>Sito internet distributore<input id="mupDistributorWebsite" type="url"></label>
+      <label>Autorità di vigilanza<input id="mupIvass" required></label>
+
+      <label>Intermediario per cui opera la Sezione E<input id="mupMainIntermediary" required></label>
+      <label>RUI intermediario<input id="mupMainRui" required></label>
+      <label>Sezione intermediario<input id="mupMainSection" required placeholder="A / B"></label>
+      <label>Ruolo intermediario<input id="mupMainRole"></label>
+      <label>Sede legale intermediario<input id="mupMainAddress" required></label>
+      <label>Telefono intermediario<input id="mupMainPhone"></label>
+      <label>E-mail intermediario<input id="mupMainEmail" type="email"></label>
+      <label>PEC intermediario<input id="mupMainPec" type="email"></label>
+      <label>Sito internet intermediario<input id="mupMainWebsite" type="url"></label>
+      <label>Impresa/e di assicurazione<input id="mupInsurer" required></label>
+
+      <label class="full">Modello di distribuzione<input id="mupDistribution" required placeholder="Client mandate / una o più imprese / altro: descrivere il modello effettivo"></label>
+      <label>Mandato del cliente<input id="mupMandate" required placeholder="SI / NO"></label>
+      <label>Collaborazione orizzontale<input id="mupHorizontal" required placeholder="SI / NO"></label>
+      <label>Intermediario collaborazione orizzontale<input id="mupHorizontalName"></label>
+
+      <label>Partecipazioni ≥10% / conflitto<input id="mupConflict" required placeholder="SI / NO"></label>
+      <label class="full">Dettagli conflitto / partecipazioni<input id="mupConflictDetails"></label>
+
+      <label>Consulenza art. 119-ter, c.3<input id="mupAdvice" required placeholder="SI / NO"></label>
+      <label>Analisi imparziale art. 119-ter, c.4<input id="mupImpartial" required placeholder="SI / NO"></label>
+      <label>Contratto di distribuzione esclusiva<input id="mupExclusive" required placeholder="SI / NO"></label>
+      <label>Distribuzione non esclusiva<input id="mupNonExclusive" required placeholder="SI / NO"></label>
+      <label class="full">Imprese con cui esistono rapporti di affari<input id="mupBusinessRelationships"></label>
+
+      <label class="full">Remunerazione<input id="mupRemuneration" required placeholder="Fee, commissione inclusa nel premio, altro beneficio economico, combinazione, ecc."></label>
+      <label class="full">Eventuale compenso pagato direttamente dal cliente<input id="mupClientFee"></label>
+
+      <label class="full">Pagamento dei premi / regime applicabile<input id="mupPayment" required></label>
+      <label>Gestione separata / garanzia bancaria, se applicabile<input id="mupSegregatedAssets"></label>
+      <label class="full">Modalità di pagamento ammesse<input id="mupPaymentMethods"></label>
+
+      <label class="full">RC professionale / estremi applicabili<input id="mupRc" required></label>
+      <label class="full">Reclami: modalità e recapiti<input id="mupComplaints" required></label>
+      <label class="full">Arbitro Assicurativo<input id="mupArbitro" required placeholder="Informativa e pagina/recapiti effettivi"></label>
+      <label>FIN.NET, se applicabile<input id="mupFinNet"></label>
+      <label>Altri sistemi ADR, se applicabili<input id="mupOtherAdr"></label>
+      <label class="full">Diritto all’oblio oncologico<input id="mupOncology" required></label>
+    </div>
+    <div id="mupMsg" class="message" aria-live="polite"></div>
+    <div class="actions" style="display:flex;gap:8px;justify-content:flex-end">
+      <button id="mupCancel" class="btn ghost" type="button">ANNULLA</button>
+      <button id="mupGenerate" class="btn primary" type="button">GENERA MUP</button>
+    </div>
+  </div>
+</div>
+
+<div id="practiceModal" class="modal hidden"><div class="modal-card"><button id="closeModal" class="modal-close" aria-label="Chiudi">×</button><h2>Nuova pratica</h2><form id="practiceForm" class="form-grid"><label>Cliente / ragione sociale<input name="client" required maxlength="180"></label><label>Tipologia<select name="type"><option>Capacità finanziaria</option><option>Fideiussione</option><option>Appalti pubblici</option><option>Locazioni</option><option>Dogane</option><option>Ambiente</option></select></label><label>Data scadenza<input name="expiry" type="date" required></label><label>Email cliente<input name="email" type="email"></label><label>Prezzo cliente — interno<input name="clientPrice" type="number" step="0.01" min="0"></label><label>Costo revisore — interno<input name="reviewerCost" type="number" step="0.01" min="0"></label><label class="full">Note interne<textarea name="notes" rows="4" maxlength="10000"></textarea></label><div class="full actions"><button type="submit" class="btn primary">SALVA</button></div></form><div id="practiceMsg" class="message"></div></div></div>
+<script src="/admin/index-init.js" defer></script>
 <script src="/admin/admin.js" defer></script>
 <script src="/admin/mup.js" defer></script>
 </body>
