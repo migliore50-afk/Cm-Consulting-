@@ -7,7 +7,7 @@
     "node": ">=22"
   },
   "scripts": {
-    "check": "node --check api/admin.js && node --check api/_security.js && node --check api/submit-request.js && node --check admin/admin.js"
+    "check": "node --check api/admin.js && node --check api/_security.js && node --check api/submit-request.js && node --check admin/admin.js && node --check admin/mup.js"
   },
   "dependencies": {
     "@vercel/blob": "^2.7.0"
