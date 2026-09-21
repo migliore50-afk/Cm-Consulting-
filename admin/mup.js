@@ -120,7 +120,34 @@
     $('mupMsg').textContent = 'MUP generato in una nuova scheda. Verificare i dati e usare la stampa del browser per creare il PDF.';
   }
 
+  function openFromDetail() {
+    const d = document.getElementById('detail');
+    if (!d) return;
+    const title = d.querySelector('h2')?.textContent?.trim() || '';
+    const meta = d.querySelector('.section-head p')?.textContent?.trim() || '';
+    const parts = meta.split(' · scadenza ');
+    const type = parts[0] || '';
+    const date = parts[1] || '';
+    open({ client: title, type, expiry: date ? date.split('/').reverse().join('-') : '' });
+  }
+
+  function installDetailButton() {
+    const detail = document.getElementById('detail');
+    if (!detail || detail.querySelector('[data-mup-open]')) return;
+    if (!detail.classList.contains('hidden') && detail.querySelector('#deletePractice')) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'small-btn';
+      button.dataset.mupOpen = '1';
+      button.textContent = 'GENERA MUP';
+      button.addEventListener('click', openFromDetail);
+      detail.querySelector('#deletePractice').before(button);
+    }
+  }
+
   window.cmMup = { open, close, generate };
+  new MutationObserver(installDetailButton).observe(document.getElementById('detail'), { childList: true, subtree: true, attributes: true });
+  installDetailButton();
   $('mupClose').addEventListener('click', close);
   $('mupCancel').addEventListener('click', close);
   $('mupGenerate').addEventListener('click', generate);
