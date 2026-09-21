@@ -579,7 +579,7 @@ export default async function handler(req, res) {
   if (
     action === 'login' &&
     req.method === 'POST' &&
-    process.env.ADMIN_LOGIN_DISABLED !== 'false'
+    process.env.ADMIN_LOGIN_DISABLED !== 'false' && process.env.VERCEL_ENV !== 'preview'
   ) {
     return json(res, 503, {
       ok: false,
