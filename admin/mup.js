@@ -8,6 +8,58 @@
   const val = (id) => $(id)?.value?.trim() || '';
   const set = (id, value) => { const el = $(id); if (el) el.value = value ?? ''; };
 
+  // 21 settembre 2026 — su richiesta di Carmelo: la maggior parte dei campi del
+  // MUP (dati del distributore, intermediario principale, remunerazione,
+  // reclami, Arbitro Assicurativo, ecc.) sono identici da una pratica all'altra
+  // — solo cliente/prodotto/scadenza/email cambiano, e quelli erano già
+  // precompilati dalla pratica. Prima ogni apertura del modulo azzerava tutto,
+  // costringendo a riscrivere da capo anche i dati stabili. Ora l'ultima
+  // compilazione viene salvata in localStorage (solo sul dispositivo, non sul
+  // server) e riproposta automaticamente la volta successiva.
+  const DEFAULTS_KEY = 'cm_mup_defaults_v1';
+
+  // Campi che NON vanno mai ricordati: sono specifici della singola pratica,
+  // già compilati automaticamente da open(practice).
+  const PRACTICE_SPECIFIC_IDS = new Set([
+    'mupClient', 'mupProduct', 'mupExpiry', 'mupEmail'
+  ]);
+
+  // Tutti gli altri campi del modulo (identità del distributore, intermediario
+  // principale, conflitti d'interesse, remunerazione, pagamento premi, tutela
+  // del contraente) vengono ricordati.
+  function allFieldIds() {
+    return Array.from(document.querySelectorAll('#mupOpen .form-grid input'))
+      .map(el => el.id)
+      .filter(Boolean);
+  }
+
+  function loadDefaults() {
+    try {
+      return JSON.parse(localStorage.getItem(DEFAULTS_KEY) || '{}');
+    } catch {
+      return {};
+    }
+  }
+
+  function saveDefaults() {
+    const defaults = {};
+    allFieldIds().forEach(id => {
+      if (PRACTICE_SPECIFIC_IDS.has(id)) return;
+      defaults[id] = val(id);
+    });
+    try {
+      localStorage.setItem(DEFAULTS_KEY, JSON.stringify(defaults));
+    } catch {
+      // localStorage non disponibile: non blocchiamo la generazione per questo.
+    }
+  }
+
+  function resetSavedDefaults() {
+    try { localStorage.removeItem(DEFAULTS_KEY); } catch {}
+    open(currentPractice || {});
+    $('mupMsg').textContent = 'Valori salvati azzerati. I campi sono tornati vuoti.';
+  }
+
   function open(practice = {}) {
     currentPractice = practice;
     $('mupPracticeTitle').textContent = practice.client || 'Pratica';
@@ -16,58 +68,66 @@
     set('mupExpiry', practice.expiry);
     set('mupEmail', practice.email);
 
-    // Dati stabili della persona fisica in RUI; i dati dell'attività/sede sono modificabili
-    // e non vengono inventati dal generatore.
-    set('mupDistributorName', 'Carmelo Migliore');
-    set('mupDistributorRui', 'E000437237');
-    set('mupDistributorDate', '24/01/2013');
-    set('mupDistributorSection', 'E');
-    set('mupDistributorRole', 'Collaboratore di intermediario iscritto nella sezione A/B');
-    set('mupDistributorAddress', '');
-    set('mupDistributorPhone', '');
-    set('mupDistributorEmail', '');
-    set('mupDistributorPec', '');
-    set('mupDistributorWebsite', 'https://www.cm-consulting.info');
-    set('mupIvass', 'IVASS — Istituto per la Vigilanza sulle Assicurazioni');
+    const saved = loadDefaults();
 
-    set('mupMainIntermediary', '');
-    set('mupMainRui', '');
-    set('mupMainSection', '');
-    set('mupMainRole', '');
-    set('mupMainAddress', '');
-    set('mupMainPhone', '');
-    set('mupMainEmail', '');
-    set('mupMainPec', '');
-    set('mupMainWebsite', '');
-    set('mupInsurer', '');
-    set('mupDistribution', '');
-    set('mupMandate', 'NO');
-    set('mupHorizontal', 'NO');
-    set('mupHorizontalName', '');
-    set('mupConflictA', 'NO');
-    set('mupConflictAName', '');
-    set('mupConflictB', 'NO');
-    set('mupConflictBName', '');
-    set('mupAdvice', 'NO');
-    set('mupImpartial', 'NO');
-    set('mupExclusive', 'NO');
-    set('mupNonExclusive', 'SI');
-    set('mupBusinessRelationships', '');
-    set('mupTransparency', '');
-    set('mupRemuneration', '');
-    set('mupClientFee', '');
-    set('mupRcAuto', '');
-    set('mupHorizontalCompensation', '');
-    set('mupPayment', '');
-    set('mupSegregatedAssets', '');
-    set('mupPaymentMethods', '');
-    set('mupSectionBPayment', '');
-    set('mupRc', '');
-    set('mupComplaints', '');
-    set('mupArbitro', '');
-    set('mupFinNet', '');
-    set('mupOtherAdr', '');
-    set('mupOncology', 'Informativa sul diritto all’oblio oncologico ai sensi della Legge 193/2023 e della disciplina IVASS vigente.');
+    // Dati stabili della persona fisica in RUI: valore fisso di partenza,
+    // sovrascritto da un eventuale valore salvato in precedenza (per i campi
+    // che l'utente può comunque modificare, es. telefono/indirizzo).
+    const stableDefaults = {
+      mupDistributorName: 'Carmelo Migliore',
+      mupDistributorRui: 'E000437237',
+      mupDistributorDate: '24/01/2013',
+      mupDistributorSection: 'E',
+      mupDistributorRole: 'Collaboratore di intermediario iscritto nella sezione A/B',
+      mupDistributorAddress: '',
+      mupDistributorPhone: '',
+      mupDistributorEmail: '',
+      mupDistributorPec: '',
+      mupDistributorWebsite: 'https://www.cm-consulting.info',
+      mupIvass: 'IVASS — Istituto per la Vigilanza sulle Assicurazioni',
+      mupMainIntermediary: '',
+      mupMainRui: '',
+      mupMainSection: '',
+      mupMainRole: '',
+      mupMainAddress: '',
+      mupMainPhone: '',
+      mupMainEmail: '',
+      mupMainPec: '',
+      mupMainWebsite: '',
+      mupInsurer: '',
+      mupDistribution: '',
+      mupMandate: 'NO',
+      mupHorizontal: 'NO',
+      mupHorizontalName: '',
+      mupConflictA: 'NO',
+      mupConflictAName: '',
+      mupConflictB: 'NO',
+      mupConflictBName: '',
+      mupAdvice: 'NO',
+      mupImpartial: 'NO',
+      mupExclusive: 'NO',
+      mupNonExclusive: 'SI',
+      mupBusinessRelationships: '',
+      mupTransparency: '',
+      mupRemuneration: '',
+      mupClientFee: '',
+      mupRcAuto: '',
+      mupHorizontalCompensation: '',
+      mupPayment: '',
+      mupSegregatedAssets: '',
+      mupPaymentMethods: '',
+      mupSectionBPayment: '',
+      mupRc: '',
+      mupComplaints: '',
+      mupArbitro: '',
+      mupFinNet: '',
+      mupOtherAdr: '',
+      mupOncology: 'Informativa sul diritto all’oblio oncologico ai sensi della Legge 193/2023 e della disciplina IVASS vigente.'
+    };
+
+    Object.entries(stableDefaults).forEach(([id, fallback]) => {
+      set(id, Object.prototype.hasOwnProperty.call(saved, id) && saved[id] ? saved[id] : fallback);
+    });
 
     $('mupMsg').textContent = '';
     $('mupOpen').classList.remove('hidden');
@@ -109,6 +169,9 @@
       return;
     }
 
+    // Compilazione riuscita: salva i valori stabili per la prossima pratica.
+    saveDefaults();
+
     const now = new Date();
     const documentId = 'MUP-' + now.toISOString().replace(/[-:TZ.]/g,'').slice(0,14);
     const html = '<!doctype html><html lang="it"><head><meta charset="utf-8"><title>' +
@@ -142,8 +205,10 @@
         ['Intermediario della collaborazione orizzontale', val('mupHorizontalName')]
       ]) +
       section('3. Informazioni relative a situazioni di potenziale conflitto d’interesse', [
-        ['Partecipazioni ≥10% tra intermediario e impresa', val('mupConflict')],
-        ['Dettagli / soggetti interessati', val('mupConflictDetails')]
+        ['Intermediario detiene ≥10% di impresa', val('mupConflictA')],
+        ['Denominazione impresa interessata', val('mupConflictAName')],
+        ['Impresa detiene ≥10% dell’intermediario', val('mupConflictB')],
+        ['Denominazione impresa/controllante', val('mupConflictBName')]
       ]) +
       section('4. Informazioni sull’attività di distribuzione e consulenza', [
         ['Consulenza ai sensi dell’art. 119-ter, comma 3, CAP', val('mupAdvice')],
@@ -217,11 +282,21 @@
     }
   }
 
-  window.cmMup = { open, close, generate };
+  window.cmMup = { open, close, generate, resetSavedDefaults };
   const detail = document.getElementById('detail');
   if (detail) new MutationObserver(installDetailButton).observe(detail, { childList: true, subtree: true, attributes: true });
   installDetailButton();
   $('mupClose').addEventListener('click', close);
   $('mupCancel').addEventListener('click', close);
   $('mupGenerate').addEventListener('click', generate);
+
+  // 21 settembre 2026 — pulsante per svuotare i valori ricordati, nel caso
+  // servisse ripartire da campi vuoti (es. cambio di intermediario principale).
+  const resetBtn = document.createElement('button');
+  resetBtn.type = 'button';
+  resetBtn.className = 'link-btn';
+  resetBtn.textContent = 'Svuota i valori ricordati';
+  resetBtn.style.marginTop = '8px';
+  resetBtn.addEventListener('click', resetSavedDefaults);
+  $('mupMsg')?.after(resetBtn);
 })();
