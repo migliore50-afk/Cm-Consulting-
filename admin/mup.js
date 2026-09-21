@@ -251,7 +251,7 @@
       '<div class="footer">Modello riferito all’Allegato 3 del Regolamento IVASS n. 40/2018, come modificato dai Provvedimenti IVASS n. 163/2025 e n. 169/2026. Il MUP deve essere consegnato o trasmesso nei tempi e con le modalità previste dalla normativa applicabile. Documento generato per controllo interno: non sostituisce la verifica della modulistica ufficiale e dei dati effettivi della distribuzione.</div>' +
       '</body></html>';
 
-    const w = window.open('', '_blank', 'noopener,noreferrer');
+    const w = window.open('', '_blank');
     if (!w) { $('mupMsg').textContent = 'Il browser ha bloccato la finestra del MUP. Consentire i popup per il sito.'; return; }
     w.document.open(); w.document.write(html); w.document.close();
     $('mupMsg').textContent = 'MUP generato in una nuova scheda. Verificare tutti i dati e usare la stampa del browser per il PDF.';
