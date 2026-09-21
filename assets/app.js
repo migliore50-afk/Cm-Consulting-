@@ -591,8 +591,7 @@ function initMobileBottomNav() {
     servizi: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><path d="M2 13h20"/></svg>',
     preventivo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><circle cx="8" cy="11" r=".7" fill="currentColor" stroke="none"/><circle cx="12" cy="11" r=".7" fill="currentColor" stroke="none"/><circle cx="16" cy="11" r=".7" fill="currentColor" stroke="none"/><circle cx="8" cy="15" r=".7" fill="currentColor" stroke="none"/><circle cx="12" cy="15" r=".7" fill="currentColor" stroke="none"/><circle cx="16" cy="15" r=".7" fill="currentColor" stroke="none"/><circle cx="8" cy="19" r=".7" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r=".7" fill="currentColor" stroke="none"/></svg>',
     contatti: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>',
-    aiuto: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>',
-    menu: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>'
+    aiuto: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>'
   };
   const nav = document.createElement('nav');
   nav.id = 'cmMobileNav';
@@ -604,16 +603,13 @@ function initMobileBottomNav() {
     <a href="/richiedi-preventivo" class="cm-mn-item cm-mn-cta"><span class="cm-mn-icon" aria-hidden="true">${icons.preventivo}</span><span>Preventivo</span></a>
     <a href="/contatti" class="cm-mn-item"><span class="cm-mn-icon" aria-hidden="true">${icons.contatti}</span><span>Contatti</span></a>
     <button type="button" class="cm-mn-item" id="cmMobileNavAiuto"><span class="cm-mn-icon" aria-hidden="true">${icons.aiuto}</span><span>Aiuto</span></button>
-    <button type="button" class="cm-mn-item" id="cmMobileNavMenu"><span class="cm-mn-icon" aria-hidden="true">${icons.menu}</span><span>Menu</span></button>
   `;
   document.body.appendChild(nav);
-  document.getElementById('cmMobileNavMenu')?.addEventListener('click', () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    document.getElementById('menu')?.click();
-  });
   // 21 settembre 2026 — su richiesta di Carmelo, l'Assistente CM su mobile si apre
-  // da qui (sesta voce) invece che dal pallone fluttuante, che copriva il
-  // contenuto della pagina. Il pallone resta nascosto su mobile via CSS.
+  // da qui invece che dal pallone fluttuante, che copriva il contenuto della
+  // pagina. Il pallone resta nascosto su mobile via CSS. Voce "Menu" rimossa
+  // (ridondante con l'hamburger già presente nell'header) — con 5 voci
+  // "Preventivo" torna esattamente al centro della barra.
   document.getElementById('cmMobileNavAiuto')?.addEventListener('click', () => {
     if (typeof window.openAI === 'function') window.openAI();
   });

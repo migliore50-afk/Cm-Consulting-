@@ -535,7 +535,7 @@ body.privacy-modal-open{overflow:hidden}
   body{padding-bottom:70px}
   .cm-mobile-nav{
     display:grid;
-    grid-template-columns:repeat(6,1fr);
+    grid-template-columns:repeat(5,1fr);
     position:fixed;
     left:0;right:0;bottom:0;
     z-index:9000;
