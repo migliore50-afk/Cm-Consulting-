@@ -610,6 +610,7 @@ export default async function handler(req, res) {
      * ============================================================
      */
     if (action === 'login' && req.method === 'POST') {
+      let loginStage = 'request';
       const body = req.body || {};
       const email = str(body.email);
       const password = typeof body.password === 'string' ? body.password : '';
@@ -622,6 +623,7 @@ export default async function handler(req, res) {
       }
 
       const ip = getIp(req);
+      loginStage = 'rate-limit-check';
       const limiter = await rateLimitLogin(ip, email);
 
       if (limiter.blocked) {
@@ -631,6 +633,7 @@ export default async function handler(req, res) {
         });
       }
 
+      loginStage = 'supabase-password';
       const auth = await supabaseFetch('/auth/v1/token?grant_type=password', {
         method: 'POST',
         body: { email, password }
@@ -662,8 +665,10 @@ export default async function handler(req, res) {
        * NON viene ancora creata alcuna sessione admin.
        * La sessione è ancora AAL1.
        */
+      loginStage = 'clear-login-limit';
       await clearLoginFailures(ip, email);
 
+      loginStage = 'mfa-factors';
       const factors = await getTotpFactors(auth.data.access_token);
 
       if (!factors.ok) {
@@ -1187,7 +1192,15 @@ export default async function handler(req, res) {
     /*
      * Non esporre mai al client il corpo grezzo
      * degli errori Supabase, Redis o runtime.
+     * In Preview restituiamo soltanto lo stadio tecnico,
+     * senza messaggi, URL, token o stack trace.
      */
+    if (process.env.VERCEL_ENV === 'preview' && typeof loginStage === 'string') {
+      return json(res, 503, {
+        ok: false,
+        error: { code: 'PREVIEW_LOGIN_STAGE', message: `Errore temporaneo [${loginStage}].` }
+      });
+    }
     return json(res, 503, {
       ok: false,
       error: { code: 'SERVER_ERROR', message: 'Errore temporaneo.' }
