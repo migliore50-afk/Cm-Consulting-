@@ -520,14 +520,22 @@ async function dbRequest(path, { method = 'GET', body } = {}) {
   if (!url || !serviceKey) {
     throw new Error('Database non configurabile.');
   }
+  const headers = {
+    apikey: serviceKey,
+    'Content-Type': 'application/json',
+    Prefer: 'return=representation'
+  };
+
+  // Supabase new opaque secret keys (sb_secret_...) are API keys, not JWTs.
+  // Do not send them as a Bearer JWT: let the Supabase API gateway derive
+  // the authenticated service-role context from the apikey header.
+  if (!serviceKey.startsWith('sb_secret_')) {
+    headers.Authorization = `Bearer ${serviceKey}`;
+  }
+
   const response = await fetch(`${url}/rest/v1/${path}`, {
     method,
-    headers: {
-      apikey: serviceKey,
-      Authorization: `Bearer ${serviceKey}`,
-      'Content-Type': 'application/json',
-      Prefer: 'return=representation'
-    },
+    headers,
     body: body === undefined ? undefined : JSON.stringify(body)
   });
   let data = null;
