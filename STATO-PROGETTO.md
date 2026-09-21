@@ -1,11 +1,11 @@
 # STATO-PROGETTO.md
 ## CM Consulting — Registro tecnico ufficiale
 
-**Ultimo aggiornamento:** 20 settembre 2026  
+**Ultimo aggiornamento:** 20 settembre 2026 (sera)  
 **Repository:** `migliore50-afk/Cm-Consulting-`  
 **Branch:** `main`  
-**Deploy:** Vercel — Production (dominio Aruba non ancora collegato, in attesa — vedi §23)  
-**Stato:** progetto attivo. Vedi §23 per l'audit tecnico completo del 20 settembre (bug menu/logo risolti, riscoperta dell'Area Amministratore già esistente, sitemap da aggiornare, flusso email/allegati da decidere). Punto aperto storico: nuovo logo per header, affidato a un grafico esterno (Fiverr), in attesa dei file — vedi §22.
+**Deploy:** Vercel — Production (dominio Aruba non ancora collegato, in attesa — vedi §23 e §24)  
+**Stato:** progetto attivo. **LEGGERE PRIMA §24**: la ragione sociale/P.IVA attuale potrebbe cambiare (posizione camerale in riattivazione, il commercialista sta valutando se aprirne una nuova) — non registrare/comunicare nulla di definitivo con l'identità attuale finché non è chiarito. Vedi poi §23 per l'audit tecnico del 20 settembre (bug menu/logo risolti, riscoperta dell'Area Amministratore, sitemap aggiornata, riferimenti normativi reclami aggiornati). Punto aperto storico: nuovo logo per header, affidato a un grafico esterno (Fiverr), in attesa dei file — vedi §22.
 
 ---
 
@@ -35,7 +35,7 @@ Ogni correzione indipendente deve avere un commit separato.
 
 Se il RAW GitHub è troncato, non ricostruire il file alla cieca: recuperare il contenuto necessario oppure chiedere il file completo.
 
-**Attenzione per chi riprende**: questo registro ha già avuto almeno un caso di "punto chiuso riproposto come aperto" per non aver riletto §18 con attenzione (vedi nota in fondo a §18). Prima di segnalare un punto come "ancora da fare", verificare sempre se esiste già una sezione che lo chiude. Vedi anche §23 per un secondo caso simile (Area Amministratore esistente ma non documentata).
+**Attenzione per chi riprende**: questo registro ha già avuto almeno un caso di "punto chiuso riproposto come aperto" per non aver riletto §18 con attenzione (vedi nota in fondo a §18), e un caso di funzionalità completa non documentata (§23, Area Amministratore). Prima di segnalare un punto come "ancora da fare", verificare sempre se esiste già una sezione che lo chiude. **Leggere §24 per primo, in ogni sessione**: è il punto più critico attualmente aperto.
 
 ---
 
@@ -67,9 +67,9 @@ Copia di sicurezza sul PC:
 
 ## 3. DATI E VINCOLI DEL PROGETTO
 
-**Azienda:** CM Consulting di Carmelo Migliore – Intermediazione Assicurativa.
+**Azienda:** CM Consulting di Carmelo Migliore – Intermediazione Assicurativa. **Attenzione: nome e P.IVA potrebbero cambiare — vedi §24, punto critico aperto.**
 
-Attività: intermediazione assicurativa, con particolare attenzione a fideiussioni, appalti pubblici, locazioni, capacità finanziaria per albi trasportatori, dogane, ambiente e altre esigenze.
+Attività: intermediazione assicurativa come collaboratore RUI Sezione E — vedi §24 per il modello di lavoro reale (raccolta documentazione, valutazione del rischio, collocamento presso l'intermediario collaboratore più idoneo; l'istruttoria e l'emissione della garanzia sono a cura dell'intermediario/compagnia). Ambiti: fideiussioni, appalti pubblici, locazioni, capacità finanziaria per albi trasportatori, dogane, ambiente e altre esigenze.
 
 ### Contatti
 
@@ -81,15 +81,25 @@ Attività: intermediazione assicurativa, con particolare attenzione a fideiussio
 
 `Via Spinoza n. 49 - 00137 - Roma`
 
+### Intermediari collaboratori (RUI pubblico, verificato il 20 settembre 2026)
+
+Carmelo Migliore, RUI Sezione E n. E000437237 dal 24/01/2013, collabora con:
+- **Cadore Assicurazioni S.r.l.** — Sezione A, n. A000524766 dal 15/12/2015
+- **C.B.A. S.r.l. Semplificata** — Sezione B, n. B000511269 dal 20/04/2016
+
+Non pubblicare questo elenco come pagina statica del sito (non richiesto e non opportuno, l'informazione va nel MUP di ogni pratica specifica — vedi §23 punto 3) — è qui solo come riferimento tecnico interno.
+
 ### Vincoli
 
 - non riportare il vecchio indirizzo di Pomezia;
-- non elencare stabilmente broker/compagnie/intermediari collaboranti;
+- non elencare stabilmente broker/compagnie/intermediari collaboranti sul sito pubblico;
 - mantenere impostazione moderna e professionale;
 - rispettare gli obblighi IVASS;
 - non modificare parti non richieste;
 - **non dichiarare numeri di esperienza, volumi di pratiche, recensioni o marchi registrati non veritieri — vedi §20 e §21**;
-- **non introdurre servizi/infrastrutture di terzi che richiedano dati di una carta di debito/credito, anche se il piano è "gratuito"** — vedi §18, motivazione esplicita.
+- **non introdurre servizi/infrastrutture di terzi che richiedano dati di una carta di debito/credito, anche se il piano è "gratuito"** — vedi §18, motivazione esplicita;
+- **non usare la parola "consulenza" per descrivere l'attività a meno che non si tratti di vera consulenza formale ai sensi dell'art. 59 del Regolamento IVASS 40/2018** — vedi §23 e §24. Usare invece "assistenza", "orientamento", "individuiamo la soluzione più adatta" ecc.;
+- **non presentare pubblicamente né fatturare un servizio di consulenza/assistenza a pagamento separato dalla provvigione finché non verificato su tre fronti indipendenti** (commercialista, intermediari collaboratori, conformità IVASS) — vedi §24.
 
 ---
 
@@ -181,7 +191,7 @@ File storici già eliminati: `assets/cm-assistant-v7.css`, `assets/cm-assistant.
 Ogni asset segue lo schema `<stem>-retina-<768|1280|1920|2560|3840>.webp`. Stem attivi: `appalti`, `autotrasportatori`, `capacita`, `ambiente`, `altre-esigenze` (condiviso solo da "Altre Fideiussioni", scelta voluta), `locazioni`, `affitti-commerciali`, `affitti-rami-azienda`, `dogane`, `contratti-privati`. Foto generate con Gemini (Nano Banana Pro/2), non foto stock. Logo: `assets/images/logo-cm-consulting.webp` (attuale, header e footer, invariato) — un tentativo di sostituirlo nel solo footer è stato fatto e annullato, vedi §22.
 
 ## Configurazione
-`vercel.json` — redirect delle vecchie URL; aggiornato il 18 settembre 2026 quando le pagine di tipologia sono state riattivate (vedi §21). `sitemap.xml` e `robots.txt` in root — **sitemap ferma al 27 agosto 2026, da aggiornare, vedi §23**.
+`vercel.json` — redirect delle vecchie URL e header di sicurezza (HSTS, CSP, X-Frame-Options DENY, ecc. — verificati presenti e corretti il 20 settembre, vedi §23). `sitemap.xml` e `robots.txt` in root — **sitemap aggiornata il 20 settembre 2026, tutte le pagine presenti**.
 
 ## API backend (`api/`)
 `api/admin.js` (vedi sopra), `api/submit-request.js` (invio richiesta + email via Resend, supporta allegati reali via Vercel Blob con scansione antivirus fail-closed — **non collegato al frontend attuale, vedi §23**), `api/attachment-upload-url.js` (genera URL di upload firmato, non richiamato da nessuna pagina), `api/_security.js` (rate limiting e scansione antivirus condivisi, entrambi fail-closed).
@@ -210,7 +220,7 @@ Corretta su `index.html` e `capacita-finanziaria.html`: vecchio indirizzo di Bei
 
 **Stato: CHIUSO E DEFINITIVO come scelta Oracle Cloud/ClamAV — ma vedi §23 per un'alternativa a pagamento (Cloudmersive) riemersa il 20 settembre, se Carmelo deciderà di riattivare l'upload con allegati.**
 
-Il sito non usa più upload diretti di file in nessuna pagina — sostituito da invio documentazione via email dal cliente (flusso a due email separate, vedi §23 punto 3). Codice backend (`api/_security.js`, `api/attachment-upload-url.js`, `api/submit-request.js`) non toccato, resta nel repository completo e funzionante ma non richiamato dal frontend attuale.
+Il sito non usa più upload diretti di file in nessuna pagina — sostituito da invio documentazione via email dal cliente (flusso a due email separate, vedi §23 punto 1). Codice backend (`api/_security.js`, `api/attachment-upload-url.js`, `api/submit-request.js`) non toccato, resta nel repository completo e funzionante ma non richiamato dal frontend attuale.
 
 **Motivazione esplicita (confermata da Carmelo il 19 settembre 2026, non era scritta chiaramente qui prima d'ora)**: l'ipotesi era ospitare un antivirus ClamAV reale su un server Oracle Cloud a livello gratuito ("Always Free"). Oracle richiede comunque i dati di una carta di debito/credito anche per il piano gratuito. Carmelo ha deciso di non procedere per il rischio concreto che, se in futuro Oracle cambiasse le condizioni del piano gratuito, la carta collegata potrebbe subire addebiti senza un'azione esplicita da parte sua. Si è quindi scelto di eliminare l'esigenza stessa (niente upload diretto sul sito, quindi niente bisogno di un antivirus) invece di accettare quel rischio finanziario per una funzione non essenziale al business.
 
@@ -264,7 +274,7 @@ Ogni pagina ha: H1/H2 per SEO, elenco "Cosa può coprire" (checklist compatta a 
 
 ## Pagina Reclami — riscritta con struttura a 4 passaggi
 
-`reclami-e-arbitro-assicurativo.html` riscritta su richiesta di Carmelo (confrontata con la pagina equivalente di un altro operatore di settore, mondocauzioni.it): prima erano due riquadri densi senza il passaggio "reclamo alla compagnia assicurativa". Ora: 1) Reclamo a CM Consulting (contatti reali, cosa deve contenere, 45 giorni) 2) Reclamo alla Compagnia Assicurativa (dove trovare i contatti — DIP Aggiuntivo) 3) Reclamo all'IVASS (indirizzo/fax/PEC verificati con ricerca web in questa sessione: Via del Quirinale 21, 00187 Roma; fax 06.42133206; PEC tutela.consumatore@pec.ivass.it) 4) Sistemi alternativi — aggiunte **Mediazione civile** (obbligatoria per legge, D.Lgs 28/2010) e **Negoziazione assistita**, assenti prima.
+`reclami-e-arbitro-assicurativo.html` riscritta su richiesta di Carmelo (confrontata con la pagina equivalente di un altro operatore di settore, mondocauzioni.it): prima erano due riquadri densi senza il passaggio "reclamo alla compagnia assicurativa". Ora: 1) Reclamo a CM Consulting (contatti reali, cosa deve contenere, 45 giorni) 2) Reclamo alla Compagnia Assicurativa (dove trovare i contatti — DIP Aggiuntivo) 3) Reclamo all'IVASS (indirizzo/fax/PEC verificati con ricerca web in questa sessione: Via del Quirinale 21, 00187 Roma; fax 06.42133206; PEC tutela.consumatore@pec.ivass.it) 4) Sistemi alternativi — aggiunte **Mediazione civile** (obbligatoria per legge, D.Lgs 28/2010) e **Negoziazione assistita**, assenti prima. **Aggiornamento 20 settembre, vedi §23**: riferimenti normativi aggiornati con il Provvedimento IVASS 163/2025.
 
 ## Navigazione — menu a tendina, voci rimosse/aggiunte, tutto via `assets/app.js`
 
@@ -336,7 +346,7 @@ Carmelo ha esplorato per diverso tempo alternative al logo attuale (non leggibil
 
 ---
 
-# 23. LAVORO DEL 20 SETTEMBRE 2026 — bug menu/logo, Area Amministratore, audit tecnico completo
+# 23. LAVORO DEL 20 SETTEMBRE 2026 — bug menu/logo, Area Amministratore, audit tecnico, verifica incrociata ChatGPT
 
 ## Bug menu ☰ e logo che sborda — CHIUSI
 
@@ -361,32 +371,72 @@ Aggiunta la voce di menu **"ACCEDI AREA PRIVATA"** (ultima voce, verso `/admin`)
 
 **Nota di continuità, sullo stesso schema di §18**: come per l'antivirus, un'intera funzionalità completa e testata in passato non era stata scritta in questo registro, causando lavoro di riscoperta. D'ora in poi, ogni volta che si trova un pezzo importante di codice non documentato qui, va aggiunto subito, anche se non richiede modifiche immediate.
 
-## Audit tecnico completo — 20 settembre 2026
+## Audit tecnico completo + verifica incrociata con ChatGPT ("staffetta")
 
-Su richiesta di Carmelo, audit approfondito dell'intero progetto (architettura, sicurezza, flusso richieste, conformità IVASS, SEO, concorrenti), consegnato come documento separato `AUDIT-TECNICO-20-SETTEMBRE-2026.md` (fuori dal repository, fornito a Carmelo). Punti aperti emersi, non ancora risolti:
+Su richiesta di Carmelo, audit approfondito dell'intero progetto (architettura, sicurezza, flusso richieste, conformità IVASS, SEO, concorrenti), consegnato come documento separato `AUDIT-TECNICO-20-SETTEMBRE-2026.md` (fuori dal repository). L'audit includeva anche un prompt per far verificare la stessa analisi in modo indipendente da ChatGPT. **Diverse correzioni proposte da ChatGPT sono state verificate una per una con ricerche mirate (non accettate per fiducia) prima di essere applicate** — dettaglio sotto.
 
-### 1. Flusso email/allegati — DECISIONE DA PRENDERE
+### 1. Flusso email/allegati — ANCORA APERTO, decisione da prendere
 
-Scoperta: `api/submit-request.js` supporta già nativamente allegati reali (upload su Vercel Blob, scansione antivirus fail-closed, invio di un'unica email a Carmelo con dati e allegati veri tramite Resend) — **ma il frontend (`richiedi-preventivo.html`) non usa questa funzione**. Oggi il cliente riceve solo la registrazione testuale della richiesta via `/api/submit-request`, poi deve inviare lui stesso un'email separata (via `mailto:`) con gli allegati — risultato pratico: **due email distinte** per Carmelo invece di una sola completa.
+`api/submit-request.js` supporta già nativamente allegati reali (upload su Vercel Blob, scansione antivirus fail-closed, invio di un'unica email a Carmelo con dati e allegati veri tramite Resend) — **ma il frontend (`richiedi-preventivo.html`) non usa questa funzione**. Oggi il cliente riceve solo la registrazione testuale della richiesta via `/api/submit-request`, poi deve inviare lui stesso un'email separata (via `mailto:`) con gli allegati — risultato pratico: **due email distinte** per Carmelo invece di una sola completa.
 
-Causa: la scansione antivirus è fail-closed e richiede `CM_ANTIVIRUS_WEBHOOK_URL` configurato (vedi §18) — non configurato per la scelta già presa su Oracle Cloud/ClamAV. Per un'unica email con allegati servirebbe ricollegare il frontend alla funzione già scritta **e** attivare un vero servizio antivirus — possibile alternativa più economica di un server autogestito: un servizio antivirus in cloud a pagamento (es. Cloudmersive, già valutato in una sessione precedente), che evita il problema "carta di credito su piano gratuito" che aveva fatto scartare Oracle. **In attesa della decisione di Carmelo**: tenere il flusso attuale a due email, oppure investire nel ricollegamento + antivirus a pagamento.
+Causa: la scansione antivirus è fail-closed e richiede `CM_ANTIVIRUS_WEBHOOK_URL` configurato (vedi §18) — non configurato per la scelta già presa su Oracle Cloud/ClamAV. Per un'unica email con allegati servirebbe ricollegare il frontend alla funzione già scritta **e** attivare un vero servizio antivirus — possibile alternativa più economica di un server autogestito: un servizio antivirus in cloud a pagamento (es. Cloudmersive), che evita il problema "carta di credito su piano gratuito" che aveva fatto scartare Oracle. **In attesa della decisione di Carmelo.**
 
-### 2. Sitemap.xml da aggiornare
+### 2. Sitemap.xml — CHIUSO IL 20 SETTEMBRE 2026
 
-`sitemap.xml` ferma al 27 agosto 2026, mancano `/affitti-commerciali`, `/affitti-rami-azienda`, `/fideiussioni-contratti-privati`, `/chi-siamo`, `/faq` — pagine reali create il 18 settembre. Basso sforzo, da fare appena richiesto.
+Aggiornata con le 5 pagine che mancavano (`/affitti-commerciali`, `/affitti-rami-azienda`, `/fideiussioni-contratti-privati`, `/chi-siamo`, `/faq`) e date `lastmod` corrette per le pagine modificate di recente. Caricata e verificata su GitHub.
 
-### 3. Aggiornamento normativo da verificare con un professionista
+### 3. Riferimenti normativi — parzialmente CHIUSO, resta un controllo operativo
 
-Trovato che il Modulo Unico Precontrattuale (Allegati 3/4 del Regolamento IVASS 40/2018) è stato aggiornato dal **Provvedimento IVASS n. 147/2024, in vigore dal 1° luglio 2025**. `trasparenza.html` cita solo il Regolamento 40/2018 originale. Da verificare con un consulente compliance/IVASS (fuori dalle competenze di un'IA) se il MUP che Carmelo consegna in pratica ai clienti sia già nel formato aggiornato, e se aggiungere un riferimento esplicito al Provvedimento 147/2024 in `trasparenza.html`.
+**Verifica incrociata con ChatGPT, fatta con ricerche mirate una per una (non solo lette per buone):**
+- **Confermato reale**: Provvedimento IVASS n. 163 del 25 novembre 2025 — modifica l'art. 79 del Regolamento 40/2018 (comma 1, lettera e) imponendo di indicare sul sito la facoltà di ricorso all'Arbitro Assicurativo con link diretto, oltre ai recapiti reclami. `reclami-e-arbitro-assicurativo.html` sostanzialmente già rispettava il contenuto — **aggiornati i riferimenti normativi** (sottotitolo pagina + paragrafo finale) per citare esplicitamente il Provvedimento 163/2025. Caricato e verificato.
+- **Confermato reale ma non pertinente qui**: Provvedimento IVASS n. 169/2026 (15 gennaio 2026) esiste davvero e ha aggiornato MUP/DIP, ma riguarda il **diritto all'oblio oncologico** (dichiarazioni sanitarie in polizze vita/salute) — non applicabile alle fideiussioni/cauzioni di CM Consulting. Non aggiunto da nessuna parte sul sito, correttamente.
+- **Confermato reale**: obbligo per ogni persona fisica iscritta al RUI di comunicare a IVASS il dominio del proprio sito (Regolamento 40/2018, artt. 5/78, come modificati dal Provvedimento 128/2023, in vigore dal 2023) — **Carmelo ha confermato di non averlo ancora fatto**, scelta consapevole rimandata a "progetto finito" (vedi anche §24). Verificato che il campo "Sito internet" sul profilo RUI pubblico di Carmelo è oggi vuoto, coerente.
+- **Resta da fare, operativo non sul sito**: verificare che il MUP effettivamente usato nelle pratiche sia aggiornato ai Provvedimenti 147/2024 + 163/2025 (non 169/2026, non pertinente). Va verificato con un professionista, non è compito di un'IA. **Collegato a §24**: ha senso pieno solo una volta chiarita quale entità (P.IVA attuale o nuova) userà quel MUP.
 
-### 4. Test di sicurezza esterno — raccomandato prima del collegamento Aruba
+### 4. Test di sicurezza esterno — raccomandazione, non obbligo IVASS automatico
 
-`SECURITY-V12.8.md` raccomanda esplicitamente un test di sicurezza esterno prima del "deploy definitivo" — non ancora fatto. Da considerare prima di collegare il dominio vero, dato che l'Area Amministratore tratta dati di clienti.
+`SECURITY-V12.8.md` lo raccomanda prima del "deploy definitivo" — non ancora fatto. ChatGPT ha correttamente ridimensionato: non risulta un obbligo generale IVASS per un piccolo intermediario Sezione E; resta comunque una buona pratica di sicurezza da considerare prima di collegare il dominio vero, dato che l'Area Amministratore tratta dati di clienti.
 
-### 5. Dati strutturati Schema.org — miglioramento SEO facoltativo
+### 5. Header di sicurezza HTTP — CHIUSO, verificato presente
 
-Assenti (es. `LocalBusiness`/`InsuranceAgency` in home, `FAQPage` in `faq.html`). Migliorerebbero la visibilità nei risultati di ricerca (rich snippet). Non urgente.
+Verifica diretta di `vercel.json`, confermato: HSTS, X-Content-Type-Options, X-Frame-Options DENY, Referrer-Policy, Permissions-Policy, Content-Security-Policy (più restrittiva sull'area `/admin`, senza `unsafe-inline` sugli script lì). Correzione rispetto alla prima stesura dell'audit, che li segnalava come "da verificare".
 
-### Verifica incrociata con ChatGPT
+### 6. Linguaggio "consulenza" — CHIUSO IL 20 SETTEMBRE, con chiarimento importante di Carmelo
 
-Consegnato a Carmelo un prompt completo per far verificare in modo indipendente a ChatGPT: conformità IVASS approfondita (in particolare il punto 3 sopra), sicurezza vista da un secondo punto di vista, parole chiave SEO e markup Schema.org pronto da incollare, ricerca di concorrenti Sezione E comparabili. Prompt conservato in `AUDIT-TECNICO-20-SETTEMBRE-2026.md`, sezione finale.
+Frasi verificate una per una nel codice (confermate reali, non ipotetiche): "Consulenza dedicata per operazioni complesse" (`affitti-rami-azienda.html`), "Individuiamo la soluzione più adatta" (`locazioni.html`), "Segui la tua pratica direttamente con me" (`chi-siamo.html`), "ti indicheremo il percorso giusto" (`richiedi-preventivo.html`).
+
+**Chiarimento di Carmelo sul suo modello di lavoro reale**: raccoglie la documentazione dal cliente, valuta il tipo di rischio da collocare, individua l'intermediario collaboratore più idoneo (Cadore per sezione A, C.B.A. per sezione B — vedi §3), e trasmette la pratica — è l'intermediario/compagnia a fare l'istruttoria e l'eventuale emissione della garanzia. Questo corrisponde all'attività di valutazione delle esigenze del cliente prevista dall'art. 58 del Regolamento IVASS 40/2018, **non** a una consulenza assicurativa formale ai sensi dell'art. 59 (che richiederebbe una dichiarazione di analisi imparziale su un numero sufficiente di contratti/fornitori del mercato — difficilmente sostenibile con soli due intermediari collaboratori).
+
+**Correzione fatta**: solo "Consulenza dedicata" → "Assistenza dedicata" in `affitti-rami-azienda.html` (unica occorrenza con la parola specifica disciplinata dalla norma). Le altre tre frasi restano invariate: descrivono correttamente assistenza ordinaria, non consulenza formale.
+
+**Punto collegato emerso durante la discussione, vedi §24**: Carmelo ha chiesto se potrebbe in futuro fatturare separatamente un servizio di analisi/assistenza al cliente, oltre alla provvigione — **non implementato, in attesa di tre verifiche indipendenti** (commercialista, intermediari collaboratori, conformità IVASS). Nessuna modifica al sito su questo finché non chiarito.
+
+---
+
+# 24. PUNTO CRITICO — POSSIBILE CAMBIO DI RAGIONE SOCIALE/P.IVA (20 settembre 2026)
+
+**Stato: APERTO — il più importante di tutto il progetto, sopra a qualunque altro punto elencato in questo registro. Leggere questa sezione per prima in ogni nuova sessione, prima di §22 e §23.**
+
+## Cosa è emerso
+
+La posizione camerale attuale di CM Consulting **risulta oggi inattiva**. Carmelo la sta riattivando con il commercialista per riprendere l'attività di intermediazione assicurativa (fideiussioni), dopo un periodo in cui ha lavorato come venditore di automobili. Il commercialista conferma che si può fare, ma **sta ancora valutando se convenga**:
+
+- **riattivare l'attuale impresa individuale** (stessa P.IVA 14416401009, stesso nome "CM Consulting di Carmelo Migliore"), oppure
+- **chiuderla e aprirne una nuova** per questo progetto.
+
+Se sarà aperta una nuova impresa, **cambieranno quasi certamente sia il nome sia la Partita IVA** attualmente scritti in tutto il sito (footer di ogni pagina, `chi-siamo.html`, `trasparenza.html`, `contatti.html`, meta-tag, eventuali fatture). Ancora nessuna certezza: si attende la risposta del commercialista.
+
+## Perché è collegato ad altri punti di questo registro
+
+Questo spiega retroattivamente alcune scelte prudenti già prese da Carmelo, che ora risultano più motivate di quanto sembrasse:
+- §22/§23 — motivo aggiuntivo per cui la comunicazione del dominio `cm-consulting.info` a IVASS è stata rimandata "a progetto finito": se cambia la P.IVA, cambierebbe anche l'intermediario titolare da comunicare.
+- §23 punto 3 — la verifica del MUP operativo ha senso pieno solo una volta chiarita quale entità (attuale o nuova) lo utilizzerà.
+- Emerso anche un tema collegato ma distinto: Carmelo valuta se strutturare un compenso separato ("analisi documentale/assistenza alla collocazione del rischio") oltre alla provvigione da intermediazione — **prima di qualunque fattura in tal senso**, servono tre verifiche indipendenti, nessuna delle quali è di competenza di un'IA: (1) commercialista, per il corretto trattamento fiscale/IVA (le provvigioni di intermediazione sono tipicamente esenti IVA, una "consulenza" generica no); (2) Cadore Assicurazioni S.r.l. e C.B.A. S.r.l. Semplificata (i due intermediari con cui Carmelo collabora, sezioni A e B — vedi §3), per verificare se un compenso separato fatturato direttamente al cliente finale è compatibile con gli accordi di collaborazione in essere; (3) se si dichiara "consulenza" formale ai sensi dell'art. 59 del Regolamento IVASS 40/2018, si attivano obblighi specifici di raccomandazione personalizzata che oggi il sito non è strutturato per soddisfare.
+
+## Cosa fare nel frattempo — regola pratica
+
+- **Si può continuare** a lavorare su struttura del sito, contenuti, sicurezza, funzionalità, SEO: nessuno di questi dipende dal nome/P.IVA finale ed è comunque lavoro utile.
+- **Non registrare o comunicare nulla che leghi in modo definitivo l'identità attuale** finché non arriva la risposta del commercialista: niente comunicazione del dominio a IVASS (già sospesa), niente fatture reali (né di provvigione extra né di "consulenza"), attenzione a non presentare pubblicamente un servizio di consulenza a pagamento sul sito prima che il modello sia chiarito su tutti e tre i fronti sopra elencati.
+- Quando arriva la risposta del commercialista: se cambia P.IVA/nome, sarà necessario un aggiornamento sistematico di tutti i dati identificativi sul sito (footer, chi-siamo, trasparenza, contatti, meta-tag) — lavoro meccanico ma da fare con attenzione, un file alla volta, verificando ogni pagina.
+
+**Nota per chi riprende**: se in una sessione futura sembra che questo punto sia stato dimenticato, è probabilmente perché non è stato riletto — controllare sempre questa sezione prima di procedere con qualunque modifica ai dati identificativi (P.IVA, REA, nome) o con la comunicazione del dominio a IVASS.
