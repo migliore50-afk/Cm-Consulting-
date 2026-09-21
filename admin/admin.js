@@ -1,4 +1,4 @@
- const $ = (id) => document.getElementById(id);
+const $ = (id) => document.getElementById(id);
 const state = { mode: null, factorId: null, practices: [], requests: [] };
 
 function msg(el, text, type = '') { el.textContent = text || ''; el.className = `message ${type}`; }
@@ -25,6 +25,76 @@ function renderPractices() {
   $('mTot').textContent = rows.length;
   $('mSoon').textContent = rows.filter(p => daysUntil(p.expiry) >= 0 && daysUntil(p.expiry) <= 30).length;
   $('mOpen').textContent = rows.filter(p => !p.checked).length;
+}
+
+// 21 settembre 2026 — funzione mancante: il pulsante "APRI" sulla riga di ogni
+// pratica chiamava openDetail(id), ma la funzione non era mai stata scritta —
+// causava un errore silenzioso in console e il click non produceva alcun
+// effetto visibile. Ricostruita seguendo lo stesso schema già usato e
+// funzionante per openRequestDetail() poco sotto, e la struttura che
+// admin/mup.js si aspetta di trovare dentro #detail (un <h2> col nome cliente,
+// un paragrafo "<tipologia> · scadenza <data>" dentro .section-head, e un
+// pulsante con id="deletePractice" prima del quale mup.js inserisce
+// automaticamente il pulsante "GENERA MUP").
+function openDetail(id) {
+  const p = state.practices.find(x => String(x.id) === String(id));
+  if (!p) return;
+  const s = status(p.expiry);
+  const d = $('detail');
+  d.classList.remove('hidden');
+  d.innerHTML = `
+    <div class="section-head">
+      <div>
+        <div class="eyebrow">PRATICA</div>
+        <h2>${escapeHtml(p.client)}</h2>
+        <p class="muted">${escapeHtml(p.type)} · scadenza ${new Date(`${p.expiry}T00:00:00`).toLocaleDateString('it-IT')}</p>
+      </div>
+      <button class="small-btn" id="closeDetail">CHIUDI</button>
+    </div>
+    <p><strong>Stato:</strong> <span class="status ${s[1]}">${s[0]}</span></p>
+    <p><strong>Email cliente:</strong> ${escapeHtml(p.email || '—')}</p>
+    <p><strong>Prezzo cliente:</strong> ${p.client_price != null && p.client_price !== '' ? escapeHtml(String(p.client_price)) : '—'}</p>
+    <p><strong>Costo revisore:</strong> ${p.reviewer_cost != null && p.reviewer_cost !== '' ? escapeHtml(String(p.reviewer_cost)) : '—'}</p>
+    <div class="panel">
+      <h3>Note interne</h3>
+      <textarea id="detailNotes" rows="4" style="width:100%;box-sizing:border-box">${escapeHtml(p.notes || '')}</textarea>
+      <div class="actions" style="margin-top:8px;display:flex;gap:8px;justify-content:flex-end">
+        <button class="small-btn" id="saveNotes">SALVA NOTE</button>
+      </div>
+    </div>
+    <label style="display:flex;align-items:center;gap:8px;margin-top:12px">
+      <input type="checkbox" id="detailChecked" ${p.checked ? 'checked' : ''}> Pratica verificata
+    </label>
+    <div class="actions" style="margin-top:20px;display:flex;gap:8px;justify-content:flex-end">
+      <button class="small-btn" id="deletePractice" style="color:#b42318;border-color:#b42318">ELIMINA PRATICA</button>
+    </div>
+  `;
+
+  $('closeDetail').onclick = () => d.classList.add('hidden');
+
+  $('saveNotes').onclick = async () => {
+    try {
+      await api('practice', { method: 'PATCH', query: `&id=${encodeURIComponent(p.id)}`, body: { notes: $('detailNotes').value } });
+      await loadPractices();
+      msg($('detailNotes'), '', '');
+    } catch (err) { alert(err.message); }
+  };
+
+  $('detailChecked').onchange = async (e) => {
+    try {
+      await api('practice', { method: 'PATCH', query: `&id=${encodeURIComponent(p.id)}`, body: { checked: e.target.checked } });
+      await loadPractices();
+    } catch (err) { alert(err.message); }
+  };
+
+  $('deletePractice').onclick = async () => {
+    if (!confirm(`Eliminare la pratica "${p.client}"? L'azione non è reversibile.`)) return;
+    try {
+      await api('practice', { method: 'DELETE', query: `&id=${encodeURIComponent(p.id)}` });
+      d.classList.add('hidden');
+      await loadPractices();
+    } catch (err) { alert(err.message); }
+  };
 }
 
 function formatRequestDate(value) {
