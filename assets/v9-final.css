@@ -517,3 +517,56 @@ body.privacy-modal-open{overflow:hidden}
    footer ("Verifica iscrizione RUI", "Reclami e Arbitro Assicurativo"): rimossi via
    JavaScript in assets/app.js (funzione removeRedundantFooterButtons), non serve
    nascondere nulla qui — questa nota e' solo per chi legge il CSS in futuro. */
+
+/* 21 settembre 2026 — barra di navigazione fissa in basso, solo su mobile, su
+   richiesta di Carmelo (ispirata a mondocauzioni.it): 5 voci sempre a portata di
+   pollice (Home, Servizi, Preventivo in evidenza al centro, Contatti, Menu).
+   WhatsApp volutamente assente — nessun numero attivo ancora (eSIM non attiva),
+   vedi registro tecnico. Sposta piu' in alto Assistente CM e "Torna su" perche'
+   non restino coperti dalla nuova barra. */
+.cm-mobile-nav{display:none}
+@media(max-width:760px){
+  body{padding-bottom:68px}
+  .cm-mobile-nav{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    position:fixed;
+    left:0;right:0;bottom:0;
+    z-index:9000;
+    background:#fff;
+    border-top:1px solid rgba(9,43,67,.10);
+    box-shadow:0 -8px 24px rgba(9,43,67,.10);
+    padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));
+  }
+  .cm-mn-item{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-end;
+    gap:3px;
+    min-height:52px;
+    border:0;
+    background:none;
+    color:#4a5f70;
+    font-size:10px;
+    font-weight:800;
+    text-decoration:none;
+    padding:4px 2px 2px;
+    font-family:inherit;
+  }
+  .cm-mn-icon{font-size:19px;line-height:1}
+  .cm-mn-cta{color:#092b43;position:relative;top:-14px}
+  .cm-mn-cta .cm-mn-icon{
+    width:48px;height:48px;
+    display:flex;align-items:center;justify-content:center;
+    border-radius:50%;
+    background:var(--gold,#d6aa45);
+    color:#092b43;
+    box-shadow:0 10px 22px rgba(214,170,69,.45);
+    font-size:20px;
+  }
+
+  /* Assistente CM e "Torna su": sollevati sopra la nuova barra */
+  #cm-ai-fab,.cm-ai-fab{bottom:78px!important}
+  #cm-back-top{bottom:78px!important}
+}
