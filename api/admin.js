@@ -1104,6 +1104,15 @@ export default async function handler(req, res) {
       });
 
       if (!r.response.ok) {
+        if (process.env.VERCEL_ENV === 'preview') {
+          return json(res, 503, {
+            ok: false,
+            error: {
+              code: 'PREVIEW_DATABASE_ERROR',
+              message: `Salvataggio fallito [HTTP ${r.response.status}]${r.data?.code ? ` [${r.data.code}]` : ''}.${r.data?.message ? ` ${String(r.data.message).slice(0, 240)}` : ''}`
+            }
+          });
+        }
         return json(res, 400, {
           ok: false,
           error: { code: 'DATABASE_ERROR', message: 'Salvataggio fallito.' }
