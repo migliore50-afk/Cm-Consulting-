@@ -523,13 +523,19 @@ body.privacy-modal-open{overflow:hidden}
    pollice (Home, Servizi, Preventivo in evidenza al centro, Contatti, Menu).
    WhatsApp volutamente assente — nessun numero attivo ancora (eSIM non attiva),
    vedi registro tecnico. Sposta piu' in alto Assistente CM e "Torna su" perche'
-   non restino coperti dalla nuova barra. */
+   non restino coperti dalla nuova barra.
+   21 settembre 2026, correzione: icone emoji sostituite con icone SVG a linea
+   (piu' vicine allo stile Mondocauzioni, coerenti col resto del sito che non usa
+   mai emoji nella navigazione). Correzione: lo scostamento di Assistente CM/Torna
+   su ora usa env(safe-area-inset-bottom) esplicitamente — su iPhone senza tasto
+   Home la barra e' piu' alta del previsto (indicatore Home), un valore fisso non
+   bastava e i due pulsanti restavano in parte coperti dalla barra. */
 .cm-mobile-nav{display:none}
 @media(max-width:760px){
-  body{padding-bottom:68px}
+  body{padding-bottom:70px}
   .cm-mobile-nav{
     display:grid;
-    grid-template-columns:repeat(5,1fr);
+    grid-template-columns:repeat(6,1fr);
     position:fixed;
     left:0;right:0;bottom:0;
     z-index:9000;
@@ -543,7 +549,7 @@ body.privacy-modal-open{overflow:hidden}
     flex-direction:column;
     align-items:center;
     justify-content:flex-end;
-    gap:3px;
+    gap:4px;
     min-height:52px;
     border:0;
     background:none;
@@ -554,19 +560,22 @@ body.privacy-modal-open{overflow:hidden}
     padding:4px 2px 2px;
     font-family:inherit;
   }
-  .cm-mn-icon{font-size:19px;line-height:1}
+  .cm-mn-icon{display:flex;align-items:center;justify-content:center;width:22px;height:22px}
+  .cm-mn-icon svg{width:100%;height:100%}
   .cm-mn-cta{color:#092b43;position:relative;top:-14px}
   .cm-mn-cta .cm-mn-icon{
-    width:48px;height:48px;
-    display:flex;align-items:center;justify-content:center;
+    width:46px;height:46px;
     border-radius:50%;
     background:var(--gold,#d6aa45);
     color:#092b43;
     box-shadow:0 10px 22px rgba(214,170,69,.45);
-    font-size:20px;
   }
+  .cm-mn-cta .cm-mn-icon svg{width:21px;height:21px}
 
-  /* Assistente CM e "Torna su": sollevati sopra la nuova barra */
-  #cm-ai-fab,.cm-ai-fab{bottom:78px!important}
-  #cm-back-top{bottom:78px!important}
+  /* 21 settembre 2026 — su richiesta di Carmelo: il pallone "Assistente CM"
+     fluttuante copriva il contenuto della pagina (segnalato più volte). Su
+     mobile è ora sostituito dalla voce "Aiuto" nella barra qui sopra — il
+     pallone va quindi nascosto del tutto qui, non solo sollevato. */
+  #cm-ai-fab,.cm-ai-fab{display:none!important}
+  #cm-back-top{bottom:calc(80px + env(safe-area-inset-bottom,0px))!important}
 }
