@@ -1032,6 +1032,87 @@ export default async function handler(req, res) {
 
     /*
      * ============================================================
+     * DEBUG KEY CHECK — TEMPORANEO, SOLO PREVIEW, SOLO ADMIN AUTENTICATO
+     * Diagnostica il caricamento di SUPABASE_SERVICE_ROLE_KEY senza mai
+     * esporne il valore: presenza, prefisso, lunghezza, impronta SHA-256,
+     * più un'unica chiamata di prova in SOLA LETTURA (nessun INSERT) verso
+     * /rest/v1/admin_practices, di cui riportiamo solo lo status HTTP e
+     * l'eventuale messaggio d'errore di Supabase (mai la chiave).
+     * DA RIMUOVERE una volta risolto il 401 su "Nuova pratica" — vedi
+     * STATO-PROGETTO.md.
+     * ============================================================
+     */
+    if (action === 'debug-key-check' && req.method === 'GET') {
+      if (process.env.VERCEL_ENV !== 'preview') {
+        return json(res, 404, {
+          ok: false,
+          error: { code: 'NOT_FOUND', message: 'Non trovato.' }
+        });
+      }
+
+      const auth = await requireAdmin(req, res);
+      if (!auth) {
+        return json(res, 401, {
+          ok: false,
+          error: { code: 'UNAUTHORIZED', message: 'Autenticazione richiesta.' }
+        });
+      }
+
+      const url = str(process.env.SUPABASE_URL).replace(/\/$/, '');
+      const serviceKey = str(process.env.SUPABASE_SERVICE_ROLE_KEY);
+
+      let urlHost = '';
+      try { urlHost = new URL(url).host; } catch {}
+
+      const fingerprint = serviceKey
+        ? crypto.createHash('sha256').update(serviceKey).digest('hex')
+        : '';
+
+      let liveTest = { attempted: false };
+
+      if (url && serviceKey) {
+        const headers = { apikey: serviceKey };
+        if (!serviceKey.startsWith('sb_secret_')) {
+          headers.Authorization = `Bearer ${serviceKey}`;
+        }
+        try {
+          const testResponse = await fetch(
+            `${url}/rest/v1/admin_practices?select=id&limit=1`,
+            { method: 'GET', headers }
+          );
+          let testData = null;
+          try { testData = await testResponse.json(); } catch {}
+          liveTest = {
+            attempted: true,
+            status: testResponse.status,
+            code: testData?.code || null,
+            message: testData?.message || null
+          };
+        } catch (err) {
+          liveTest = {
+            attempted: true,
+            status: null,
+            code: 'FETCH_ERROR',
+            message: String(err?.message || err)
+          };
+        }
+      }
+
+      return json(res, 200, {
+        ok: true,
+        supabaseUrlPresent: Boolean(url),
+        supabaseUrlHost: urlHost,
+        serviceKeyPresent: Boolean(serviceKey),
+        serviceKeyPrefix: serviceKey ? serviceKey.slice(0, 10) : '',
+        serviceKeyLength: serviceKey.length,
+        serviceKeyFingerprintSha256: fingerprint,
+        vercelEnv: str(process.env.VERCEL_ENV),
+        liveTest
+      });
+    }
+
+    /*
+     * ============================================================
      * REQUESTS — GET
      * ============================================================
      */
