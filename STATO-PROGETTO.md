@@ -1,7 +1,7 @@
 # STATO-PROGETTO.md
 ## CM Consulting — Registro tecnico ufficiale
 
-**Ultimo aggiornamento:** 20 settembre 2026 (sera)  
+**Ultimo aggiornamento:** 20 settembre 2026 (sera tarda) — vedi §25 per gli ultimi aggiornamenti (punti 6/7/8, chiarimento MUP)  
 **Repository:** `migliore50-afk/Cm-Consulting-`  
 **Branch:** `main`  
 **Deploy:** Vercel — Production (dominio Aruba non ancora collegato, in attesa — vedi §23 e §24)  
@@ -440,3 +440,37 @@ Questo spiega retroattivamente alcune scelte prudenti già prese da Carmelo, che
 - Quando arriva la risposta del commercialista: se cambia P.IVA/nome, sarà necessario un aggiornamento sistematico di tutti i dati identificativi sul sito (footer, chi-siamo, trasparenza, contatti, meta-tag) — lavoro meccanico ma da fare con attenzione, un file alla volta, verificando ogni pagina.
 
 **Nota per chi riprende**: se in una sessione futura sembra che questo punto sia stato dimenticato, è probabilmente perché non è stato riletto — controllare sempre questa sezione prima di procedere con qualunque modifica ai dati identificativi (P.IVA, REA, nome) o con la comunicazione del dominio a IVASS.
+
+---
+
+# 25. AGGIORNAMENTI DEL 20 SETTEMBRE 2026 (SERA TARDA) — punti 6/7/8, chiarimento MUP
+
+## Punto 6 (email con allegati) — MESSO IN PAUSA, collegato a §24
+
+Carmelo ha giustamente osservato che, con il flusso attuale a due email separate, l'antivirus non serve affatto: il documento arriva direttamente nella sua casella di posta, mai sui server del sito, quindi la protezione della sua email/il suo antivirus personale sono sufficienti per quel percorso. L'antivirus (Cloudmersive o simile) servirebbe solo se si sceglie di far transitare il file sui server (Vercel Blob) per comporre un'unica email automatica.
+
+**Decisione presa**: aspettare l'esito con il commercialista (§24) prima di decidere ed eventualmente registrarsi a un servizio come Cloudmersive — per non dover rifare la registrazione con nome/email diversi se cambierà la ragione sociale. **Nessun lavoro di sviluppo iniziato su questo punto.**
+
+Nota tecnica raccolta nel frattempo, utile quando si riprenderà: Cloudmersive offre 600 controlli antivirus gratuiti al mese, senza scadenza (verificato con ricerca il 20 settembre) — se il volume di richieste di CM Consulting resta contenuto, potrebbe restare gratuito. Non confermato con certezza se la registrazione gratuita richieda una carta di credito: da verificare al momento dell'iscrizione, prima di inserire qualsiasi dato di pagamento (stesso principio già applicato a Oracle Cloud, vedi §18).
+
+## Punto 7 (test di sicurezza esterno) — CHIUSO, non di interesse per Carmelo
+
+Carmelo ha deciso di non procedere. Nessuna azione necessaria. Se il tema dovesse riemergere in futuro, ripartire da qui: già valutato e scartato consapevolmente il 20 settembre 2026.
+
+## Punto 8 (pulizia file storici in root) — IN CORSO, istruzioni date
+
+Lista definitiva confermata (14 file, verificata contro il contenuto reale di `main`): `AUDIT-V12.6-FINALE.md`, `AUDIT-V12.7-FINALE.md`, `README-V12.7.md`, `README-V12.8-SECURITY.md`, `ASSET-AUDIT-V11.txt`, `ASSET-RECUPERATI.txt`, `CONTROLLO-TECNICO-V9.txt`, `PUBBLICAZIONE-CHECKLIST.txt`, `AUDIT-ASSISTENTE-V12.6.1.md`, `VERSION-DEFINITIVA.txt`, `VERSION-LOGO-FINALE.txt`, `VERSION-SECURITY-FINALE.txt`, `VERSION-UX-GENERIC.txt`, `VERSION.txt`.
+
+**Esplicitamente esclusi**: `AMBIENTE-PHOTO-AUDIT-V12.3.txt` (non fa parte del gruppo), `SECURITY-V12.8.md` (documentazione architetturale ancora attiva, citata in questo registro — resta in root), `README.md` (file corrente, non storico).
+
+Destinazione: `docs/archivio/` (cartella `docs/` già esistente in root), stesso nome file, un solo commit (`chore: archivia file storici in docs/archivio`) tramite l'editor github.dev (tasto "." sulla pagina del repository), non tramite 14 modifiche separate. **In attesa che Carmelo esegua lo spostamento e confermi.**
+
+## Chiarimento sul MUP — aggiornamento rispetto a §23 punto 3
+
+Carmelo ha chiarito un punto importante: **non ha mai usato un Modulo Unico Precontrattuale nelle pratiche passate, e non ne conosceva l'esistenza**. Non sa se questo dipendesse dal fatto che non fosse applicabile al tipo di fideiussioni trattate, o se la documentazione precontrattuale fosse gestita direttamente da Cadore/C.B.A. come intermediari titolari.
+
+**Non trattare questo come una violazione accertata** — è un punto da chiarire, non un errore confermato. La domanda concreta da porre a Cadore e C.B.A. (non risolvibile da un'IA, serve la loro conferma sul rapporto di collaborazione specifico): chi consegna il MUP e la documentazione precontrattuale nel loro accordo con Carmelo come collaboratore Sezione E, e quale modello va usato oggi per le fideiussioni, aggiornato ai Provvedimenti IVASS più recenti. **Nessuna modifica al sito su questo finché Carmelo non ha una risposta** — richiesta esplicita di Carmelo di non fare supposizioni.
+
+## Nota su accesso in scrittura — chiarimento per chi riprende
+
+Carmelo ha chiesto se Claude o ChatGPT potessero eseguire da soli le modifiche su GitHub (es. lo spostamento file del punto 8), invece di fargli fare i passaggi manuali. Confermato: **Claude in questa chat ha solo accesso in lettura a GitHub** (vedi §5-bis, causa già diagnosticata). Non è possibile verificare da qui se un'istanza di ChatGPT in un'altra conversazione abbia invece accesso in scrittura — dipende dagli strumenti che Carmelo ha eventualmente collegato al suo account ChatGPT, informazione che va chiesta direttamente a ChatGPT stesso in quella conversazione.
