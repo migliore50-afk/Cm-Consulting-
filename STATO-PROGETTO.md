@@ -1,9 +1,9 @@
 # STATO-PROGETTO.md
 ## CM Consulting — Registro tecnico ufficiale
 
-**Ultimo aggiornamento:** 20 settembre 2026 (sera tarda) — vedi §25 per gli ultimi aggiornamenti (punti 6/7/8, chiarimento MUP)  
+**Ultimo aggiornamento:** 22 settembre 2026 — vedi §26 per il generatore MUP (Word/PDF veri, CHIUSO), l'archivio intermediari, e la Fase 1 facsimile (costruita ma CONGELATA, non autorizzata)  
 **Repository:** `migliore50-afk/Cm-Consulting-`  
-**Branch:** `main`  
+**Branch:** `main` (per il sito pubblico) — **vedi anche `feat/mup-generator-2026`, branch di sviluppo separato per l'area admin/MUP, mai mergiato su `main`, §26**  
 **Deploy:** Vercel — Production (dominio Aruba non ancora collegato, in attesa — vedi §23 e §24)  
 **Stato:** progetto attivo. **LEGGERE PRIMA §24**: la ragione sociale/P.IVA attuale potrebbe cambiare (posizione camerale in riattivazione, il commercialista sta valutando se aprirne una nuova) — non registrare/comunicare nulla di definitivo con l'identità attuale finché non è chiarito. Vedi poi §23 per l'audit tecnico del 20 settembre (bug menu/logo risolti, riscoperta dell'Area Amministratore, sitemap aggiornata, riferimenti normativi reclami aggiornati). Punto aperto storico: nuovo logo per header, affidato a un grafico esterno (Fiverr), in attesa dei file — vedi §22.
 
@@ -87,7 +87,7 @@ Carmelo Migliore, RUI Sezione E n. E000437237 dal 24/01/2013, collabora con:
 - **Cadore Assicurazioni S.r.l.** — Sezione A, n. A000524766 dal 15/12/2015
 - **C.B.A. S.r.l. Semplificata** — Sezione B, n. B000511269 dal 20/04/2016
 
-Non pubblicare questo elenco come pagina statica del sito (non richiesto e non opportuno, l'informazione va nel MUP di ogni pratica specifica — vedi §23 punto 3) — è qui solo come riferimento tecnico interno.
+Non pubblicare questo elenco come pagina statica del sito (non richiesto e non opportuno, l'informazione va nel MUP di ogni pratica specifica — vedi §23 punto 3) — è qui solo come riferimento tecnico interno. **Aggiornamento 22 settembre 2026**: Cadore è stata inserita nel nuovo archivio "Intermediari collaboratori" del pannello admin (vedi §26); C.B.A. non ancora.
 
 ### Vincoli
 
@@ -140,6 +140,8 @@ Il connettore GitHub MCP usato da Claude in questa chat ha **solo accesso in let
 
 **Procedura consolidata e usata per tutto il lavoro di questo registro**: Claude legge sempre il RAW da GitHub prima di modificare, prepara il file completo (come download, dal 19 settembre 2026 — vedi §1) o le istruzioni precise, e **Carmelo carica manualmente** via drag & drop sull'editor web GitHub, un commit per correzione (o un gruppo di file coerenti caricati insieme). Claude verifica poi il risultato rileggendo il RAW.
 
+**Aggiornamento 22 settembre 2026**: Claude ha invece accesso diretto in lettura **e scrittura** al progetto Supabase collegato (non solo GitHub) — vedi §26. Resta comunque sola lettura su GitHub.
+
 ---
 
 # 6-8. STORICO CAROUSEL/ASSISTENTE/HERO — superato
@@ -181,6 +183,8 @@ File storici già eliminati: `assets/cm-assistant-v7.css`, `assets/cm-assistant.
 ## Area Amministratore (riscoperta il 20 settembre 2026 — vedi §23)
 `admin/index.html` (login), `admin/reset.html`, `admin/admin.css`, `admin/admin.js` — frontend completo dell'area riservata, servito su `/admin`. `area-cm.html` è solo un redirect verso `/admin`. Backend: `api/admin.js` (login password+TOTP, sessioni Redis, CRUD pratiche/richieste su Supabase). Documentazione architetturale in `SECURITY-V12.8.md` (root). **Login testato e funzionante il 20 settembre 2026** sull'URL stabile `https://cm-consulting-v128-security-vercel.vercel.app/admin` — non funziona sugli URL di preview `-deploy-xxxxx.vercel.app` per via del controllo origine legato a `SITE_URL`, comportamento corretto e voluto.
 
+**Aggiornamento 22 settembre 2026 — SOLO sul branch `feat/mup-generator-2026`, non su `main`**: `api/admin.js` esteso con azioni per generatore MUP (Word/PDF), archivio intermediari, e Fase 1 facsimile — vedi §26 per il dettaglio completo. Nuovi file: `api/mup-docx.js`, `api/mup-pdf.js`, `api/facsimile-extract.js`.
+
 ## JavaScript
 `assets/app.js` — contiene sia la logica applicativa (carousel, Assistente CM, form) sia diverse funzioni di correzione automatica del menu/footer eseguite a runtime su ogni pagina (vedi §21, §22, §23). Leggere sempre il RAW prima di aggiungere nuova logica simile, per non duplicarla. Funzioni runtime attive nel blocco `DOMContentLoaded`: `initMenu`, `initSlider`, `initAssistantUI`, `initAssistantFab`, `initAssistantFabFooterHide`, `initClickableCards`, `initBasicFormValidation`, `initBackToTop`, `simplifyLegalBar`, `removeRedundantFooterButtons`, più l'IIFE `initServiziDropdown` in fondo al file (menu SERVIZI, link "Accedi Area Privata", pulizia telefono/RUI). **Nessuna funzione di sostituzione logo attiva** (rimossa la sera del 19 settembre, vedi §22).
 
@@ -195,6 +199,9 @@ Ogni asset segue lo schema `<stem>-retina-<768|1280|1920|2560|3840>.webp`. Stem 
 
 ## API backend (`api/`)
 `api/admin.js` (vedi sopra), `api/submit-request.js` (invio richiesta + email via Resend, supporta allegati reali via Vercel Blob con scansione antivirus fail-closed — **non collegato al frontend attuale, vedi §23**), `api/attachment-upload-url.js` (genera URL di upload firmato, non richiamato da nessuna pagina), `api/_security.js` (rate limiting e scansione antivirus condivisi, entrambi fail-closed).
+
+## Database Supabase (progetto `mtvixcvokxvgnsglwqix`)
+Tabelle su `main`/produzione: `admin_practices`, `admin_requests` (RLS attivo, nessuna policy — solo backend service-role). **Aggiornamento 22 settembre, solo sul branch `feat/mup-generator-2026`**: aggiunte `admin_intermediaries` e `admin_practice_documents`, più nuove colonne su `admin_practices` — vedi §26. Le modifiche al database sono reali e già applicate (Supabase non ha branch separati come Git), ma il codice che le usa vive solo sul branch di sviluppo.
 
 ---
 
@@ -424,7 +431,7 @@ La posizione camerale attuale di CM Consulting **risulta oggi inattiva**. Carmel
 - **riattivare l'attuale impresa individuale** (stessa P.IVA 14416401009, stesso nome "CM Consulting di Carmelo Migliore"), oppure
 - **chiuderla e aprirne una nuova** per questo progetto.
 
-Se sarà aperta una nuova impresa, **cambieranno quasi certamente sia il nome sia la Partita IVA** attualmente scritti in tutto il sito (footer di ogni pagina, `chi-siamo.html`, `trasparenza.html`, `contatti.html`, meta-tag, eventuali fatture). Ancora nessuna certezza: si attende la risposta del commercialista.
+Se sarà aperta una nuova impresa, **cambieranno quasi certamente sia il nome sia la Partita IVA** attualmente scritti in tutto il sito (footer di ogni pagina, `chi-siamo.html`, `trasparenza.html`, `contatti.html`, meta-tag, eventuali fatture). Ancora nessuna certezza: si attende la risposta del commercialista. **Aggiornamento 20 settembre sera**: Carmelo ha precisato che la risposta arriverà "con l'anno nuovo, se si farà" — non è più un blocco urgente, ma resta da tenere presente prima di qualunque comunicazione ufficiale (RUI, fatture) legata all'identità attuale.
 
 ## Perché è collegato ad altri punti di questo registro
 
@@ -474,3 +481,61 @@ Carmelo ha chiarito un punto importante: **non ha mai usato un Modulo Unico Prec
 ## Nota su accesso in scrittura — chiarimento per chi riprende
 
 Carmelo ha chiesto se Claude o ChatGPT potessero eseguire da soli le modifiche su GitHub (es. lo spostamento file del punto 8), invece di fargli fare i passaggi manuali. Confermato: **Claude in questa chat ha solo accesso in lettura a GitHub** (vedi §5-bis, causa già diagnosticata). Non è possibile verificare da qui se un'istanza di ChatGPT in un'altra conversazione abbia invece accesso in scrittura — dipende dagli strumenti che Carmelo ha eventualmente collegato al suo account ChatGPT, informazione che va chiesta direttamente a ChatGPT stesso in quella conversazione.
+
+---
+
+# 26. LAVORO DEL 22 SETTEMBRE 2026 — Generatore MUP con Word/PDF veri, archivio intermediari, Fase 1 facsimile (congelata)
+
+**Importante: tutto questo lavoro è avvenuto su un branch separato, `feat/mup-generator-2026`, mai su `main`. Production non è mai stata toccata. La domanda "quando lo mergiamo su main" resta aperta e non è stata ancora affrontata — vedi in fondo a questa sezione.**
+
+## MUP — generatore Word (.docx) + PDF veri — CHIUSO E VERIFICATO
+
+Il generatore MUP (Allegato 3, Regolamento IVASS 40/2018, aggiornato ai Provvedimenti 163/2025 e 169/2026) è stato riscritto da zero rispetto alla prima versione (che apriva solo una pagina HTML in una nuova scheda): ora **"GENERA MUP" produce due file veri**, un `.docx` (libreria `docx`) e un `.pdf` (libreria `pdfkit`), entrambi generati lato server in `api/mup-docx.js` e `api/mup-pdf.js`, salvati come base64 nella pratica (`admin_practices.mup_docx_base64`, `mup_pdf_base64` + rispettive colonne `_generated_at`) e scaricati automaticamente dal browser.
+
+**Contenuto del documento, rifinito su richiesta di Carmelo perché il file generato dev'essere quello definitivo da mandare al cliente, non una bozza interna:**
+- nessun banner "verifica obbligatoria" (la verifica si fa prima, in fase di compilazione, non resta scritta sul documento finale);
+- nessuna e-mail del cliente (non prevista dall'Allegato 3, era un riferimento interno aggiunto da noi — tolta, il blocco "Dati della pratica" finale è stato rimosso del tutto, i dati utili restano comunque nelle sezioni 1-2);
+- simbolo "≥" sostituito con "almeno il 10%" — Helvetica (il font usato da `pdfkit`) non supporta quel carattere Unicode e lo mostrava corrotto (`"e10%`) solo nel PDF, non nel Word;
+- "DA COMPILARE" (sui campi facoltativi lasciati vuoti, es. quando un conflitto d'interesse è "NO") sostituito con un semplice trattino "—", più adatto a un documento definitivo;
+- **Sezione VIII (oblio oncologico)**: Carmelo ha confermato di non collocare prodotti vita/salute — la sezione resta presente (nel dubbio che il modello ufficiale la richieda comunque) ma con testo "Non applicabile: CM Consulting non colloca prodotti assicurativi vita/salute per i quali sia richiesta una dichiarazione sullo stato di salute del contraente.", non il testo legale generico.
+- solo i 15 campi realmente verificati dal controllo JavaScript (non tutti quelli con `required` nell'HTML, che di per sé non blocca nulla: il modulo non è dentro un `<form>`) sono contrassegnati con asterisco rosso e legenda in cima; se mancano, vengono evidenziati in rosso e il messaggio conta quanti sono, oltre a elencarli.
+- il modulo **ricorda** i dati stabili tra una pratica e l'altra (`localStorage`, non sul server) — cliente/prodotto/scadenza/email restano sempre specifici della pratica, il resto si ripropone; link "Svuota i valori ricordati" per ripartire da zero.
+
+**Bug corretto durante il percorso**: su iPhone il secondo di due download avviati in sequenza veniva bloccato dal sistema. Corretto scaricando prima il PDF, poi il Word con 350ms di pausa in mezzo — tecnica standard, cross-browser.
+
+**Verifica finale**: fatta su un documento vero, generato dalla Preview, con un intermediario reale (Cadore Assicurazioni S.r.l., vedi sotto) — dieci criteri controllati uno per uno da Claude e da Carmelo indipendentemente, tutti confermati corretti. **MUP dichiarato ufficialmente chiuso il 22 settembre 2026.**
+
+## Archivio "Intermediari collaboratori" — nuovo, sostituisce il campo di testo libero
+
+Su proposta di ChatGPT, accettata da Claude dopo verifica: il campo "Intermediario principale" del MUP non è più testo libero (rischio di dati incoerenti o inventati), ma un **menu a tendina** che legge da una nuova tabella Supabase, `admin_intermediaries` (denominazione, RUI, sezione A/B, sede, telefono, email, PEC, sito, attivo/non attivo). Solo i record "attivi" compaiono nel menu. Selezionandone uno, RUI/sezione/sede/contatti si compilano da soli (campi bloccati in sola lettura) e appare un riepilogo di conferma verde.
+
+Gestione dell'archivio: nuova sezione "Intermediari collaboratori" dentro Impostazioni sicurezza del pannello admin — aggiungi, modifica, attiva/disattiva. Nessun SQL a mano necessario in futuro.
+
+**Deliberatamente scartata** una proposta successiva di ChatGPT (interrogare automaticamente l'Open Data del RUI IVASS + fare scraping dei siti dei collaboratori per compilare l'archivio da solo): troppo fragile per un documento legale, e i rapporti di Carmelo (Cadore dal 2015, C.B.A. dal 2016) sono sostanzialmente stabili da un decennio — l'archivio manuale è proporzionato al bisogno reale. Da rivalutare solo se in futuro l'uso reale dimostra che aggiornarlo a mano è davvero un peso.
+
+**Popolamento**: l'archivio era vuoto per scelta (nessun dato inventato da un'IA). Carmelo ha inserito il primo intermediario reale, **Cadore Assicurazioni S.r.l.** (RUI A000524766, Sezione A, Via Pieve di Cadore 33, 00135 Roma, tel. 06 3013712, PEC cadoreassicurazionisrl@legalmail.it — email e sito lasciati vuoti perché non ancora verificati), usato anche per il test finale del MUP. **C.B.A. S.r.l. Semplificata non ancora inserita.**
+
+## Database Supabase — modifiche applicate direttamente da Claude
+
+In questa sessione Claude ha scoperto di avere accesso diretto in lettura/scrittura al progetto Supabase (`mtvixcvokxvgnsglwqix`) tramite strumenti dedicati — non solo lettura come su GitHub. Usato per: creare `admin_intermediaries` (RLS attivo, nessuna policy — stesso schema fail-closed di `admin_practices`/`admin_requests`, solo il backend con la chiave service-role può accedere), aggiungere le colonne MUP a `admin_practices`, verificare più volte lo stato reale delle tabelle durante le discussioni con ChatGPT (utile: in almeno due occasioni ha permesso di confermare o smentire affermazioni fatte in chat senza dover chiedere a Carmelo di controllare lui stesso).
+
+## Fase 1 — caricamento e lettura automatica del facsimile — COSTRUITA MA CONGELATA
+
+Proposta e costruita da ChatGPT durante la sessione: caricamento privato del facsimile ricevuto dal collaboratore (PDF o Word, su Vercel Blob, accesso privato con URL firmati), lettura automatica del testo (librerie reali `mammoth` per Word e `pdf-parse` per PDF — **non un'IA vera, solo estrazione di testo + ricerca di pattern semplici tipo "Contraente: ..."**, scelta deliberatamente prudente), schermata di verifica, e i dati diventano "ufficiali" sulla pratica solo dopo conferma esplicita di Carmelo (mai in automatico). Nuova tabella `admin_practice_documents` e nuove colonne su `admin_practices` (`official_data`, `official_data_source_document_id`, `official_data_confirmed_at`).
+
+**Non è mai stata autorizzata né testata**: costruita mentre il MUP era ancora aperto, in violazioni dell'ordine concordato ("prima chiudiamo il MUP") — Carmelo se n'è accorto e ha fermato tutto, congelandola esplicitamente. **Resta così finché Carmelo non decide di riprenderla**, un pezzo alla volta, a partire da questo solo passaggio (non toccare ancora lettura email automatica, scadenze/rinnovi, motore per nuovi tipi di rischio — tutte idee più ampie proposte nella stessa occasione, mai avviate).
+
+## Bug critico trovato e corretto: l'import statico rompeva il login
+
+Il codice della Fase 1 ha introdotto un `import { extractFacsimile } from './facsimile-extract.js';` **in cima** a `api/admin.js` (statico, non dentro la funzione). Quel modulo carica `pdf-parse`/`pdfjs-dist`, che nell'ambiente Vercel lancia `ReferenceError: DOMMatrix is not defined` **al momento del caricamento del file**, non quando la funzione viene davvero chiamata — quindi **ogni singola azione dell'endpoint, login compreso, falliva con errore 500**, anche senza toccare mai il facsimile.
+
+**Diagnosticato da ChatGPT tramite i runtime log di Vercel**, confermato da Claude leggendo il codice sorgente. **Corretto** spostando l'import da statico a dinamico (`await import('./facsimile-extract.js')`), solo dentro l'azione `facsimile-extract` — login e tutto il resto sono tornati a funzionare immediatamente, senza toccare MUP, intermediari, o la logica della Fase 1 in sé.
+
+**Nota di metodo per chi riprende**: durante questa sessione, diverse volte le correzioni dichiarate "già caricate" da ChatGPT non corrispondevano affatto al contenuto reale del branch (file vecchi ricaricati per errore, correzioni parziali, un caricamento del tutto mancato). **La regola che ha funzionato, sempre**: non fidarsi di un "è a posto" — controllare direttamente il file sul branch prima di far perdere tempo a Carmelo con un altro test. Vale per entrambe le IA, non solo per una.
+
+## Prossimi passi
+
+1. **Decidere quando (e se) mergiare `feat/mup-generator-2026` su `main`** — non ancora discusso. Il branch contiene ora una funzionalità importante (MUP reale) pronta, più una (Fase 1) volutamente non finita/non autorizzata. Andrà probabilmente separata: mergiare il MUP, lasciare la Fase 1 su un branch a parte finché non viene ripresa.
+2. **Aggiungere C.B.A. S.r.l. Semplificata** all'archivio intermediari, quando Carmelo avrà i dati di contatto verificati (sede, telefono, email, PEC).
+3. **Riprendere la Fase 1**, solo quando Carmelo lo decide esplicitamente, un pezzo alla volta.
+4. Resta collegato a **§24**: il MUP e l'archivio intermediari usano i dati identificativi attuali (nome, P.IVA, RUI di Carmelo) — se cambierà la ragione sociale, andranno aggiornati anche qui.
