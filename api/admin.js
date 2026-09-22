@@ -1,3 +1,5 @@
+import { generateMupDocx } from './mup-docx.js';
+import { generateMupPdf } from './mup-pdf.js';
 /**
  * CM Consulting — API di amministrazione protetta
  * Autenticazione con password + MFA TOTP obbligatorio
@@ -1145,6 +1147,93 @@ export default async function handler(req, res) {
         vercelEnv: str(process.env.VERCEL_ENV),
         liveTest
       });
+    }
+
+    /*
+     * ============================================================
+     * MUP FILES — GENERAZIONE DOCX + PDF
+     * ============================================================
+     */
+    if (action === 'mup-files' && req.method === 'POST') {
+      const auth = await requireAdmin(req, res);
+      if (!auth) {
+        return json(res, 401, { ok: false, error: { code: 'UNAUTHORIZED', message: 'Autenticazione richiesta.' } });
+      }
+
+      const id = str(req.query?.id);
+      if (!/^[0-9a-f-]{36}$/i.test(id)) {
+        return json(res, 400, { ok: false, error: { code: 'INVALID_PRACTICE_ID', message: 'ID pratica non valido.' } });
+      }
+
+      const data = req.body || {};
+      const documentId = str(data.documentId) || ('MUP-' + new Date().toISOString().replace(/[-:TZ.]/g, '').slice(0, 14));
+      const generatedAt = new Date().toISOString();
+      const payload = { ...data, documentId, generatedAt };
+
+      const [docx, pdf] = await Promise.all([
+        generateMupDocx(payload),
+        generateMupPdf(payload)
+      ]);
+
+      const docxBase64 = docx.toString('base64');
+      const pdfBase64 = pdf.toString('base64');
+      const html = str(data.html).slice(0, 500000);
+
+      const r = await dbRequest(`admin_practices?id=eq.${encodeURIComponent(id)}`, {
+        method: 'PATCH',
+        body: {
+          ...(html ? { mup_html: html } : {}),
+          mup_generated_at: generatedAt,
+          mup_docx_base64: docxBase64,
+          mup_docx_generated_at: generatedAt,
+          mup_pdf_base64: pdfBase64,
+          mup_pdf_generated_at: generatedAt
+        }
+      });
+
+      if (!r.response.ok) {
+        return json(res, 400, { ok: false, error: { code: 'DATABASE_ERROR', message: 'Salvataggio dei file MUP fallito.' } });
+      }
+
+      return json(res, 200, {
+        ok: true,
+        documentId,
+        generatedAt,
+        docxBase64,
+        pdfBase64
+      });
+    }
+
+    /*
+     * ============================================================
+     * MUP FILE — DOWNLOAD DI UN DOCUMENTO GIÀ SALVATO
+     * ============================================================
+     */
+    if (action === 'mup-file' && req.method === 'GET') {
+      const auth = await requireAdmin(req, res);
+      if (!auth) {
+        return json(res, 401, { ok: false, error: { code: 'UNAUTHORIZED', message: 'Autenticazione richiesta.' } });
+      }
+
+      const id = str(req.query?.id);
+      const type = str(req.query?.type);
+      if (!/^[0-9a-f-]{36}$/i.test(id) || !['word', 'pdf'].includes(type)) {
+        return json(res, 400, { ok: false, error: { code: 'INVALID_REQUEST', message: 'Richiesta file non valida.' } });
+      }
+
+      const column = type === 'word' ? 'mup_docx_base64,mup_generated_at' : 'mup_pdf_base64,mup_generated_at';
+      const r = await dbRequest(`admin_practices?id=eq.${encodeURIComponent(id)}&select=${column}`);
+      if (!r.response.ok || !r.data?.[0]) {
+        return json(res, 404, { ok: false, error: { code: 'MUP_NOT_FOUND', message: 'Documento MUP non trovato.' } });
+      }
+
+      const item = r.data[0];
+      const base64 = type === 'word' ? item.mup_docx_base64 : item.mup_pdf_base64;
+      if (!base64) {
+        return json(res, 404, { ok: false, error: { code: 'MUP_NOT_FOUND', message: 'Documento MUP non ancora generato.' } });
+      }
+
+      return json(res, 200, { ok: true, type, base64, generatedAt: item.mup_generated_at || null });
     }
 
     /*
