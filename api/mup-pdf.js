@@ -44,10 +44,8 @@ export function generateMupPdf(data) {
       doc.font('Helvetica').fontSize(8.5).fillColor('#5F6B75')
         .text(`Documento: ${documentId} · generato il ${new Date(generatedAt).toLocaleString('it-IT')}`);
       doc.fillColor('#17212B').moveDown(0.4);
-      doc.font('Helvetica-Bold').fontSize(8.5)
-        .text('VERIFICA OBBLIGATORIA: il documento è compilato dalla pratica amministrativa. Prima della consegna verificare che ogni dato corrisponda alla distribuzione effettivamente svolta e alla singola impresa/prodotto.', { width: 505 });
-      doc.font('Helvetica').fontSize(8.5).moveDown(0.4)
-        .text('Base del modello: Allegato 3 al Regolamento IVASS n. 40/2018. Il contenuto deve essere verificato rispetto alla versione normativa vigente e alla specifica distribuzione prima della trasmissione al contraente.', { width: 505 });
+      doc.font('Helvetica').fontSize(8.5)
+        .text('Base del modello: Allegato 3 al Regolamento IVASS n. 40/2018, come modificato dai Provvedimenti IVASS n. 163/2025 e n. 169/2026.', { width: 505 });
     };
 
     header();
@@ -108,20 +106,19 @@ export function generateMupPdf(data) {
       ['Altri sistemi ADR, se applicabili', d.mupOtherAdr]
     ]);
     addSection(doc, '8. Informazioni sul diritto all’oblio oncologico', [
-      ['Informativa', d.mupOncology]
+      ['Informativa', 'Il contraente può esercitare il diritto all’oblio oncologico previsto dalla Legge 7 dicembre 2023, n. 193. Per contenuti e modalità di attuazione si rinvia al DIP aggiuntivo. Le clausole contrattuali in contrasto con la normativa sono nulle a vantaggio del contraente o dell’assicurato.']
     ]);
     addSection(doc, 'Dati della pratica — riferimento amministrativo', [
       ['Contraente / cliente', d.mupClient],
       ['Tipologia / prodotto', d.mupProduct],
       ['Scadenza pratica', d.mupExpiry],
-      ['E-mail cliente', d.mupEmail],
       ['Intermediario principale', d.mupMainIntermediary],
       ['Impresa di assicurazione', d.mupInsurer]
     ]);
 
     doc.moveDown(0.8);
     doc.font('Helvetica').fontSize(7.5).fillColor('#5F6B75')
-      .text('Modello riferito all’Allegato 3 del Regolamento IVASS n. 40/2018, come modificato dai Provvedimenti IVASS n. 163/2025 e n. 169/2026. Documento generato per controllo interno: non sostituisce la verifica della modulistica ufficiale e dei dati effettivi della distribuzione.', { width: 505 });
+      .text('Allegato 3 al Regolamento IVASS n. 40/2018, come modificato dai Provvedimenti IVASS n. 163/2025 e n. 169/2026.', { width: 505 });
     doc.end();
   });
 }
