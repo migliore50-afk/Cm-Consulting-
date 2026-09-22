@@ -60,7 +60,7 @@ function openDetail(id) {
     <p><strong>Prezzo cliente:</strong> ${p.client_price != null && p.client_price !== '' ? escapeHtml(String(p.client_price)) : '—'}</p>
     <p><strong>Costo revisore:</strong> ${p.reviewer_cost != null && p.reviewer_cost !== '' ? escapeHtml(String(p.reviewer_cost)) : '—'}</p>
     <p><strong>MUP:</strong> ${p.mup_generated_at
-      ? `generato il ${new Date(p.mup_generated_at).toLocaleString('it-IT')} — <button class="link-btn" id="viewMup" type="button">Visualizza</button>`
+      ? `generato il ${new Date(p.mup_generated_at).toLocaleString('it-IT')} — <button class="link-btn" id="downloadMupWord" type="button">Scarica Word</button> <button class="link-btn" id="downloadMupPdf" type="button">Scarica PDF</button>`
       : 'non ancora generato'}</p>
     <div class="panel">
       <h3>Note interne</h3>
@@ -77,16 +77,30 @@ function openDetail(id) {
     </div>
   `;
 
-  // 21 settembre 2026 — apre il MUP già salvato (stesso metodo Blob usato dal
-  // generatore, affidabile anche su Safari).
-  if (p.mup_html) {
-    $('viewMup')?.addEventListener('click', () => {
-      const blob = new Blob([p.mup_html], { type: 'text/html' });
-      const url = URL.createObjectURL(blob);
-      window.open(url, '_blank');
-    });
+  async function downloadSavedMup(type) {
+    try {
+      const response = await fetch('/api/admin?action=mup-file&id=' + encodeURIComponent(p.id) + '&type=' + encodeURIComponent(type), { credentials: 'same-origin' });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.ok || !data.base64) throw new Error(data?.error?.message || 'File MUP non disponibile.');
+      const bytes = Uint8Array.from(atob(data.base64), c => c.charCodeAt(0));
+      const mime = type === 'word' ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' : 'application/pdf';
+      const extension = type === 'word' ? 'docx' : 'pdf';
+      const safeClient = String(p.client || 'pratica').replace(/[^a-zA-Z0-9À-ÿ _-]/g, '').trim().replace(/\s+/g, '_') || 'pratica';
+      const url = URL.createObjectURL(new Blob([bytes], { type: mime }));
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'MUP_' + safeClient + '.' + extension;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 30000);
+    } catch (err) {
+      alert(err?.message || 'Download MUP non riuscito.');
+    }
   }
 
+  $('downloadMupWord')?.addEventListener('click', () => downloadSavedMup('word'));
+  $('downloadMupPdf')?.addEventListener('click', () => downloadSavedMup('pdf'));
   $('closeDetail').onclick = () => d.classList.add('hidden');
 
   $('saveNotes').onclick = async () => {
