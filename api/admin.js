@@ -1,7 +1,6 @@
 import { generateMupDocx } from './mup-docx.js';
 import { generateMupPdf } from './mup-pdf.js';
 import { issueSignedToken, presignUrl, get } from '@vercel/blob';
-import { extractFacsimile } from './facsimile-extract.js';
 /**
  * CM Consulting — API di amministrazione protetta
  * Autenticazione con password + MFA TOTP obbligatorio
@@ -1238,6 +1237,7 @@ export default async function handler(req, res) {
       for await (const chunk of blob.stream) chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
       const buffer = Buffer.concat(chunks);
 
+      const { extractFacsimile } = await import('./facsimile-extract.js');
       const extracted = await extractFacsimile(buffer, doc.content_type);
       const patch = {
         status:'extracted',
