@@ -17,7 +17,7 @@ function text(v) {
 }
 
 function row(label, value) {
-  const valueText = text(value) || 'DA COMPILARE';
+  const valueText = text(value) || '—';
   return new TableRow({
     children: [
       new TableCell({
@@ -88,7 +88,8 @@ export async function generateMupDocx(data) {
     new Paragraph({
       children: [
         new TextRun({
-          text: 'Base del modello: Allegato 3 al Regolamento IVASS n. 40/2018, come modificato dai Provvedimenti IVASS n. 163/2025 e n. 169/2026.'
+          text: 'Riferimento normativo: Allegato 3 al Regolamento IVASS n. 40/2018, come modificato dai Provvedimenti IVASS n. 163/2025 e n. 169/2026.',
+          color: '5F6B75'
         })
       ]
     }),
@@ -115,9 +116,9 @@ export async function generateMupDocx(data) {
       ['Intermediario della collaborazione orizzontale', d.mupHorizontalName]
     ]),
     ...section('3. Informazioni relative a situazioni di potenziale conflitto d’interesse', [
-      ['Intermediario detiene ≥10% di impresa', d.mupConflictA],
+      ['Intermediario detiene almeno il 10% di impresa', d.mupConflictA],
       ['Denominazione impresa interessata', d.mupConflictAName],
-      ['Impresa detiene ≥10% dell’intermediario', d.mupConflictB],
+      ['Impresa detiene almeno il 10% dell’intermediario', d.mupConflictB],
       ['Denominazione impresa/controllante', d.mupConflictBName]
     ]),
     ...section('4. Informazioni sull’attività di distribuzione e consulenza', [
@@ -148,24 +149,8 @@ export async function generateMupDocx(data) {
       ['Altri sistemi ADR, se applicabili', d.mupOtherAdr]
     ]),
     ...section('8. Informazioni sul diritto all’oblio oncologico', [
-      ['Informativa', 'Il contraente può esercitare il diritto all’oblio oncologico previsto dalla Legge 7 dicembre 2023, n. 193. Per contenuti e modalità di attuazione si rinvia al DIP aggiuntivo. Le clausole contrattuali in contrasto con la normativa sono nulle a vantaggio del contraente o dell’assicurato.']
-    ]),
-    ...section('Dati della pratica — riferimento amministrativo', [
-      ['Contraente / cliente', d.mupClient],
-      ['Tipologia / prodotto', d.mupProduct],
-      ['Scadenza pratica', d.mupExpiry],
-      ['Intermediario principale', d.mupMainIntermediary],
-      ['Impresa di assicurazione', d.mupInsurer]
-    ]),
-    new Paragraph({
-      children: [
-        new TextRun({
-          text: 'Allegato 3 al Regolamento IVASS n. 40/2018, come modificato dai Provvedimenti IVASS n. 163/2025 e n. 169/2026.',
-          color: '5F6B75',
-          size: 17
-        })
-      ]
-    })
+      ['Informativa', 'Non applicabile: CM Consulting non colloca prodotti assicurativi vita/salute per i quali sia richiesta una dichiarazione sullo stato di salute del contraente.']
+    ])
   ];
 
   const doc = new Document({

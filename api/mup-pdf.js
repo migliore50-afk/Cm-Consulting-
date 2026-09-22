@@ -9,7 +9,7 @@ function addSection(doc, title, rows) {
   doc.moveDown(0.35);
 
   for (const [label, value] of rows) {
-    const v = clean(value) || 'DA COMPILARE';
+    const v = clean(value) || '—';
     const startY = doc.y;
     doc.font('Helvetica-Bold').fontSize(9.5).text(label, 48, startY, { width: 175 });
     const labelHeight = doc.heightOfString(label, { width: 175 });
@@ -45,7 +45,7 @@ export function generateMupPdf(data) {
         .text(`Documento: ${documentId} · generato il ${new Date(generatedAt).toLocaleString('it-IT')}`);
       doc.fillColor('#17212B').moveDown(0.4);
       doc.font('Helvetica').fontSize(8.5)
-        .text('Base del modello: Allegato 3 al Regolamento IVASS n. 40/2018, come modificato dai Provvedimenti IVASS n. 163/2025 e n. 169/2026.', { width: 505 });
+        .text('Riferimento normativo: Allegato 3 al Regolamento IVASS n. 40/2018, come modificato dai Provvedimenti IVASS n. 163/2025 e n. 169/2026.', { width: 505 });
     };
 
     header();
@@ -73,9 +73,9 @@ export function generateMupPdf(data) {
       ['Intermediario della collaborazione orizzontale', d.mupHorizontalName]
     ]);
     addSection(doc, '3. Informazioni relative a situazioni di potenziale conflitto d’interesse', [
-      ['Intermediario detiene ≥10% di impresa', d.mupConflictA],
+      ['Intermediario detiene almeno il 10% di impresa', d.mupConflictA],
       ['Denominazione impresa interessata', d.mupConflictAName],
-      ['Impresa detiene ≥10% dell’intermediario', d.mupConflictB],
+      ['Impresa detiene almeno il 10% dell’intermediario', d.mupConflictB],
       ['Denominazione impresa/controllante', d.mupConflictBName]
     ]);
     addSection(doc, '4. Informazioni sull’attività di distribuzione e consulenza', [
@@ -106,19 +106,13 @@ export function generateMupPdf(data) {
       ['Altri sistemi ADR, se applicabili', d.mupOtherAdr]
     ]);
     addSection(doc, '8. Informazioni sul diritto all’oblio oncologico', [
-      ['Informativa', 'Il contraente può esercitare il diritto all’oblio oncologico previsto dalla Legge 7 dicembre 2023, n. 193. Per contenuti e modalità di attuazione si rinvia al DIP aggiuntivo. Le clausole contrattuali in contrasto con la normativa sono nulle a vantaggio del contraente o dell’assicurato.']
-    ]);
-    addSection(doc, 'Dati della pratica — riferimento amministrativo', [
-      ['Contraente / cliente', d.mupClient],
-      ['Tipologia / prodotto', d.mupProduct],
-      ['Scadenza pratica', d.mupExpiry],
-      ['Intermediario principale', d.mupMainIntermediary],
-      ['Impresa di assicurazione', d.mupInsurer]
+      ['Informativa', 'Non applicabile: CM Consulting non colloca prodotti assicurativi vita/salute per i quali sia richiesta una dichiarazione sullo stato di salute del contraente.']
     ]);
 
+    if (doc.y > 680) doc.addPage();
     doc.moveDown(0.8);
     doc.font('Helvetica').fontSize(7.5).fillColor('#5F6B75')
-      .text('Allegato 3 al Regolamento IVASS n. 40/2018, come modificato dai Provvedimenti IVASS n. 163/2025 e n. 169/2026.', { width: 505 });
+      .text('Riferimento normativo: Allegato 3 al Regolamento IVASS n. 40/2018, come modificato dai Provvedimenti IVASS n. 163/2025 e n. 169/2026.', { width: 505 });
     doc.end();
   });
 }
