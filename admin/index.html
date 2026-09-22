@@ -71,6 +71,10 @@
           <div class="settings-grid">
             <article class="panel"><h2>Password</h2><p class="muted">Modifica la password dell'account amministratore. Supabase Auth la memorizza con hashing bcrypt lato servizio.</p><form id="passwordForm" class="stack"><label>Password attuale<input id="currentPassword" type="password" autocomplete="current-password" required></label><label>Nuova password<input id="newPassword" type="password" autocomplete="new-password" minlength="12" required></label><label>Conferma nuova password<input id="confirmPassword" type="password" autocomplete="new-password" minlength="12" required></label><button class="btn primary" type="submit">CAMBIA PASSWORD</button></form><div id="passwordMsg" class="message"></div></article>
             <article class="panel"><h2>Autenticazione a due fattori</h2><p class="muted">Il TOTP è obbligatorio per l'accesso. Puoi aggiungere un secondo dispositivo Authenticator senza rimuovere il fattore principale.</p><button id="addMfaBtn" class="btn secondary">AGGIUNGI DISPOSITIVO MFA</button><div id="settingsQr" class="qr-wrap hidden"><img id="settingsQrImage" alt="QR code MFA"><code id="settingsSecret"></code><form id="settingsMfaForm" class="stack"><label>Codice del nuovo dispositivo<input id="settingsMfaCode" inputmode="numeric" maxlength="6" autocomplete="one-time-code" required></label><button class="btn primary" type="submit">CONFERMA DISPOSITIVO</button></form></div><div id="mfaSettingsMsg" class="message"></div></article>
+            <article class="panel" style="grid-column:1/-1">
+              <div class="section-head" style="margin-bottom:10px"><div><h2 style="margin:0">Intermediari collaboratori</h2><p class="muted" style="margin:6px 0 0">Sezione A/B con cui collabori. Solo quelli "Attivo" compaiono nel generatore MUP — nessuna modifica al codice necessaria per aggiungerne o toglierne uno.</p></div><button id="newIntermediaryBtn" class="btn secondary" type="button">+ NUOVO INTERMEDIARIO</button></div>
+              <div class="table-wrap"><table><thead><tr><th>Denominazione</th><th>RUI</th><th>Sezione</th><th>Stato</th><th></th></tr></thead><tbody id="intermediaryBody"></tbody></table></div>
+            </article>
           </div>
         </div>
       </section>
@@ -83,36 +87,41 @@
     <button id="mupClose" class="modal-close" aria-label="Chiudi">×</button>
     <h2>Generatore MUP 2026</h2>
     <p class="muted">Pratica: <strong id="mupPracticeTitle">—</strong>. Compilare i dati della singola distribuzione; non usare valori inventati o generici.</p>
+    <div class="mup-legend"><span><b class="mup-req-mark">*</b> Campo obbligatorio</span><span>Gli altri campi sono facoltativi</span></div>
     <div class="form-grid">
       <label>Contraente / cliente<input id="mupClient" required></label>
       <label>Tipologia / prodotto<input id="mupProduct" required></label>
       <label>Scadenza pratica<input id="mupExpiry" type="date"></label>
       <label>E-mail cliente<input id="mupEmail" type="email"></label>
 
-      <label>Nome distributore<input id="mupDistributorName" required></label>
-      <label>RUI distributore<input id="mupDistributorRui" required></label>
+      <label class="mup-req">Nome distributore <b class="mup-req-mark">*</b><input id="mupDistributorName" required></label>
+      <label class="mup-req">RUI distributore <b class="mup-req-mark">*</b><input id="mupDistributorRui" required></label>
       <label>Data iscrizione RUI<input id="mupDistributorDate" required></label>
-      <label>Sezione RUI<input id="mupDistributorSection" required></label>
+      <label class="mup-req">Sezione RUI <b class="mup-req-mark">*</b><input id="mupDistributorSection" required></label>
       <label>Ruolo<input id="mupDistributorRole" required></label>
-      <label>Sede legale / domicilio professionale<input id="mupDistributorAddress" required></label>
+      <label class="mup-req">Sede legale / domicilio professionale <b class="mup-req-mark">*</b><input id="mupDistributorAddress" required></label>
       <label>Telefono<input id="mupDistributorPhone"></label>
       <label>E-mail distributore<input id="mupDistributorEmail" type="email"></label>
       <label>PEC distributore<input id="mupDistributorPec" type="email"></label>
       <label>Sito internet distributore<input id="mupDistributorWebsite" type="url"></label>
       <label>Autorità di vigilanza<input id="mupIvass" required></label>
 
-      <label>Intermediario per cui opera la Sezione E<input id="mupMainIntermediary" required></label>
-      <label>RUI intermediario<input id="mupMainRui" required></label>
-      <label>Sezione intermediario<input id="mupMainSection" required placeholder="A / B"></label>
+      <label class="mup-req full">Intermediario per cui opera la Sezione E <b class="mup-req-mark">*</b>
+        <select id="mupMainIntermediarySelect"><option value="">Seleziona intermediario…</option></select>
+        <input type="hidden" id="mupMainIntermediary">
+      </label>
+      <div id="mupMainSummary" class="mup-summary hidden full"></div>
+      <label class="mup-req">RUI intermediario <b class="mup-req-mark">*</b><input id="mupMainRui" required readonly></label>
+      <label class="mup-req">Sezione intermediario <b class="mup-req-mark">*</b><input id="mupMainSection" required readonly></label>
       <label>Ruolo intermediario<input id="mupMainRole"></label>
-      <label>Sede legale intermediario<input id="mupMainAddress" required></label>
-      <label>Telefono intermediario<input id="mupMainPhone"></label>
-      <label>E-mail intermediario<input id="mupMainEmail" type="email"></label>
-      <label>PEC intermediario<input id="mupMainPec" type="email"></label>
-      <label>Sito internet intermediario<input id="mupMainWebsite" type="url"></label>
-      <label>Impresa/e di assicurazione<input id="mupInsurer" required></label>
+      <label class="mup-req">Sede legale intermediario <b class="mup-req-mark">*</b><input id="mupMainAddress" required readonly></label>
+      <label>Telefono intermediario<input id="mupMainPhone" readonly></label>
+      <label>E-mail intermediario<input id="mupMainEmail" type="email" readonly></label>
+      <label>PEC intermediario<input id="mupMainPec" type="email" readonly></label>
+      <label>Sito internet intermediario<input id="mupMainWebsite" type="url" readonly></label>
+      <label class="mup-req">Impresa/e di assicurazione <b class="mup-req-mark">*</b><input id="mupInsurer" required placeholder="Es. denominazione della compagnia"></label>
 
-      <label class="full">Modello di distribuzione<input id="mupDistribution" required placeholder="Client mandate / una o più imprese / altro: descrivere il modello effettivo"></label>
+      <label class="full mup-req">Modello di distribuzione <b class="mup-req-mark">*</b><input id="mupDistribution" required placeholder="Come viene effettuata la distribuzione: es. mandato del cliente, una o più imprese, altro"></label>
       <label>Mandato del cliente<input id="mupMandate" required placeholder="SI / NO"></label>
       <label>Collaborazione orizzontale<input id="mupHorizontal" required placeholder="SI / NO"></label>
       <label>Intermediario collaborazione orizzontale<input id="mupHorizontalName"></label>
@@ -129,19 +138,19 @@
       <label class="full">Imprese con cui esistono rapporti di affari<input id="mupBusinessRelationships"></label>
       <label class="full">Altre informazioni utili alla trasparenza ex art. 119-bis, c.7 CAP<input id="mupTransparency"></label>
 
-      <label class="full">Remunerazione<input id="mupRemuneration" required placeholder="Fee, commissione inclusa nel premio, altro beneficio economico, combinazione, ecc."></label>
+      <label class="full mup-req">Remunerazione <b class="mup-req-mark">*</b><input id="mupRemuneration" required placeholder="Fee, commissione inclusa nel premio, altro beneficio economico, combinazione, ecc."></label>
       <label class="full">Eventuale compenso pagato direttamente dal cliente<input id="mupClientFee"></label>
       <label>Provvigioni RC Auto, se applicabile<input id="mupRcAuto"></label>
       <label>Compensi complessivi collaborazione orizzontale / Sezione E<input id="mupHorizontalCompensation"></label>
 
-      <label class="full">Pagamento dei premi / regime applicabile<input id="mupPayment" required></label>
+      <label class="full mup-req">Pagamento dei premi / regime applicabile <b class="mup-req-mark">*</b><input id="mupPayment" required placeholder="Es. pagamento diretto alla compagnia, gestione separata, ecc."></label>
       <label>Gestione separata / garanzia bancaria, se applicabile<input id="mupSegregatedAssets"></label>
       <label class="full">Modalità di pagamento ammesse<input id="mupPaymentMethods"></label>
       <label class="full">Pagamento a intermediario Sezione B, se applicabile<input id="mupSectionBPayment"></label>
 
-      <label class="full">RC professionale / estremi applicabili<input id="mupRc" required></label>
-      <label class="full">Reclami: modalità e recapiti<input id="mupComplaints" required></label>
-      <label class="full">Arbitro Assicurativo<input id="mupArbitro" required placeholder="Informativa e pagina/recapiti effettivi"></label>
+      <label class="full mup-req">RC professionale / estremi applicabili <b class="mup-req-mark">*</b><input id="mupRc" required placeholder="Es. compagnia ed estremi della polizza RC professionale"></label>
+      <label class="full mup-req">Reclami: modalità e recapiti <b class="mup-req-mark">*</b><input id="mupComplaints" required></label>
+      <label class="full mup-req">Arbitro Assicurativo <b class="mup-req-mark">*</b><input id="mupArbitro" required placeholder="Informativa e pagina/recapiti effettivi"></label>
       <label>FIN.NET, se applicabile<input id="mupFinNet"></label>
       <label>Altri sistemi ADR, se applicabili<input id="mupOtherAdr"></label>
       <label class="full">Diritto all’oblio oncologico<input id="mupOncology" required></label>
@@ -155,6 +164,27 @@
 </div>
 
 <div id="practiceModal" class="modal hidden"><div class="modal-card"><button id="closeModal" class="modal-close" aria-label="Chiudi">×</button><h2>Nuova pratica</h2><form id="practiceForm" class="form-grid"><label>Cliente / ragione sociale<input name="client" required maxlength="180"></label><label>Tipologia<select name="type"><option>Capacità finanziaria</option><option>Fideiussione</option><option>Appalti pubblici</option><option>Locazioni</option><option>Dogane</option><option>Ambiente</option></select></label><label>Data scadenza<input name="expiry" type="date" required></label><label>Email cliente<input name="email" type="email"></label><label>Prezzo cliente — interno<input name="clientPrice" type="number" step="0.01" min="0"></label><label>Costo revisore — interno<input name="reviewerCost" type="number" step="0.01" min="0"></label><label class="full">Note interne<textarea name="notes" rows="4" maxlength="10000"></textarea></label><div class="full actions"><button type="submit" class="btn primary">SALVA</button></div></form><div id="practiceMsg" class="message"></div></div></div>
+
+<div id="intermediaryModal" class="modal hidden">
+  <div class="modal-card">
+    <button id="closeIntermediaryModal" class="modal-close" aria-label="Chiudi">×</button>
+    <h2 id="intermediaryModalTitle">Nuovo intermediario</h2>
+    <form id="intermediaryForm" class="form-grid">
+      <input type="hidden" name="id">
+      <label class="full">Denominazione<input name="name" required maxlength="180"></label>
+      <label>RUI<input name="rui" required maxlength="40" placeholder="Es. A000123456"></label>
+      <label>Sezione<select name="section"><option value="A">A</option><option value="B">B</option></select></label>
+      <label class="full">Sede legale<input name="address" required maxlength="300"></label>
+      <label>Telefono<input name="phone"></label>
+      <label>E-mail<input name="email" type="email"></label>
+      <label>PEC<input name="pec" type="email"></label>
+      <label>Sito internet<input name="website" type="url"></label>
+      <label style="flex-direction:row;align-items:center;gap:8px;display:flex"><input type="checkbox" name="active" style="width:auto" checked> Attivo — compare nel generatore MUP</label>
+      <div class="full actions"><button type="submit" class="btn primary">SALVA</button></div>
+    </form>
+    <div id="intermediaryMsg" class="message"></div>
+  </div>
+</div>
 <script src="/admin/index-init.js" defer></script>
 <script src="/admin/admin.js" defer></script>
 <script src="/admin/mup.js" defer></script>
