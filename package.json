@@ -3,15 +3,15 @@
   "version": "12.8.0",
   "private": true,
   "type": "module",
-  "engines": {
-    "node": ">=22"
-  },
+  "engines": { "node": ">=22" },
   "scripts": {
-    "check": "node --check api/admin.js && node --check api/_security.js && node --check api/submit-request.js && node --check api/mup-docx.js && node --check api/mup-pdf.js && node --check admin/admin.js && node --check admin/mup.js"
+    "check": "node --check api/admin.js && node --check api/_security.js && node --check api/submit-request.js && node --check api/mup-docx.js && node --check api/mup-pdf.js && node --check api/facsimile-extract.js && node --check admin/admin.js && node --check admin/mup.js"
   },
   "dependencies": {
     "@vercel/blob": "^2.7.0",
     "docx": "9.7.1",
+    "mammoth": "1.12.3",
+    "pdf-parse": "2.4.5",
     "pdfkit": "0.17.2"
   }
 }
