@@ -79,10 +79,12 @@
       mupDistributorDate: '24/01/2013',
       mupDistributorSection: 'E',
       mupDistributorRole: 'Collaboratore di intermediario iscritto nella sezione A/B',
-      mupDistributorAddress: '',
-      mupDistributorPhone: '',
-      mupDistributorEmail: '',
-      mupDistributorPec: '',
+      // 22 settembre 2026 — questi dati sono già noti e stabili e vengono
+      // utilizzati anche nelle altre sezioni del sito.
+      mupDistributorAddress: 'Via Spinoza n. 49, 00137 Roma',
+      mupDistributorPhone: '328 6382612',
+      mupDistributorEmail: 'info@cm-consulting.info',
+      mupDistributorPec: 'carmelo.migliore@legalmail.it',
       mupDistributorWebsite: 'https://www.cm-consulting.info',
       mupIvass: 'IVASS — Istituto per la Vigilanza sulle Assicurazioni',
       mupMainIntermediary: '',
@@ -118,8 +120,10 @@
       mupPaymentMethods: '',
       mupSectionBPayment: '',
       mupRc: '',
-      mupComplaints: '',
-      mupArbitro: '',
+      // 22 settembre 2026 — reclami e Arbitro Assicurativo sono già
+      // pubblicati sulla pagina reale "Reclami e Arbitro Assicurativo" del sito.
+      mupComplaints: 'Reclamo a CM Consulting via email (info@cm-consulting.info), PEC (carmelo.migliore@legalmail.it) o posta ordinaria (Via Spinoza n. 49, 00137 Roma) — risposta entro 45 giorni. Se non soddisfatto, reclamo all’IVASS (Via del Quirinale 21, 00187 Roma).',
+      mupArbitro: 'Diritto di ricorso all’Arbitro Assicurativo per le controversie in materia assicurativa e/o di intermediazione, operativo dal 15 gennaio 2026 — dettagli e modalità sulla pagina “Reclami e Arbitro Assicurativo” di cm-consulting.info.',
       mupFinNet: '',
       mupOtherAdr: '',
       mupOncology: 'Informativa sul diritto all’oblio oncologico ai sensi della Legge 193/2023 e della disciplina IVASS vigente.'
