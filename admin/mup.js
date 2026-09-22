@@ -341,39 +341,52 @@
       '<div class="footer">Modello riferito all’Allegato 3 del Regolamento IVASS n. 40/2018, come modificato dai Provvedimenti IVASS n. 163/2025 e n. 169/2026. Il MUP deve essere consegnato o trasmesso nei tempi e con le modalità previste dalla normativa applicabile. Documento generato per controllo interno: non sostituisce la verifica della modulistica ufficiale e dei dati effettivi della distribuzione.</div>' +
       '</body></html>';
 
-    // 21 settembre 2026 — su Safari, window.open('', '_blank') seguito da
-    // document.write() apriva spesso una scheda bianca (about:blank), perché
-    // Safari non garantisce che la scheda sia pronta a ricevere contenuto
-    // scritto in questo modo. Creiamo invece un vero file (Blob) e apriamo
-    // quello — piu' affidabile su tutti i browser, Safari incluso.
-    const blob = new Blob([html], { type: 'text/html' });
-    const blobUrl = URL.createObjectURL(blob);
-    const w = window.open(blobUrl, '_blank');
-    if (!w) {
-      $('mupMsg').textContent = 'Il browser ha bloccato la finestra del MUP. Consentire i popup per il sito.';
-      return;
-    }
+    // Il MUP non viene più aperto come pagina HTML. Il pulsante genera due
+    // file reali: DOCX (Word) e PDF. Entrambi vengono salvati nella pratica
+    // e resi scaricabili dalla scheda della pratica.
+    const payload = {};
+    document.querySelectorAll('#mupOpen input, #mupOpen select, #mupOpen textarea').forEach(el => {
+      if (el.id) payload[el.id] = el.value || '';
+    });
+    payload.documentId = documentId;
+    payload.html = html;
 
-    // 21 settembre 2026 — su richiesta di Carmelo: il documento generato resta
-    // salvato dentro la pratica (non solo aperto in una scheda temporanea).
-    // api() e loadPractices() sono definite in admin/admin.js, caricato prima
-    // di questo file — condivise perché entrambi sono script classici, non
-    // moduli. Se il salvataggio fallisce (es. sessione scaduta), il documento
-    // resta comunque visibile nella scheda appena aperta: non blocchiamo
-    // l'utente per un errore di salvataggio secondario.
-    if (currentPractice?.id && typeof api === 'function') {
-      api('practice', {
-        method: 'PATCH',
-        query: `&id=${encodeURIComponent(currentPractice.id)}`,
-        body: { mupHtml: html }
-      }).then(() => {
-        if (typeof loadPractices === 'function') loadPractices();
-        $('mupMsg').textContent = 'MUP generato in una nuova scheda e salvato nella pratica. Verificare tutti i dati e usare la stampa del browser per il PDF.';
-      }).catch(() => {
-        $('mupMsg').textContent = 'MUP generato in una nuova scheda, ma il salvataggio nella pratica non è riuscito. Verificare la connessione e riprovare.';
+    $('mupGenerate').disabled = true;
+    $('mupMsg').textContent = 'Generazione Word e PDF in corso…';
+
+    try {
+      const response = await fetch('/api/admin?action=mup-files&id=' + encodeURIComponent(currentPractice.id), {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
       });
-    } else {
-      $('mupMsg').textContent = 'MUP generato in una nuova scheda. Verificare tutti i dati e usare la stampa del browser per il PDF.';
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || !result.ok) throw new Error(result?.error?.message || 'Generazione dei file MUP non riuscita.');
+
+      const downloadBase64 = (base64, mime, filename) => {
+        const bytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+        const blob = new Blob([bytes], { type: mime });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 30000);
+      };
+
+      const safeClient = String(val('mupClient') || 'pratica').replace(/[^a-zA-Z0-9À-ÿ _-]/g, '').trim().replace(/\\s+/g, '_') || 'pratica';
+      downloadBase64(result.docxBase64, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', result.documentId + '_' + safeClient + '.docx');
+      downloadBase64(result.pdfBase64, 'application/pdf', result.documentId + '_' + safeClient + '.pdf');
+
+      if (typeof loadPractices === 'function') await loadPractices();
+      $('mupMsg').textContent = 'MUP generato e salvato nella pratica. Word (.docx) e PDF sono stati scaricati. Nella pratica resteranno disponibili per un nuovo download.';
+    } catch (err) {
+      $('mupMsg').textContent = err?.message || 'Generazione dei file MUP non riuscita.';
+    } finally {
+      $('mupGenerate').disabled = false;
     }
   }
 
