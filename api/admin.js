@@ -1,5 +1,7 @@
 import { generateMupDocx } from './mup-docx.js';
 import { generateMupPdf } from './mup-pdf.js';
+import { issueSignedToken, presignUrl, get } from '@vercel/blob';
+import { extractFacsimile } from './facsimile-extract.js';
 /**
  * CM Consulting — API di amministrazione protetta
  * Autenticazione con password + MFA TOTP obbligatorio
@@ -1147,6 +1149,156 @@ export default async function handler(req, res) {
         vercelEnv: str(process.env.VERCEL_ENV),
         liveTest
       });
+    }
+
+    /*
+     * ============================================================
+     * FACSIMILE — UPLOAD PRIVATO + ESTRAZIONE + CONFERMA
+     * ============================================================
+     */
+    if (action === 'facsimile-upload-url' && req.method === 'POST') {
+      const auth = await requireAdmin(req, res);
+      if (!auth) return json(res, 401, { ok:false, error:{code:'UNAUTHORIZED', message:'Autenticazione richiesta.'} });
+
+      const practiceId = str(req.body?.practiceId);
+      const filename = str(req.body?.filename).normalize('NFKC');
+      const contentType = str(req.body?.contentType).toLowerCase();
+      const size = Number(req.body?.size);
+      const allowed = new Set([
+        'application/pdf',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      ]);
+
+      if (!/^[0-9a-f-]{36}$/i.test(practiceId) || !filename || filename.length > 180 ||
+          /[\\/\\:*?"<>|\u0000-\u001f\u007f]/.test(filename) ||
+          !allowed.has(contentType) || !Number.isSafeInteger(size) || size <= 0 || size > 10 * 1024 * 1024) {
+        return json(res, 400, {ok:false,error:{code:'INVALID_FILE',message:'File non valido. Sono ammessi PDF e Word (.docx), massimo 10 MB.'}});
+      }
+
+      const practice = await dbRequest(`admin_practices?id=eq.${encodeURIComponent(practiceId)}&select=id&limit=1`);
+      if (!practice.response.ok || !practice.data?.[0]) {
+        return json(res, 404, {ok:false,error:{code:'PRACTICE_NOT_FOUND',message:'Pratica non trovata.'}});
+      }
+
+      const pathname = `practices/${practiceId}/facsimili/${crypto.randomUUID()}-${filename}`;
+      const validUntil = Date.now() + 15 * 60 * 1000;
+      const signedToken = await issueSignedToken({
+        pathname,
+        operations:['put'],
+        validUntil,
+        allowedContentTypes:[contentType],
+        maximumSizeInBytes:10 * 1024 * 1024,
+        oidcToken:process.env.VERCEL_OIDC_TOKEN,
+        storeId:process.env.BLOB_STORE_ID
+      });
+      const { presignedUrl } = await presignUrl(signedToken, {
+        operation:'put',
+        pathname,
+        access:'private',
+        validUntil,
+        allowedContentTypes:[contentType],
+        maximumSizeInBytes:10 * 1024 * 1024,
+        allowOverwrite:false
+      });
+
+      const doc = await dbRequest('admin_practice_documents', {
+        method:'POST',
+        body:{
+          practice_id:practiceId,
+          kind:'facsimile',
+          filename,
+          pathname,
+          content_type:contentType,
+          size_bytes:size,
+          status:'uploaded',
+          uploaded_by:auth.user.id
+        }
+      });
+      if (!doc.response.ok || !doc.data?.[0]) {
+        return json(res, 503, {ok:false,error:{code:'DOCUMENT_RECORD_FAILED',message:'Impossibile registrare il documento.'}});
+      }
+
+      return json(res, 200, {ok:true, document:doc.data[0], uploadUrl:presignedUrl, expiresAt:validUntil});
+    }
+
+    if (action === 'facsimile-extract' && req.method === 'POST') {
+      const auth = await requireAdmin(req, res);
+      if (!auth) return json(res, 401, {ok:false,error:{code:'UNAUTHORIZED',message:'Autenticazione richiesta.'}});
+      const documentId = str(req.body?.documentId);
+      if (!/^[0-9a-f-]{36}$/i.test(documentId)) return json(res,400,{ok:false,error:{code:'INVALID_DOCUMENT_ID',message:'Documento non valido.'}});
+
+      const row = await dbRequest(`admin_practice_documents?id=eq.${encodeURIComponent(documentId)}&select=*`);
+      if (!row.response.ok || !row.data?.[0]) return json(res,404,{ok:false,error:{code:'DOCUMENT_NOT_FOUND',message:'Documento non trovato.'}});
+      const doc = row.data[0];
+      if (!doc.pathname) return json(res,400,{ok:false,error:{code:'DOCUMENT_PATH_MISSING',message:'Percorso documento mancante.'}});
+
+      const blob = await get(doc.pathname, {access:'private', useCache:false});
+      if (!blob) return json(res,404,{ok:false,error:{code:'BLOB_NOT_FOUND',message:'File non trovato nello storage.'}});
+      const chunks = [];
+      for await (const chunk of blob.stream) chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+      const buffer = Buffer.concat(chunks);
+
+      const extracted = await extractFacsimile(buffer, doc.content_type);
+      const patch = {
+        status:'extracted',
+        extracted_text:extracted.text,
+        extracted_data:extracted.data,
+        extracted_at:new Date().toISOString()
+      };
+      const saved = await dbRequest(`admin_practice_documents?id=eq.${encodeURIComponent(documentId)}`, {method:'PATCH', body:patch});
+      if (!saved.response.ok) return json(res,503,{ok:false,error:{code:'EXTRACTION_SAVE_FAILED',message:'Dati estratti non salvati.'}});
+
+      return json(res,200,{ok:true,document:saved.data?.[0]||null,extractedData:extracted.data});
+    }
+
+    if (action === 'facsimile-confirm' && req.method === 'POST') {
+      const auth = await requireAdmin(req, res);
+      if (!auth) return json(res,401,{ok:false,error:{code:'UNAUTHORIZED',message:'Autenticazione richiesta.'}});
+      const documentId = str(req.body?.documentId);
+      const confirmedData = req.body?.confirmedData;
+      if (!/^[0-9a-f-]{36}$/i.test(documentId) || !confirmedData || typeof confirmedData !== 'object' || Array.isArray(confirmedData)) {
+        return json(res,400,{ok:false,error:{code:'INVALID_CONFIRMATION',message:'Dati di conferma non validi.'}});
+      }
+      const row = await dbRequest(`admin_practice_documents?id=eq.${encodeURIComponent(documentId)}&select=*`);
+      if (!row.response.ok || !row.data?.[0]) return json(res,404,{ok:false,error:{code:'DOCUMENT_NOT_FOUND',message:'Documento non trovato.'}});
+      const doc = row.data[0];
+      const saved = await dbRequest(`admin_practice_documents?id=eq.${encodeURIComponent(documentId)}`, {
+        method:'PATCH',
+        body:{status:'confirmed',confirmed_data:confirmedData,confirmed_at:new Date().toISOString()}
+      });
+      if (!saved.response.ok) return json(res,503,{ok:false,error:{code:'CONFIRMATION_SAVE_FAILED',message:'Conferma non salvata.'}});
+
+      return json(res,200,{ok:true,document:saved.data?.[0]||null});
+    }
+
+    if (action === 'facsimile-file' && req.method === 'GET') {
+      const auth = await requireAdmin(req, res);
+      if (!auth) return json(res,401,{ok:false,error:{code:'UNAUTHORIZED',message:'Autenticazione richiesta.'}});
+      const documentId = str(req.query?.id);
+      if (!/^[0-9a-f-]{36}$/i.test(documentId)) return json(res,400,{ok:false,error:{code:'INVALID_DOCUMENT_ID',message:'Documento non valido.'}});
+      const row = await dbRequest(`admin_practice_documents?id=eq.${encodeURIComponent(documentId)}&select=filename,pathname,content_type,size_bytes,status`);
+      if (!row.response.ok || !row.data?.[0]) return json(res,404,{ok:false,error:{code:'DOCUMENT_NOT_FOUND',message:'Documento non trovato.'}});
+      const doc = row.data[0];
+      const validUntil = Date.now() + 5 * 60 * 1000;
+      const signedToken = await issueSignedToken({
+        pathname:doc.pathname,
+        operations:['get'],
+        validUntil,
+        oidcToken:process.env.VERCEL_OIDC_TOKEN,
+        storeId:process.env.BLOB_STORE_ID
+      });
+      const { presignedUrl } = await presignUrl(signedToken,{operation:'get',pathname:doc.pathname,access:'private',validUntil});
+      return json(res,200,{ok:true,downloadUrl:presignedUrl,filename:doc.filename,contentType:doc.content_type,status:doc.status});
+    }
+
+    if (action === 'facsimiles' && req.method === 'GET') {
+      const auth = await requireAdmin(req, res);
+      if (!auth) return json(res,401,{ok:false,error:{code:'UNAUTHORIZED',message:'Autenticazione richiesta.'}});
+      const practiceId = str(req.query?.practiceId);
+      if (!/^[0-9a-f-]{36}$/i.test(practiceId)) return json(res,400,{ok:false,error:{code:'INVALID_PRACTICE_ID',message:'Pratica non valida.'}});
+      const rows = await dbRequest(`admin_practice_documents?practice_id=eq.${encodeURIComponent(practiceId)}&kind=eq.facsimile&select=id,filename,content_type,size_bytes,status,uploaded_at,extracted_at,confirmed_at&order=uploaded_at.desc`);
+      if (!rows.response.ok) return json(res,503,{ok:false,error:{code:'DATABASE_ERROR',message:'Impossibile leggere i facsimili.'}});
+      return json(res,200,{ok:true,documents:rows.data||[]});
     }
 
     /*
