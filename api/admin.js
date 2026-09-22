@@ -1237,6 +1237,16 @@ export default async function handler(req, res) {
         patch.notes = str(req.body.notes).slice(0, 10000);
       }
 
+      // 21 settembre 2026 — su richiesta di Carmelo: il MUP generato resta
+      // salvato dentro la pratica, non solo aperto in una scheda temporanea.
+      // Limite di lunghezza generoso (il documento generato è tipicamente
+      // qualche migliaio di caratteri) solo per sicurezza, non blocca l'uso
+      // normale.
+      if ('mupHtml' in (req.body || {})) {
+        patch.mup_html = str(req.body.mupHtml).slice(0, 500000);
+        patch.mup_generated_at = new Date().toISOString();
+      }
+
       const r = await dbRequest(`admin_practices?id=eq.${encodeURIComponent(id)}`, {
         method: 'PATCH',
         body: patch

@@ -263,7 +263,28 @@
       $('mupMsg').textContent = 'Il browser ha bloccato la finestra del MUP. Consentire i popup per il sito.';
       return;
     }
-    $('mupMsg').textContent = 'MUP generato in una nuova scheda. Verificare tutti i dati e usare la stampa del browser per il PDF.';
+
+    // 21 settembre 2026 — su richiesta di Carmelo: il documento generato resta
+    // salvato dentro la pratica (non solo aperto in una scheda temporanea).
+    // api() e loadPractices() sono definite in admin/admin.js, caricato prima
+    // di questo file — condivise perché entrambi sono script classici, non
+    // moduli. Se il salvataggio fallisce (es. sessione scaduta), il documento
+    // resta comunque visibile nella scheda appena aperta: non blocchiamo
+    // l'utente per un errore di salvataggio secondario.
+    if (currentPractice?.id && typeof api === 'function') {
+      api('practice', {
+        method: 'PATCH',
+        query: `&id=${encodeURIComponent(currentPractice.id)}`,
+        body: { mupHtml: html }
+      }).then(() => {
+        if (typeof loadPractices === 'function') loadPractices();
+        $('mupMsg').textContent = 'MUP generato in una nuova scheda e salvato nella pratica. Verificare tutti i dati e usare la stampa del browser per il PDF.';
+      }).catch(() => {
+        $('mupMsg').textContent = 'MUP generato in una nuova scheda, ma il salvataggio nella pratica non è riuscito. Verificare la connessione e riprovare.';
+      });
+    } else {
+      $('mupMsg').textContent = 'MUP generato in una nuova scheda. Verificare tutti i dati e usare la stampa del browser per il PDF.';
+    }
   }
 
   function openFromDetail() {
@@ -274,7 +295,11 @@
     const parts = meta.split(' · scadenza ');
     const type = parts[0] || '';
     const date = parts[1] || '';
-    open({ client: title, type, expiry: date ? date.split('/').reverse().join('-') : '' });
+    // 21 settembre 2026 — l'id della pratica, esposto da admin.js su
+    // #detail.dataset.practiceId, serve a generate() per salvare il MUP
+    // nella pratica corretta.
+    const id = d.dataset.practiceId || '';
+    open({ client: title, type, expiry: date ? date.split('/').reverse().join('-') : '', id });
   }
 
   function installDetailButton() {

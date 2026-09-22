@@ -42,6 +42,10 @@ function openDetail(id) {
   const s = status(p.expiry);
   const d = $('detail');
   d.classList.remove('hidden');
+  // 21 settembre 2026 — l'id della pratica viene esposto qui, così il
+  // generatore MUP (admin/mup.js) può leggerlo e salvare il documento
+  // generato dentro la pratica corretta.
+  d.dataset.practiceId = p.id;
   d.innerHTML = `
     <div class="section-head">
       <div>
@@ -55,6 +59,9 @@ function openDetail(id) {
     <p><strong>Email cliente:</strong> ${escapeHtml(p.email || '—')}</p>
     <p><strong>Prezzo cliente:</strong> ${p.client_price != null && p.client_price !== '' ? escapeHtml(String(p.client_price)) : '—'}</p>
     <p><strong>Costo revisore:</strong> ${p.reviewer_cost != null && p.reviewer_cost !== '' ? escapeHtml(String(p.reviewer_cost)) : '—'}</p>
+    <p><strong>MUP:</strong> ${p.mup_generated_at
+      ? `generato il ${new Date(p.mup_generated_at).toLocaleString('it-IT')} — <button class="link-btn" id="viewMup" type="button">Visualizza</button>`
+      : 'non ancora generato'}</p>
     <div class="panel">
       <h3>Note interne</h3>
       <textarea id="detailNotes" rows="4" style="width:100%;box-sizing:border-box">${escapeHtml(p.notes || '')}</textarea>
@@ -69,6 +76,16 @@ function openDetail(id) {
       <button class="small-btn" id="deletePractice" style="color:#b42318;border-color:#b42318">ELIMINA PRATICA</button>
     </div>
   `;
+
+  // 21 settembre 2026 — apre il MUP già salvato (stesso metodo Blob usato dal
+  // generatore, affidabile anche su Safari).
+  if (p.mup_html) {
+    $('viewMup')?.addEventListener('click', () => {
+      const blob = new Blob([p.mup_html], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+    });
+  }
 
   $('closeDetail').onclick = () => d.classList.add('hidden');
 
