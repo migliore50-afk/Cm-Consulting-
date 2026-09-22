@@ -62,6 +62,15 @@ function openDetail(id) {
     <p><strong>MUP:</strong> ${p.mup_generated_at
       ? `generato il ${new Date(p.mup_generated_at).toLocaleString('it-IT')} — <button class="link-btn" id="downloadMupWord" type="button">Scarica Word</button> <button class="link-btn" id="downloadMupPdf" type="button">Scarica PDF</button>`
       : 'non ancora generato'}</p>
+    <div class="panel" id="facsimilePanel">
+      <h3>Facsimile collaboratore</h3>
+      <p class="muted">Carica il facsimile ricevuto dal collaboratore. Il sistema estrae i dati e li presenta per la tua verifica; nulla diventa ufficiale senza conferma.</p>
+      <input id="facsimileFile" type="file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+      <div class="actions" style="margin-top:8px"><button class="small-btn" id="uploadFacsimileBtn" type="button">CARICA E LEGGI</button></div>
+      <div id="facsimileUploadMsg" class="message" aria-live="polite"></div>
+      <div id="facsimileList"></div>
+      <div id="facsimileReview" class="panel hidden" style="margin-top:12px"></div>
+    </div>
     <div class="panel">
       <h3>Note interne</h3>
       <textarea id="detailNotes" rows="4" style="width:100%;box-sizing:border-box">${escapeHtml(p.notes || '')}</textarea>
@@ -76,6 +85,129 @@ function openDetail(id) {
       <button class="small-btn" id="deletePractice" style="color:#b42318;border-color:#b42318">ELIMINA PRATICA</button>
     </div>
   `;
+
+  const FACSIMILE_FIELDS = [
+    ['collaborator','Collaboratore / intermediario'],
+    ['insurer','Impresa / compagnia'],
+    ['risk_type','Tipologia / rischio'],
+    ['contractor','Contraente / cliente'],
+    ['beneficiary','Beneficiario'],
+    ['amount','Importo / somma garantita'],
+    ['start_date','Decorrenza'],
+    ['end_date','Scadenza'],
+    ['policy_number','Numero polizza'],
+    ['beneficiary_reference','CIG / CUP / riferimento']
+  ];
+
+  function facsimileEsc(value) { return escapeHtml(value); }
+
+  async function loadFacsimiles(practiceId) {
+    const panel = $('facsimilePanel');
+    if (!panel) return;
+    try {
+      const data = await api('facsimiles', { query: '&practiceId=' + encodeURIComponent(practiceId) });
+      const docs = data.documents || [];
+      const list = $('facsimileList');
+      list.innerHTML = docs.length ? docs.map(d => {
+        const statusLabel = d.status === 'confirmed' ? 'Confermato' : d.status === 'extracted' ? 'Da verificare' : 'Caricato';
+        return '<div class="panel" style="margin-top:8px">' +
+          '<strong>' + facsimileEsc(d.filename) + '</strong> · ' + facsimileEsc(statusLabel) +
+          ' <span class="muted">(' + Math.ceil(Number(d.size_bytes || 0) / 1024) + ' KB)</span>' +
+          '<div class="actions" style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">' +
+          '<button class="small-btn" type="button" data-fac-download="' + d.id + '">SCARICA ORIGINALE</button>' +
+          (d.status === 'extracted' || d.status === 'confirmed' ? '<button class="small-btn" type="button" data-fac-review="' + d.id + '">VERIFICA DATI</button>' : '') +
+          '</div></div>';
+      }).join('') : '<p class="muted">Nessun facsimile caricato.</p>';
+      list.querySelectorAll('[data-fac-download]').forEach(btn => btn.onclick = () => downloadFacsimile(btn.dataset.facDownload));
+      list.querySelectorAll('[data-fac-review]').forEach(btn => btn.onclick = () => reviewFacsimile(btn.dataset.facReview));
+    } catch (err) {
+      $('facsimileList').textContent = err.message;
+    }
+  }
+
+  async function downloadFacsimile(id) {
+    const data = await api('facsimile-file', { query: '&id=' + encodeURIComponent(id) });
+    const response = await fetch(data.downloadUrl);
+    if (!response.ok) throw new Error('Download documento non riuscito.');
+    const blob = await response.blob();
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = data.filename || 'facsimile';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 30000);
+  }
+
+  async function reviewFacsimile(id) {
+    const data = await api('facsimiles', { query: '&practiceId=' + encodeURIComponent($('detail').dataset.practiceId) });
+    const doc = (data.documents || []).find(x => String(x.id) === String(id));
+    if (!doc) return;
+    const detail = await api('facsimile-file', { query: '&id=' + encodeURIComponent(id) });
+    // I dati estratti vengono letti separatamente per evitare di esporli
+    // nell'elenco generale dei documenti.
+    const full = await api('facsimile-extract', { method:'POST', body:{documentId:id} });
+    renderFacsimileReview(full.document || {id}, full.extractedData || {});
+  }
+
+  function renderFacsimileReview(doc, extracted) {
+    const box = $('facsimileReview');
+    if (!box) return;
+    box.classList.remove('hidden');
+    box.dataset.documentId = doc.id || '';
+    box.innerHTML = '<h3>Verifica dati estratti</h3>' +
+      '<p class="muted">Questi dati sono una proposta di estrazione. <strong>Non diventano ufficiali finché non premi CONFERMA DATI.</strong></p>' +
+      '<div class="form-grid">' +
+      FACSIMILE_FIELDS.map(([key,label]) => '<label>' + facsimileEsc(label) + '<input data-fac-field="' + key + '" value="' + facsimileEsc(extracted[key] || '') + '"></label>').join('') +
+      '</div>' +
+      '<div class="actions" style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">' +
+      '<button class="small-btn" type="button" id="cancelFacReview">ANNULLA</button>' +
+      '<button class="btn primary" type="button" id="confirmFacReview">CONFERMA DATI</button></div>' +
+      '<div id="facsimileReviewMsg" class="message" aria-live="polite"></div>';
+    $('cancelFacReview').onclick = () => box.classList.add('hidden');
+    $('confirmFacReview').onclick = async () => {
+      const confirmedData = {};
+      box.querySelectorAll('[data-fac-field]').forEach(input => {
+        const key = input.dataset.facField;
+        const value = input.value.trim();
+        if (value) confirmedData[key] = value;
+      });
+      if (!Object.keys(confirmedData).length) {
+        $('facsimileReviewMsg').textContent = 'Inserisci almeno un dato prima della conferma.';
+        return;
+      }
+      $('confirmFacReview').disabled = true;
+      $('facsimileReviewMsg').textContent = 'Salvataggio conferma…';
+      try {
+        await api('facsimile-confirm', {method:'POST', body:{documentId:box.dataset.documentId, confirmedData}});
+        $('facsimileReviewMsg').textContent = 'Dati confermati e collegati alla pratica.';
+        await loadPractices();
+        await loadFacsimiles($('detail').dataset.practiceId);
+      } catch (err) {
+        $('facsimileReviewMsg').textContent = err.message;
+      } finally {
+        $('confirmFacReview').disabled = false;
+      }
+    };
+  }
+
+  async function uploadFacsimile(practiceId, file) {
+    const allowed = new Set([
+      'application/pdf',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ]);
+    if (!allowed.has(file.type)) throw new Error('Seleziona un PDF oppure un documento Word .docx.');
+    if (file.size > 10 * 1024 * 1024) throw new Error('Il file supera il limite di 10 MB.');
+    $('facsimileUploadMsg').textContent = 'Preparazione caricamento…';
+    const ticket = await api('facsimile-upload-url', {method:'POST', body:{
+      practiceId, filename:file.name, contentType:file.type, size:file.size
+    }});
+    const put = await fetch(ticket.uploadUrl, {method:'PUT', headers:{'Content-Type':file.type}, body:file});
+    if (!put.ok) throw new Error('Caricamento del facsimile non riuscito.');
+    $('facsimileUploadMsg').textContent = 'Documento caricato. Lettura automatica in corso…';
+    const extracted = await api('facsimile-extract', {method:'POST', body:{documentId:ticket.document.id}});
+    $('facsimileUploadMsg').textContent = 'Lettura completata: verifica i dati proposti.';
+    renderFacsimileReview(extracted.document || ticket.document, extracted.extractedData || {});
+    await loadFacsimiles(practiceId);
+  }
 
   async function downloadSavedMup(type) {
     try {
@@ -102,6 +234,16 @@ function openDetail(id) {
   $('downloadMupWord')?.addEventListener('click', () => downloadSavedMup('word'));
   $('downloadMupPdf')?.addEventListener('click', () => downloadSavedMup('pdf'));
   $('closeDetail').onclick = () => d.classList.add('hidden');
+
+  $('uploadFacsimileBtn')?.addEventListener('click', async () => {
+    const file = $('facsimileFile')?.files?.[0];
+    if (!file) { $('facsimileUploadMsg').textContent = 'Seleziona prima un PDF o un Word .docx.'; return; }
+    const btn = $('uploadFacsimileBtn'); btn.disabled = true;
+    try { await uploadFacsimile(p.id, file); $('facsimileFile').value = ''; }
+    catch (err) { $('facsimileUploadMsg').textContent = err.message || 'Operazione non riuscita.'; }
+    finally { btn.disabled = false; }
+  });
+  loadFacsimiles(p.id);
 
   $('saveNotes').onclick = async () => {
     try {
