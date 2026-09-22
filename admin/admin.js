@@ -1,5 +1,5 @@
 const $ = (id) => document.getElementById(id);
-const state = { mode: null, factorId: null, practices: [], requests: [] };
+const state = { mode: null, factorId: null, practices: [], requests: [], intermediaries: [] };
 
 function msg(el, text, type = '') { el.textContent = text || ''; el.className = `message ${type}`; }
 function show(view) { ['loginView','mfaView','appView'].forEach(id => $(id).classList.toggle('hidden', id !== view)); }
@@ -189,7 +189,31 @@ function openRequestDetail(id) {
 
 async function loadPractices() { const data = await api('practices'); state.practices = data.practices || []; renderPractices(); }
 async function loadRequests() { const data = await api('requests'); state.requests = data.requests || []; renderRequests(); }
-async function enterApp(email) { $('userEmail').textContent = email || ''; show('appView'); await loadPractices(); await loadRequests(); }
+// 22 settembre 2026 — archivio degli intermediari collaboratori (Sezione A/B)
+// usato dal generatore MUP. Gestito qui (Impostazioni sicurezza), letto da
+// admin/mup.js tramite state.intermediaries (stessa variabile globale, script
+// classici non moduli — vedi nota in mup.js).
+function renderIntermediaries() {
+  const rows = state.intermediaries;
+  $('intermediaryBody').innerHTML = rows.length ? rows.map(i => `<tr>
+    <td><strong>${escapeHtml(i.name)}</strong></td>
+    <td>${escapeHtml(i.rui)}</td>
+    <td>${escapeHtml(i.section)}</td>
+    <td><span class="status ${i.active ? 'ok' : 'bad'}">${i.active ? 'Attivo' : 'Non attivo'}</span></td>
+    <td>
+      <button class="small-btn" data-edit-intermediary="${i.id}">MODIFICA</button>
+      <button class="small-btn" data-toggle-intermediary="${i.id}">${i.active ? 'DISATTIVA' : 'ATTIVA'}</button>
+    </td>
+  </tr>`).join('') : '<tr><td colspan="5" style="text-align:center;padding:24px;color:#65717d">Nessun intermediario registrato.</td></tr>';
+}
+
+async function loadIntermediaries() {
+  const data = await api('intermediaries');
+  state.intermediaries = data.intermediaries || [];
+  renderIntermediaries();
+}
+
+async function enterApp(email) { $('userEmail').textContent = email || ''; show('appView'); await loadPractices(); await loadRequests(); await loadIntermediaries(); }
 
 $('loginForm').addEventListener('submit', async e => {
   e.preventDefault(); msg($('loginMsg'), '');
@@ -223,6 +247,67 @@ $('backLoginBtn').onclick = async () => { await api('logout', {method:'POST'}).c
 $('forgotBtn').onclick = async () => { const email = prompt('Inserisci l’email dell’account amministratore:'); if (!email) return; try { const d = await api('forgot-password',{method:'POST',body:{email:email.trim()}}); msg($('loginMsg'), d.message, 'ok'); } catch(e) { msg($('loginMsg'), e.message, 'error'); } };
 $('logoutBtn').onclick = async () => { await api('logout',{method:'POST'}).catch(()=>{}); show('loginView'); };
 $('newPracticeBtn').onclick = () => { $('practiceModal').classList.remove('hidden'); $('practiceMsg').textContent=''; };
+$('newIntermediaryBtn').onclick = () => {
+  const f = $('intermediaryForm');
+  f.reset();
+  f.elements.id.value = '';
+  f.elements.active.checked = true;
+  $('intermediaryModalTitle').textContent = 'Nuovo intermediario';
+  $('intermediaryMsg').textContent = '';
+  $('intermediaryModal').classList.remove('hidden');
+};
+$('closeIntermediaryModal').onclick = () => $('intermediaryModal').classList.add('hidden');
+$('intermediaryBody').addEventListener('click', e => {
+  const editBtn = e.target.closest('[data-edit-intermediary]');
+  if (editBtn) {
+    const i = state.intermediaries.find(x => String(x.id) === editBtn.dataset.editIntermediary);
+    if (!i) return;
+    const f = $('intermediaryForm');
+    f.elements.id.value = i.id;
+    f.elements.name.value = i.name;
+    f.elements.rui.value = i.rui;
+    f.elements.section.value = i.section;
+    f.elements.address.value = i.address;
+    f.elements.phone.value = i.phone || '';
+    f.elements.email.value = i.email || '';
+    f.elements.pec.value = i.pec || '';
+    f.elements.website.value = i.website || '';
+    f.elements.active.checked = i.active;
+    $('intermediaryModalTitle').textContent = 'Modifica intermediario';
+    $('intermediaryMsg').textContent = '';
+    $('intermediaryModal').classList.remove('hidden');
+    return;
+  }
+  const toggleBtn = e.target.closest('[data-toggle-intermediary]');
+  if (toggleBtn) {
+    const id = toggleBtn.dataset.toggleIntermediary;
+    const i = state.intermediaries.find(x => String(x.id) === id);
+    if (!i) return;
+    if (i.active && !confirm(`Disattivare "${i.name}"? Non comparirà più tra le scelte del generatore MUP finché non lo riattivi.`)) return;
+    api('intermediary', { method: 'PATCH', query: `&id=${encodeURIComponent(id)}`, body: { active: !i.active } })
+      .then(loadIntermediaries)
+      .catch(err => alert(err.message));
+  }
+});
+$('intermediaryForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const f = new FormData(e.target);
+  const id = f.get('id');
+  const body = {
+    name: f.get('name'), rui: f.get('rui'), section: f.get('section'),
+    address: f.get('address'), phone: f.get('phone'), email: f.get('email'),
+    pec: f.get('pec'), website: f.get('website'), active: f.get('active') === 'on'
+  };
+  try {
+    if (id) {
+      await api('intermediary', { method: 'PATCH', query: `&id=${encodeURIComponent(id)}`, body });
+    } else {
+      await api('intermediaries', { method: 'POST', body });
+    }
+    $('intermediaryModal').classList.add('hidden');
+    await loadIntermediaries();
+  } catch (err) { msg($('intermediaryMsg'), err.message, 'error'); }
+});
 $('closeModal').onclick = () => $('practiceModal').classList.add('hidden');
 $('practiceBody').addEventListener('click', e => { const btn = e.target.closest('[data-open]'); if (btn) openDetail(btn.dataset.open); });
 $('requestBody').addEventListener('click', e => { const btn = e.target.closest('[data-request-open]'); if (btn) openRequestDetail(btn.dataset.requestOpen); });
