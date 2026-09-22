@@ -1262,13 +1262,26 @@ export default async function handler(req, res) {
       const row = await dbRequest(`admin_practice_documents?id=eq.${encodeURIComponent(documentId)}&select=*`);
       if (!row.response.ok || !row.data?.[0]) return json(res,404,{ok:false,error:{code:'DOCUMENT_NOT_FOUND',message:'Documento non trovato.'}});
       const doc = row.data[0];
+      const confirmedAt = new Date().toISOString();
       const saved = await dbRequest(`admin_practice_documents?id=eq.${encodeURIComponent(documentId)}`, {
         method:'PATCH',
-        body:{status:'confirmed',confirmed_data:confirmedData,confirmed_at:new Date().toISOString()}
+        body:{status:'confirmed',confirmed_data:confirmedData,confirmed_at:confirmedAt}
       });
       if (!saved.response.ok) return json(res,503,{ok:false,error:{code:'CONFIRMATION_SAVE_FAILED',message:'Conferma non salvata.'}});
 
-      return json(res,200,{ok:true,document:saved.data?.[0]||null});
+      const practiceSaved = await dbRequest(`admin_practices?id=eq.${encodeURIComponent(doc.practice_id)}`, {
+        method:'PATCH',
+        body:{
+          official_data:confirmedData,
+          official_data_source_document_id:documentId,
+          official_data_confirmed_at:confirmedAt
+        }
+      });
+      if (!practiceSaved.response.ok) {
+        return json(res,503,{ok:false,error:{code:'PRACTICE_CONFIRMATION_SAVE_FAILED',message:'Dati confermati salvati nel documento ma non nella pratica.'}});
+      }
+
+      return json(res,200,{ok:true,document:saved.data?.[0]||null,practice:practiceSaved.data?.[0]||null});
     }
 
     if (action === 'facsimile-file' && req.method === 'GET') {
