@@ -575,6 +575,42 @@ function cleanPractice(body) {
   };
 }
 
+// 22 settembre 2026 — archivio degli intermediari collaboratori (Sezione A/B)
+// usato dal generatore MUP, così i loro dati non restano scritti a mano nel
+// codice. partial=true per il PATCH (solo i campi effettivamente inviati
+// vengono validati/aggiornati).
+function cleanIntermediary(body, { partial = false } = {}) {
+  const out = {};
+
+  if (!partial || 'name' in body) {
+    const name = str(body.name);
+    if (!name || name.length > 180) throw new Error('Denominazione non valida.');
+    out.name = name;
+  }
+  if (!partial || 'rui' in body) {
+    const rui = str(body.rui);
+    if (!rui || rui.length > 40) throw new Error('Numero RUI non valido.');
+    out.rui = rui;
+  }
+  if (!partial || 'section' in body) {
+    const section = str(body.section).toUpperCase();
+    if (section !== 'A' && section !== 'B') throw new Error('Sezione non valida: deve essere A o B.');
+    out.section = section;
+  }
+  if (!partial || 'address' in body) {
+    const address = str(body.address);
+    if (!address || address.length > 300) throw new Error('Sede legale non valida.');
+    out.address = address;
+  }
+  if ('phone' in body) out.phone = str(body.phone) || null;
+  if ('email' in body) out.email = str(body.email) || null;
+  if ('pec' in body) out.pec = str(body.pec) || null;
+  if ('website' in body) out.website = str(body.website) || null;
+  if ('active' in body) out.active = Boolean(body.active);
+
+  return out;
+}
+
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
 
@@ -1291,6 +1327,101 @@ export default async function handler(req, res) {
       }
 
       return json(res, 200, { ok: true });
+    }
+
+    /*
+     * ============================================================
+     * INTERMEDIARIES — GET (elenco completo, attivi e non)
+     * Usata sia dalla sezione "Intermediari collaboratori" delle
+     * Impostazioni, sia dal generatore MUP (che mostra solo i record
+     * con active=true nel menu a tendina).
+     * ============================================================
+     */
+    if (action === 'intermediaries' && req.method === 'GET') {
+      const auth = await requireAdmin(req, res);
+
+      if (!auth) {
+        return json(res, 401, {
+          ok: false,
+          error: { code: 'UNAUTHORIZED', message: 'Autenticazione richiesta.' }
+        });
+      }
+
+      const r = await dbRequest('admin_intermediaries?select=*&order=name.asc');
+
+      if (!r.response.ok) {
+        return json(res, 503, {
+          ok: false,
+          error: { code: 'DATABASE_ERROR', message: 'Errore archivio intermediari.' }
+        });
+      }
+
+      return json(res, 200, { ok: true, intermediaries: r.data || [] });
+    }
+
+    /*
+     * ============================================================
+     * INTERMEDIARIES — POST (nuovo intermediario)
+     * ============================================================
+     */
+    if (action === 'intermediaries' && req.method === 'POST') {
+      const auth = await requireAdmin(req, res);
+
+      if (!auth) {
+        return json(res, 401, {
+          ok: false,
+          error: { code: 'UNAUTHORIZED', message: 'Autenticazione richiesta.' }
+        });
+      }
+
+      const intermediary = cleanIntermediary(req.body || {});
+
+      const r = await dbRequest('admin_intermediaries', {
+        method: 'POST',
+        body: { ...intermediary, created_by: auth.user.id }
+      });
+
+      if (!r.response.ok) {
+        return json(res, 400, {
+          ok: false,
+          error: { code: 'DATABASE_ERROR', message: 'Salvataggio intermediario fallito.' }
+        });
+      }
+
+      return json(res, 200, { ok: true, intermediary: r.data?.[0] || null });
+    }
+
+    /*
+     * ============================================================
+     * INTERMEDIARY — PATCH (modifica dati o attiva/disattiva)
+     * ============================================================
+     */
+    if (action === 'intermediary' && req.method === 'PATCH') {
+      const auth = await requireAdmin(req, res);
+
+      if (!auth) {
+        return json(res, 401, {
+          ok: false,
+          error: { code: 'UNAUTHORIZED', message: 'Autenticazione richiesta.' }
+        });
+      }
+
+      const id = str(req.query?.id);
+      const patch = cleanIntermediary(req.body || {}, { partial: true });
+
+      const r = await dbRequest(`admin_intermediaries?id=eq.${encodeURIComponent(id)}`, {
+        method: 'PATCH',
+        body: patch
+      });
+
+      if (!r.response.ok) {
+        return json(res, 400, {
+          ok: false,
+          error: { code: 'DATABASE_ERROR', message: 'Aggiornamento intermediario fallito.' }
+        });
+      }
+
+      return json(res, 200, { ok: true, intermediary: r.data?.[0] || null });
     }
 
     return json(res, 404, {
