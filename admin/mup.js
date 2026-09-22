@@ -79,8 +79,9 @@
       mupDistributorDate: '24/01/2013',
       mupDistributorSection: 'E',
       mupDistributorRole: 'Collaboratore di intermediario iscritto nella sezione A/B',
-      // 22 settembre 2026 — questi dati sono già noti e stabili e vengono
-      // utilizzati anche nelle altre sezioni del sito.
+      // 22 settembre 2026 — su segnalazione di Carmelo/ChatGPT: questi quattro
+      // dati sono già noti e stabili (usati in tutto il resto del sito), non
+      // c'è motivo di lasciarli vuoti ogni volta.
       mupDistributorAddress: 'Via Spinoza n. 49, 00137 Roma',
       mupDistributorPhone: '328 6382612',
       mupDistributorEmail: 'info@cm-consulting.info',
@@ -120,8 +121,11 @@
       mupPaymentMethods: '',
       mupSectionBPayment: '',
       mupRc: '',
-      // 22 settembre 2026 — reclami e Arbitro Assicurativo sono già
-      // pubblicati sulla pagina reale "Reclami e Arbitro Assicurativo" del sito.
+      // 22 settembre 2026 — questi due non dipendono dall'intermediario
+      // principale della singola pratica: sono il processo reclami e
+      // l'informativa sull'Arbitro Assicurativo già pubblicati sulla pagina
+      // "Reclami e Arbitro Assicurativo" del sito — dati veri, non inventati,
+      // riutilizzabili da subito.
       mupComplaints: 'Reclamo a CM Consulting via email (info@cm-consulting.info), PEC (carmelo.migliore@legalmail.it) o posta ordinaria (Via Spinoza n. 49, 00137 Roma) — risposta entro 45 giorni. Se non soddisfatto, reclamo all’IVASS (Via del Quirinale 21, 00187 Roma).',
       mupArbitro: 'Diritto di ricorso all’Arbitro Assicurativo per le controversie in materia assicurativa e/o di intermediazione, operativo dal 15 gennaio 2026 — dettagli e modalità sulla pagina “Reclami e Arbitro Assicurativo” di cm-consulting.info.',
       mupFinNet: '',
@@ -133,9 +137,83 @@
       set(id, Object.prototype.hasOwnProperty.call(saved, id) && saved[id] ? saved[id] : fallback);
     });
 
+    populateIntermediarySelect();
+
+    document.querySelectorAll('#mupOpen .field-error').forEach(el => el.classList.remove('field-error'));
     $('mupMsg').textContent = '';
     $('mupOpen').classList.remove('hidden');
     $('mupClient').focus();
+  }
+
+  // 22 settembre 2026 — su richiesta di Carmelo/ChatGPT: l'intermediario
+  // principale non è più un campo di testo libero (rischio di dati inventati
+  // o incoerenti), ma un menu che legge dall'archivio "Intermediari
+  // collaboratori" gestito nelle Impostazioni. Solo quelli attivi compaiono.
+  // state.intermediaries è definita in admin/admin.js, caricato prima di
+  // questo file — condivisa perché entrambi sono script classici, non
+  // moduli.
+  function populateIntermediarySelect() {
+    const select = $('mupMainIntermediarySelect');
+    if (!select) return;
+    const list = (typeof state !== 'undefined' && Array.isArray(state.intermediaries)) ? state.intermediaries : [];
+    const active = list.filter(i => i.active);
+    const previousValue = select.value;
+    select.innerHTML = '<option value="">Seleziona intermediario…</option>' +
+      active.map(i => `<option value="${esc(i.id)}">${esc(i.name)} — Sezione ${esc(i.section)}</option>`).join('');
+
+    let toSelect = '';
+    if (previousValue && active.some(i => String(i.id) === previousValue)) {
+      toSelect = previousValue;
+    } else {
+      const remembered = (() => { try { return localStorage.getItem('cm_mup_last_intermediary_id') || ''; } catch { return ''; } })();
+      if (remembered && active.some(i => String(i.id) === remembered)) toSelect = remembered;
+    }
+
+    select.value = toSelect;
+    applyIntermediarySelection(toSelect, list);
+
+    if (!active.length) {
+      const summary = $('mupMainSummary');
+      if (summary) {
+        summary.classList.remove('hidden');
+        summary.innerHTML = 'Nessun intermediario attivo in archivio. Aggiungine uno da Impostazioni sicurezza → Intermediari collaboratori.';
+      }
+    }
+  }
+
+  function applyIntermediarySelection(id, list) {
+    const source = list || (typeof state !== 'undefined' && Array.isArray(state.intermediaries) ? state.intermediaries : []);
+    const summary = $('mupMainSummary');
+    if (!id) {
+      set('mupMainIntermediary', '');
+      set('mupMainRui', '');
+      set('mupMainSection', '');
+      set('mupMainAddress', '');
+      set('mupMainPhone', '');
+      set('mupMainEmail', '');
+      set('mupMainPec', '');
+      set('mupMainWebsite', '');
+      if (summary) summary.classList.add('hidden');
+      return;
+    }
+    const inter = source.find(i => String(i.id) === String(id));
+    if (!inter) return;
+    set('mupMainIntermediary', inter.name);
+    set('mupMainRui', inter.rui);
+    set('mupMainSection', inter.section);
+    set('mupMainAddress', inter.address);
+    set('mupMainPhone', inter.phone || '');
+    set('mupMainEmail', inter.email || '');
+    set('mupMainPec', inter.pec || '');
+    set('mupMainWebsite', inter.website || '');
+    if (summary) {
+      summary.classList.remove('hidden');
+      summary.innerHTML = '<strong>Intermediario selezionato</strong><br>' + esc(inter.name) +
+        '<br>RUI: ' + esc(inter.rui) + ' — Sezione ' + esc(inter.section) +
+        '<br>Sede: ' + esc(inter.address) +
+        '<br>✓ Dati caricati automaticamente';
+    }
+    try { localStorage.setItem('cm_mup_last_intermediary_id', String(id)); } catch {}
   }
 
   function close() { $('mupOpen').classList.add('hidden'); }
@@ -148,28 +226,36 @@
 
   function requiredValues() {
     return [
-      ['Nome distributore', val('mupDistributorName')],
-      ['RUI distributore', val('mupDistributorRui')],
-      ['Sezione distributore', val('mupDistributorSection')],
-      ['Sede legale / domicilio professionale', val('mupDistributorAddress')],
-      ['Intermediario principale per cui opera la Sezione E', val('mupMainIntermediary')],
-      ['RUI intermediario principale', val('mupMainRui')],
-      ['Sezione intermediario principale', val('mupMainSection')],
-      ['Sede legale intermediario principale', val('mupMainAddress')],
-      ['Modello di distribuzione', val('mupDistribution')],
-      ['Impresa/e di assicurazione / rapporti rilevanti', val('mupInsurer')],
-      ['Remunerazione', val('mupRemuneration')],
-      ['Pagamento premi', val('mupPayment')],
-      ['RC professionale', val('mupRc')],
-      ['Reclami', val('mupComplaints')],
-      ['Arbitro Assicurativo', val('mupArbitro')]
-    ];
+      ['Nome distributore', 'mupDistributorName'],
+      ['RUI distributore', 'mupDistributorRui'],
+      ['Sezione distributore', 'mupDistributorSection'],
+      ['Sede legale / domicilio professionale', 'mupDistributorAddress'],
+      ['Intermediario principale per cui opera la Sezione E', 'mupMainIntermediary'],
+      ['RUI intermediario principale', 'mupMainRui'],
+      ['Sezione intermediario principale', 'mupMainSection'],
+      ['Sede legale intermediario principale', 'mupMainAddress'],
+      ['Modello di distribuzione', 'mupDistribution'],
+      ['Impresa/e di assicurazione / rapporti rilevanti', 'mupInsurer'],
+      ['Remunerazione', 'mupRemuneration'],
+      ['Pagamento premi', 'mupPayment'],
+      ['RC professionale', 'mupRc'],
+      ['Reclami', 'mupComplaints'],
+      ['Arbitro Assicurativo', 'mupArbitro']
+    ].map(([label, id]) => [label, id, val(id)]);
   }
 
   function generate() {
-    const missing = requiredValues().filter(x => !x[1]);
+    const fields = requiredValues();
+    // 22 settembre 2026 — su proposta di ChatGPT/Carmelo: oltre al messaggio
+    // testuale, i campi mancanti vengono evidenziati in rosso direttamente
+    // nel modulo, ed evidenziazioni precedenti vengono sempre ripulite prima
+    // di ricalcolare quelle nuove.
+    fields.forEach(([, id]) => $(id)?.classList.remove('field-error'));
+    const missing = fields.filter(x => !x[2]);
     if (missing.length) {
-      $('mupMsg').textContent = 'MUP NON GENERATO: compilare almeno ' + missing.map(x => x[0]).join(', ') + '.';
+      missing.forEach(([, id]) => $(id)?.classList.add('field-error'));
+      $('mupMsg').textContent = missing.length + (missing.length === 1 ? ' campo obbligatorio' : ' campi obbligatori') + ' da compilare prima di generare il MUP: ' + missing.map(x => x[0]).join(', ') + '.';
+      $(missing[0][1])?.focus();
       return;
     }
 
@@ -327,6 +413,20 @@
   $('mupClose').addEventListener('click', close);
   $('mupCancel').addEventListener('click', close);
   $('mupGenerate').addEventListener('click', generate);
+
+  // 22 settembre 2026 — alla scelta di un intermediario dal menu, compila
+  // automaticamente RUI/sezione/sede/contatti e mostra il riepilogo di
+  // conferma.
+  $('mupMainIntermediarySelect')?.addEventListener('change', function () {
+    applyIntermediarySelection(this.value);
+  });
+
+  // 22 settembre 2026 — toglie l'evidenziazione rossa dal campo appena
+  // l'utente ricomincia a scriverci, senza aspettare un nuovo tentativo di
+  // generazione.
+  $('mupOpen')?.addEventListener('input', e => {
+    if (e.target?.classList?.contains('field-error')) e.target.classList.remove('field-error');
+  });
 
   // 21 settembre 2026 — pulsante per svuotare i valori ricordati, nel caso
   // servisse ripartire da campi vuoti (es. cambio di intermediario principale).
