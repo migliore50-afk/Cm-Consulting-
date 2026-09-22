@@ -88,16 +88,7 @@ export async function generateMupDocx(data) {
     new Paragraph({
       children: [
         new TextRun({
-          text: 'VERIFICA OBBLIGATORIA: il documento è compilato dalla pratica amministrativa. Prima della consegna verificare che ogni dato corrisponda alla distribuzione effettivamente svolta e alla singola impresa/prodotto.',
-          bold: true
-        })
-      ],
-      shading: { fill: 'FFF8E5', type: ShadingType.CLEAR }
-    }),
-    new Paragraph({
-      children: [
-        new TextRun({
-          text: 'Base del modello: Allegato 3 al Regolamento IVASS n. 40/2018. Il contenuto deve essere verificato rispetto alla versione normativa vigente e alla specifica distribuzione prima della trasmissione al contraente.'
+          text: 'Base del modello: Allegato 3 al Regolamento IVASS n. 40/2018, come modificato dai Provvedimenti IVASS n. 163/2025 e n. 169/2026.'
         })
       ]
     }),
@@ -157,20 +148,19 @@ export async function generateMupDocx(data) {
       ['Altri sistemi ADR, se applicabili', d.mupOtherAdr]
     ]),
     ...section('8. Informazioni sul diritto all’oblio oncologico', [
-      ['Informativa', d.mupOncology]
+      ['Informativa', 'Il contraente può esercitare il diritto all’oblio oncologico previsto dalla Legge 7 dicembre 2023, n. 193. Per contenuti e modalità di attuazione si rinvia al DIP aggiuntivo. Le clausole contrattuali in contrasto con la normativa sono nulle a vantaggio del contraente o dell’assicurato.']
     ]),
     ...section('Dati della pratica — riferimento amministrativo', [
       ['Contraente / cliente', d.mupClient],
       ['Tipologia / prodotto', d.mupProduct],
       ['Scadenza pratica', d.mupExpiry],
-      ['E-mail cliente', d.mupEmail],
       ['Intermediario principale', d.mupMainIntermediary],
       ['Impresa di assicurazione', d.mupInsurer]
     ]),
     new Paragraph({
       children: [
         new TextRun({
-          text: 'Modello riferito all’Allegato 3 del Regolamento IVASS n. 40/2018, come modificato dai Provvedimenti IVASS n. 163/2025 e n. 169/2026. Documento generato per controllo interno: non sostituisce la verifica della modulistica ufficiale e dei dati effettivi della distribuzione.',
+          text: 'Allegato 3 al Regolamento IVASS n. 40/2018, come modificato dai Provvedimenti IVASS n. 163/2025 e n. 169/2026.',
           color: '5F6B75',
           size: 17
         })
