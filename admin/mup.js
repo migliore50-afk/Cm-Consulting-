@@ -244,7 +244,7 @@
     ].map(([label, id]) => [label, id, val(id)]);
   }
 
-  function generate() {
+  async function generate() {
     const fields = requiredValues();
     // 22 settembre 2026 — su proposta di ChatGPT/Carmelo: oltre al messaggio
     // testuale, i campi mancanti vengono evidenziati in rosso direttamente
