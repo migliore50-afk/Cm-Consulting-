@@ -483,3 +483,28 @@ picture{display:block;max-width:100%}
   .cm-success-actions{flex-direction:column}
   .cm-success-actions .btn{width:100%}
 }
+
+/* CM AI — correzioni mobile 23 settembre 2026
+   Il pannello dell'assistente non deve finire sotto la barra di navigazione mobile. */
+.ai-panel.open{
+  max-height:calc(100dvh - 24px);
+}
+@media(max-width:640px){
+  .ai-panel{
+    right:14px;
+    left:14px;
+    bottom:calc(88px + env(safe-area-inset-bottom));
+    width:auto;
+    max-height:calc(100dvh - 104px - env(safe-area-inset-bottom));
+    border-radius:16px;
+  }
+  .ai-panel .ai-content{
+    max-height:calc(100dvh - 390px - env(safe-area-inset-bottom));
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+    padding-bottom:14px;
+  }
+  .ai-panel .ai-voice-row{
+    margin-bottom:2px;
+  }
+}
