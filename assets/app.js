@@ -408,6 +408,18 @@ function applyAIFormData(data) {
   }
 }
 
+function restoreAIPageContext() {
+  const route = sessionStorage.getItem('cm_ai_route') || '';
+  if (!route || !window.location.pathname.includes('capacita-finanziaria')) return;
+  let saved = null;
+  try { saved = JSON.parse(sessionStorage.getItem('cm_ai_form_context') || 'null'); } catch {}
+  if (!saved || typeof saved !== 'object') return;
+  applyAIFormData(saved);
+  if (typeof window.refreshAll === 'function') window.refreshAll();
+  sessionStorage.removeItem('cm_ai_form_context');
+  sessionStorage.removeItem('cm_ai_route');
+}
+
 function getAIPageContext() {
   return {
     path: window.location.pathname + window.location.search,
@@ -745,6 +757,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initMenu();
   initSlider();
   initAssistantUI();
+  restoreAIPageContext();
   initAssistantFab();
   initAssistantFabFooterHide();
   initClickableCards();
