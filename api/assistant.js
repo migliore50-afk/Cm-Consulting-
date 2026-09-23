@@ -107,6 +107,20 @@ ${JSON.stringify(formContext)}`;
     if (!rawReply) return res.status(502).json({ error: 'Risposta AI vuota' });
 
     const routeMatch = rawReply.match(/\[\[ROUTE:(\/[^\]]+)\]\]/i);
+    const allowedRoutes = new Set([
+      '/richiedi-preventivo?tipo=appalti',
+      '/richiedi-preventivo?tipo=locazioni',
+      '/richiedi-preventivo?tipo=dogane',
+      '/richiedi-preventivo?tipo=ambiente',
+      '/richiedi-preventivo?tipo=contributi',
+      '/richiedi-preventivo?tipo=urbanistica',
+      '/richiedi-preventivo?tipo=fiscali',
+      '/richiedi-preventivo?tipo=contratti-privati',
+      '/capacita-finanziaria',
+      '/richiedi-preventivo?esigenza=generica'
+    ]);
+    const requestedRoute = routeMatch ? routeMatch[1] : '';
+    const safeRoute = allowedRoutes.has(requestedRoute) ? requestedRoute : '';
     const formMatch = rawReply.match(/\[\[FORM:(\{[\s\S]*?\})\]\]/i);
     const reply = rawReply
       .replace(/\s*\[\[ROUTE:\/[^\]]+\]\]\s*/ig, ' ')
@@ -122,7 +136,7 @@ ${JSON.stringify(formContext)}`;
 
     return res.status(200).json({
       reply,
-      route: routeMatch ? routeMatch[1] : '',
+      route: safeRoute,
       form
     });
   } catch (error) {
