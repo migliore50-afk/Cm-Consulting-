@@ -355,14 +355,19 @@ function startAI() {
 
   const greeting = `Buongiorno! Sono l'Assistente CM. Posso aiutarti a trovare il percorso più adatto alla tua esigenza. Da dove vuoi iniziare?`;
   content.innerHTML = `
-    <div class="bubble ai"><b>Buongiorno!</b><br> Sono l'Assistente CM.<br>Posso aiutarti a trovare il percorso più adatto alla tua esigenza.<br><br><b>Da dove vuoi iniziare?</b></div>
+    <div class="bubble ai"><b>Ciao, sono l'Assistente CM.</b><br>Raccontami con parole semplici cosa devi fare. Non è necessario conoscere il nome della garanzia.</div>
+    <div class="ai-chat-log" id="aiChatLog" aria-live="polite"></div>
+    <form class="ai-chat-form" id="aiChatForm">
+      <input id="aiChatInput" type="text" maxlength="1200" autocomplete="off" placeholder="Es. Devo partecipare a una gara..." aria-label="Descrivi la tua esigenza">
+      <button type="submit" aria-label="Invia richiesta">Invia</button>
+    </form>
     <div class="ai-choices">
-      <button class="ai-choice" type="button" data-ai="appalto">🏗️ Devo partecipare a un appalto <span>›</span></button>
-      <button class="ai-choice" type="button" data-ai="trasporto">🚛 Ho un'esigenza per autotrasporto <span>›</span></button>
-      <button class="ai-choice" type="button" data-ai="locazione">🏠 Mi chiedono una garanzia per una locazione <span>›</span></button>
-      <button class="ai-choice" type="button" data-ai="dogana">🛃 Ho un'esigenza doganale <span>›</span></button>
-      <button class="ai-choice" type="button" data-ai="ambiente">🌱 Ho un'esigenza ambientale <span>›</span></button>
-      <button class="ai-choice" type="button" data-ai="altro">💬 Non so ancora quale garanzia mi serve <span>›</span></button>
+      <button class="ai-choice" type="button" data-ai="appalto">Appalto pubblico <span>›</span></button>
+      <button class="ai-choice" type="button" data-ai="trasporto">Autotrasporto <span>›</span></button>
+      <button class="ai-choice" type="button" data-ai="locazione">Locazione <span>›</span></button>
+      <button class="ai-choice" type="button" data-ai="dogana">Dogana <span>›</span></button>
+      <button class="ai-choice" type="button" data-ai="ambiente">Ambiente <span>›</span></button>
+      <button class="ai-choice" type="button" data-ai="altro">Altra esigenza <span>›</span></button>
     </div>
     <div class="ai-voice-row">
       <button class="ai-mic" id="aiMic" type="button" aria-label="Spiega a voce la tua esigenza">🎙️ <span>Spiega a voce la tua esigenza</span></button>
@@ -373,6 +378,12 @@ function startAI() {
     button.addEventListener('click', () => aiChoose(button.dataset.ai));
   });
   content.querySelector('#aiMic')?.addEventListener('click', startAssistantRecognition);
+  content.querySelector('#aiChatForm')?.addEventListener('submit', event => {
+    event.preventDefault();
+    const input = document.getElementById('aiChatInput');
+    const message = String(input?.value || '').trim();
+    if (message) aiSendMessage(message);
+  });
   speakAI(greeting);
 }
 
@@ -400,7 +411,7 @@ function startAssistantRecognition() {
     if (status) status.textContent = 'Richiesta acquisita. Apro la valutazione generica…';
     speakAI(`Ho acquisito la tua richiesta: ${transcript}. Apro la valutazione generica.`);
     window.setTimeout(() => {
-      window.location.href = 'richiedi-preventivo.html?esigenza=generica';
+      window.location.href = '/richiedi-preventivo?esigenza=generica';
     }, isVoiceEnabled() ? 700 : 0);
   };
   assistantRecognition.onerror = event => {
@@ -423,16 +434,74 @@ function stopAssistantRecognition() {
   document.getElementById('aiMic')?.classList.remove('listening');
 }
 
+async function aiSendMessage(message) {
+  const content = document.getElementById('aiContent');
+  const log = document.getElementById('aiChatLog');
+  if (!content || !log) return;
+  const input = document.getElementById('aiChatInput');
+  const send = content.querySelector('.ai-chat-form button');
+  if (input) input.value = '';
+  if (send) send.disabled = true;
+
+  const userBubble = document.createElement('div');
+  userBubble.className = 'bubble user';
+  userBubble.textContent = message;
+  log.appendChild(userBubble);
+  log.scrollTop = log.scrollHeight;
+
+  try {
+    const response = await fetch('/api/assistant', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({message})
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data?.error || 'Servizio temporaneamente non disponibile.');
+
+    const routeMatch = String(data.reply || '').match(/\[\[ROUTE:(\/[^\]]+)\]\]/i);
+    const route = routeMatch ? routeMatch[1] : '';
+    const reply = String(data.reply || '').replace(/\s*\[\[ROUTE:\/[^\]]+\]\]\s*/ig, ' ').trim();
+
+    const aiBubble = document.createElement('div');
+    aiBubble.className = 'bubble ai';
+    aiBubble.innerHTML = reply.replace(/\n/g, '<br>');
+    log.appendChild(aiBubble);
+
+    if (route) {
+      const safeRoute = route.startsWith('/') ? route : '/';
+      const actions = document.createElement('div');
+      actions.className = 'ai-route-actions';
+      const link = document.createElement('a');
+      link.className = 'ai-choice';
+      link.href = safeRoute;
+      link.textContent = safeRoute.includes('richiedi-preventivo') ? 'Apri la richiesta →' : 'Apri la sezione consigliata →';
+      actions.appendChild(link);
+      log.appendChild(actions);
+    }
+    log.scrollTop = log.scrollHeight;
+    speakAI(reply);
+  } catch (error) {
+    const fallback = document.createElement('div');
+    fallback.className = 'bubble ai';
+    fallback.innerHTML = '<b>Posso aiutarti.</b><br>Il collegamento all’assistente AI non è disponibile in questo momento. Puoi scegliere una delle aree qui sotto oppure descrivere la tua esigenza nel modulo.';
+    log.appendChild(fallback);
+    log.scrollTop = log.scrollHeight;
+  } finally {
+    if (send) send.disabled = false;
+    input?.focus();
+  }
+}
+
 function aiChoose(type) {
   const content = document.getElementById('aiContent');
   if (!content) return;
 
   const map = {
     appalto: ['Per un appalto posso indirizzarti alle garanzie collegate alla gara e agli obblighi contrattuali.', 'appalti-pubblici.html'],
-    trasporto: ["Per l'autotrasporto possiamo distinguere tra capacità finanziaria e altre esigenze di garanzia.", 'capacita-finanziaria.html'],
-    locazione: ['Per la locazione partiamo dalle condizioni richieste dal contratto o dal locatore.', 'locazioni.html'],
-    dogana: ['Per una pratica doganale partiamo dal tipo di obbligo e dalla documentazione ricevuta.', 'dogane.html'],
-    ambiente: ["Per l'ambiente partiamo dall'obbligo specifico e dal soggetto che richiede la garanzia.", 'ambiente.html'],
+    trasporto: ["Per l'autotrasporto possiamo distinguere tra capacità finanziaria e altre esigenze di garanzia.", '/capacita-finanziaria'],
+    locazione: ['Per la locazione partiamo dalle condizioni richieste dal contratto o dal locatore.', '/locazioni'],
+    dogana: ['Per una pratica doganale partiamo dal tipo di obbligo e dalla documentazione ricevuta.', '/dogane'],
+    ambiente: ["Per l'ambiente partiamo dall'obbligo specifico e dal soggetto che richiede la garanzia.", '/ambiente'],
     altro: ['Va bene. Raccontami il caso concreto e allega la documentazione che hai: apriamo direttamente la valutazione generica.', 'richiedi-preventivo.html?esigenza=generica']
   };
 
@@ -644,23 +713,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if(capLink) capLink.remove();
     const chiSiamoLink=[...links].find(a=>a.textContent.trim().toUpperCase()==='CHI SIAMO');
     if(chiSiamoLink) chiSiamoLink.setAttribute('href','/chi-siamo');
-    const hasFaq=[...links].some(a=>a.textContent.trim().toUpperCase()==='FAQ');
-    const contattiLink=[...links].find(a=>a.textContent.trim().toUpperCase()==='CONTATTI');
-    if(!hasFaq && contattiLink){
-      const faqLink=document.createElement('a');
-      faqLink.href='/faq';
-      faqLink.textContent='FAQ';
-      contattiLink.parentElement.insertBefore(faqLink,contattiLink);
-    }
-    const hasGenericCta=[...links].some(a=>a.textContent.trim().toUpperCase()==='NON SAI QUALE GARANZIA?');
+    links.querySelector('a[href="/faq"]')?.remove();
     const navEl=document.querySelector('.links');
-    if(!hasGenericCta && navEl){
-      const genericLink=document.createElement('a');
-      genericLink.href='/richiedi-preventivo?esigenza=generica';
-      genericLink.className='nav-generic-cta';
-      genericLink.textContent='NON SAI QUALE GARANZIA?';
-      navEl.appendChild(genericLink);
-    }
+    navEl?.querySelector('.nav-generic-cta')?.remove();
     // 20 settembre 2026 — link "Accedi Area Privata" su richiesta di Carmelo,
     // ultima voce del menu, verso /admin (login con password + TOTP, area
     // gia' esistente e funzionante — vedi api/admin.js e cartella admin/).
@@ -669,7 +724,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const adminLink=document.createElement('a');
       adminLink.href='/admin';
       adminLink.className='nav-admin-link';
-      adminLink.textContent='ACCEDI AREA PRIVATA';
+      adminLink.textContent='AREA ADMIN';
       navEl.appendChild(adminLink);
     }
     document.querySelectorAll('a[href^="tel:+393286382612"]').forEach(a=>{
