@@ -156,26 +156,28 @@
       <label class="full hidden" id="mupBusinessRelationshipsRow">Con quali compagnie hai rapporti d'affari? <input id="mupBusinessRelationships" placeholder="Indica le compagnie"></label>
       <label class="full">Altre informazioni utili alla trasparenza <input id="mupTransparency" placeholder="Lascia vuoto se non necessario"></label>
 
-      <label class="full mup-req">Remunerazione <b class="mup-req-mark">*</b>
+      <label class="full mup-req">Come vieni remunerato per questa pratica? <b class="mup-req-mark">*</b>
         <select id="mupRemuneration" required>
           <option value="">Seleziona…</option>
-          <option value="Commissione inclusa nel premio assicurativo">Commissione inclusa nel premio assicurativo</option>
-          <option value="Onorario corrisposto direttamente dal cliente">Onorario corrisposto direttamente dal cliente</option>
-          <option value="Altro tipo di compenso, compresi i benefici economici di qualsiasi tipo offerti o ricevuti in virtù dell’intermediazione effettuata">Altro tipo di compenso (inclusi benefici economici)</option>
-          <option value="Combinazione delle diverse tipologie di compenso">Combinazione delle diverse tipologie di compenso</option>
+          <option value="Commissione inclusa nel premio assicurativo">Commissione nel premio — nessun onorario separato dal cliente</option>
+          <option value="Onorario corrisposto direttamente dal cliente">Onorario pagato direttamente dal cliente</option>
+          <option value="Altro tipo di compenso, compresi i benefici economici di qualsiasi tipo offerti o ricevuti in virtù dell’intermediazione effettuata">Altro compenso o beneficio economico</option>
+          <option value="Combinazione delle diverse tipologie di compenso">Combinazione di più modalità</option>
         </select>
+        <small class="muted">Se il cliente paga direttamente un compenso, il sistema chiederà anche importo o criterio di calcolo.</small>
       </label>
       <label class="full mup-req hidden" id="mupRemunerationAmountRow">Importo del compenso o metodo per calcolarlo <b class="mup-req-mark">*</b><input id="mupRemunerationAmount" placeholder="Es. € 250 a pratica, oppure 2% dell'importo garantito"></label>
       <label class="full">Eventuale compenso pagato direttamente dal cliente<input id="mupClientFee"></label>
       <label>Provvigioni RC Auto, se applicabile<input id="mupRcAuto"></label>
       <label>Compensi complessivi collaborazione orizzontale / Sezione E<input id="mupHorizontalCompensation"></label>
 
-      <label class="full mup-req">Tutela delle somme versate dal cliente <b class="mup-req-mark">*</b>
+      <label class="full mup-req">Come sono tutelate le somme eventualmente incassate? <b class="mup-req-mark">*</b>
         <select id="mupPayment" required>
           <option value="">Seleziona…</option>
-          <option value="I premi e le somme incassate costituiscono patrimonio autonomo e separato dal patrimonio dell'intermediario">Patrimonio autonomo e separato dal patrimonio dell'intermediario</option>
-          <option value="Le somme incassate sono garantite da fideiussione bancaria idonea a garantire una capacità finanziaria pari al 4% dei premi incassati, con un minimo di € 23.480 (aggiornato annualmente)">Fideiussione bancaria (minimo € 23.480, aggiornato annualmente)</option>
+          <option value="I premi e le somme incassate costituiscono patrimonio autonomo e separato dal patrimonio dell'intermediario">Patrimonio separato — le somme restano separate dal patrimonio dell’intermediario</option>
+          <option value="Le somme incassate sono garantite da fideiussione bancaria idonea a garantire una capacità finanziaria pari al 4% dei premi incassati, con un minimo di € 23.480 (aggiornato annualmente)">Fideiussione bancaria — garanzia finanziaria prevista dalla normativa</option>
         </select>
+        <small class="muted">Non scegliere in base a ciò che “sembra giusto”: questo valore deve corrispondere al regime effettivamente applicabile alla tua attività.</small>
       </label>
       <label>Gestione separata / garanzia bancaria, se applicabile<input id="mupSegregatedAssets"></label>
       <label class="full">Modalità di pagamento ammesse<input id="mupPaymentMethods"></label>
