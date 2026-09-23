@@ -14,3 +14,10 @@
 .reminder-panel{margin:14px 0}
 .reminder-actions{gap:8px;flex-wrap:wrap}
 .reminder-actions .small-btn{margin:0}
+
+/* MUP 2026 — layout stabile: evita espansioni laterali di grid/select e variazioni della larghezza del viewport. */
+.mup-modal-card{width:calc(100% - 40px);max-width:980px;min-width:0;overflow:auto}
+#mupOpen .form-grid{min-width:0}
+#mupOpen .form-grid>*{min-width:0}
+#mupOpen .form-grid input,#mupOpen .form-grid select,#mupOpen .form-grid textarea{min-width:0;max-width:100%}
+@media(max-width:640px){.mup-modal-card{width:calc(100% - 20px);padding:20px}}
