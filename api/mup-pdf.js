@@ -88,6 +88,7 @@ export function generateMupPdf(data) {
     ]);
     addSection(doc, '5. Informazioni sulle remunerazioni', [
       ['Tipologia e natura della remunerazione', d.mupRemuneration],
+      ['Importo del compenso o metodo per calcolarlo', d.mupRemunerationAmount],
       ['Eventuale compenso pagato direttamente dal cliente', d.mupClientFee],
       ['Provvigioni RC Auto, se applicabile', d.mupRcAuto],
       ['Compensi complessivi in caso di collaborazione orizzontale / Sezione E', d.mupHorizontalCompensation]
