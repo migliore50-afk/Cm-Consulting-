@@ -1,7 +1,7 @@
 # STATO-PROGETTO.md
 ## CM Consulting — Registro tecnico ufficiale
 
-**Ultimo aggiornamento:** 22 settembre 2026 — vedi §26 per il generatore MUP (Word/PDF veri, CHIUSO), l'archivio intermediari, e la Fase 1 facsimile (costruita ma CONGELATA, non autorizzata)  
+**Ultimo aggiornamento:** 23 settembre 2026 — §27 registra le idee di automazione discusse dopo la chiusura del MUP; nessuna di esse è considerata una fase decisa. — vedi §26 per il generatore MUP (Word/PDF veri, CHIUSO), l'archivio intermediari, e la Fase 1 facsimile (costruita ma CONGELATA, non autorizzata)  
 **Repository:** `migliore50-afk/Cm-Consulting-`  
 **Branch:** `main` (per il sito pubblico) — **vedi anche `feat/mup-generator-2026`, branch di sviluppo separato per l'area admin/MUP, mai mergiato su `main`, §26**  
 **Deploy:** Vercel — Production (dominio Aruba non ancora collegato, in attesa — vedi §23 e §24)  
@@ -297,7 +297,6 @@ Tecnica usata per tutte le correzioni al menu: **una sola funzione IIFE in `asse
 ## Pulizia footer e nuovi elementi — via `assets/app.js` e `assets/v9-final.css`
 
 **Nota tecnica importante**: la rimozione di numero di telefono e riga RUI è fatta interamente **a runtime via JavaScript** — l'HTML statico di ogni pagina *contiene ancora* quelle righe nel markup sorgente, ma vengono rimosse dal DOM ad ogni caricamento pagina (flash impercettibile, non un bug). **Non scambiare "presente nell'HTML sorgente" per "visibile sul sito live".**
-
 - **Numero di cellulare personale (328 6382612) rimosso da tutto il sito** — su richiesta di Carmelo.
 - **Pulsante "torna su"** — ovale dorato "↑ Torna su", centrato in basso. `initBackToTop()`.
 - **Riquadro "Dati societari e iscrizione"** — vedi evoluzione completa in §22 (ulteriore restyle il 19 sera).
@@ -533,9 +532,37 @@ Il codice della Fase 1 ha introdotto un `import { extractFacsimile } from './fac
 
 **Nota di metodo per chi riprende**: durante questa sessione, diverse volte le correzioni dichiarate "già caricate" da ChatGPT non corrispondevano affatto al contenuto reale del branch (file vecchi ricaricati per errore, correzioni parziali, un caricamento del tutto mancato). **La regola che ha funzionato, sempre**: non fidarsi di un "è a posto" — controllare direttamente il file sul branch prima di far perdere tempo a Carmelo con un altro test. Vale per entrambe le IA, non solo per una.
 
-## Prossimi passi
+## Stato dopo la chiusura del MUP
 
-1. **Decidere quando (e se) mergiare `feat/mup-generator-2026` su `main`** — non ancora discusso. Il branch contiene ora una funzionalità importante (MUP reale) pronta, più una (Fase 1) volutamente non finita/non autorizzata. Andrà probabilmente separata: mergiare il MUP, lasciare la Fase 1 su un branch a parte finché non viene ripresa.
-2. **Aggiungere C.B.A. S.r.l. Semplificata** all'archivio intermediari, quando Carmelo avrà i dati di contatto verificati (sede, telefono, email, PEC).
-3. **Riprendere la Fase 1**, solo quando Carmelo lo decide esplicitamente, un pezzo alla volta.
+Il MUP è **ufficialmente chiuso**. Non viene definita qui una nuova sequenza operativa: eventuali sviluppi successivi restano subordinati a una decisione esplicita di Carmelo.
+
+1. Il branch `feat/mup-generator-2026` contiene il lavoro MUP e la Fase 1 facsimile; l'eventuale merge su `main` **non è stato deciso**.
+2. L'archivio intermediari può essere completato con C.B.A. quando i dati saranno verificati, ma **non è una fase obbligatoria già pianificata**.
+3. La Fase 1 facsimile può essere ripresa solo con decisione esplicita di Carmelo, un passaggio alla volta.
 4. Resta collegato a **§24**: il MUP e l'archivio intermediari usano i dati identificativi attuali (nome, P.IVA, RUI di Carmelo) — se cambierà la ragione sociale, andranno aggiornati anche qui.
+
+---
+
+# 27. IDEE DI AUTOMAZIONE DISCUSSE DOPO LA CHIUSURA DEL MUP — NESSUNA FASE DECISA
+
+**Aggiornamento: 23 settembre 2026.** Questa sezione registra esclusivamente idee e alternative discusse dopo la chiusura del MUP. **Non costituisce una roadmap approvata e non stabilisce un ordine di sviluppo.** Nessuna delle attività elencate deve essere ripresa automaticamente senza una nuova decisione di Carmelo.
+
+## RUI IVASS automatico — proposta esaminata e deliberatamente scartata
+
+L'idea di interrogare automaticamente l'Open Data/RUI IVASS e sincronizzare l'archivio `admin_intermediaries` è stata valutata e **scartata deliberatamente**. Non va considerata come "Fase 2" già pianificata.
+
+Motivazione registrata: maggiore fragilità per dati destinati a un documento legale, mentre i rapporti di collaborazione di Carmelo con Cadore e C.B.A. sono stabili da molti anni e non era emerso un bisogno operativo concreto che giustificasse la sincronizzazione automatica. L'archivio manuale resta quindi l'assetto attuale. La proposta potrà essere rivalutata soltanto se l'utilizzo reale dimostrerà che l'aggiornamento manuale è effettivamente scomodo.
+
+## Fase 1 facsimile — costruita ma volutamente fermata
+
+Il caricamento del facsimile, l'estrazione dei dati e la successiva conferma manuale **non sono una "fase successiva già programmata"**. Sono componenti costruite prematuramente durante il lavoro sul MUP e poi fermate esplicitamente prima di essere autorizzate/testate.
+
+Restano disponibili nel branch di sviluppo, ma la loro eventuale ripresa dipende esclusivamente da una decisione futura di Carmelo.
+
+## Altre idee — non ancora valutate come fasi
+
+Sono state inoltre menzionate idee più ampie, tra cui consegna automatica della documentazione al cliente, conservazione della prova di trasmissione, gestione delle scadenze/rinnovi e ulteriori automazioni. **Non sono state discusse nel merito né approvate come successive fasi di progetto.** Non trattarle quindi come impegni, attività aperte o roadmap.
+
+## Regola di continuità
+
+Dopo la chiusura del MUP, il punto di ripartenza non è predefinito. Prima di sviluppare qualunque automazione, verificare questa sezione e ottenere una decisione esplicita su **se** procedere e **quale** attività affrontare.
