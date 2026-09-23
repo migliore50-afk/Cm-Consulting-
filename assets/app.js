@@ -480,12 +480,10 @@ function startAssistantRecognition() {
   assistantRecognition.onresult = event => {
     const transcript = String(event.results?.[0]?.[0]?.transcript || '').trim();
     if (!transcript) return;
-    sessionStorage.setItem('cm_voice_request', transcript);
-    if (status) status.textContent = 'Richiesta acquisita. Apro la valutazione generica…';
-    speakAI(`Ho acquisito la tua richiesta: ${transcript}. Apro la valutazione generica.`);
-    window.setTimeout(() => {
-      window.location.href = '/richiedi-preventivo?esigenza=generica';
-    }, isVoiceEnabled() ? 700 : 0);
+    if (status) status.textContent = 'Richiesta acquisita. La invio all’assistente…';
+    const input = document.getElementById('aiChatInput');
+    if (input) input.value = transcript;
+    aiSendMessage(transcript);
   };
   assistantRecognition.onerror = event => {
     if (status) status.textContent = event.error === 'not-allowed' ? "Consenti l'uso del microfono per parlare con l'assistente." : "Non ho potuto acquisire l'audio. Riprova.";
