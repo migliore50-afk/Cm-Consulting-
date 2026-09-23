@@ -364,7 +364,7 @@ function saveAIConversationTurn(role, content) {
 }
 
 function getAIFormContext() {
-  const ids = ['genericDescription','beneficiary','company','amount','duration','contactName','contactEmail','contactPhone','startDate','endDate','beneficiaryTax','beneficiaryAddress','beneficiaryPec','companyTax','refs','object','notes'];
+  const ids = ['genericDescription','beneficiary','company','vat','city','province','amount','duration','contactName','contactPhone','contact','contactEmail','email','startDate','endDate','beneficiaryTax','beneficiaryAddress','beneficiaryPec','companyTax','refs','object','notes'];
   const out = {};
   ids.forEach(id => {
     const el = document.getElementById(id);
@@ -372,6 +372,10 @@ function getAIFormContext() {
   });
   const lease = document.querySelector('input[name="leaseType"]:checked');
   if (lease) out.leaseType = lease.value;
+  const vehicleCount = document.getElementById('vehicleCount');
+  if (vehicleCount) out.vehicleCount = String(vehicleCount.textContent || '').trim();
+  const bilancio = document.querySelector('input[name="bilancio"]:checked');
+  if (bilancio) out.bilancio = bilancio.value;
   return out;
 }
 
@@ -391,6 +395,16 @@ function applyAIFormData(data) {
   if (lease) {
     const radio = document.querySelector(`input[name="leaseType"][value="${CSS.escape(lease)}"]`);
     if (radio) { radio.checked = true; radio.dispatchEvent(new Event('change', {bubbles:true})); }
+  }
+  const bilancio = String(data.bilancio || '');
+  if (bilancio) {
+    const radio = document.querySelector(`input[name="bilancio"][value="${CSS.escape(bilancio)}"]`);
+    if (radio) { radio.checked = true; radio.dispatchEvent(new Event('change', {bubbles:true})); }
+  }
+  const vehicles = Number.parseInt(data.vehicleCount, 10);
+  if (Number.isFinite(vehicles) && vehicles > 0 && typeof window.changeVehicles === 'function') {
+    const current = Number.parseInt(document.getElementById('vehicleCount')?.textContent || '1', 10) || 1;
+    window.changeVehicles(vehicles - current);
   }
 }
 
@@ -495,7 +509,7 @@ async function aiSendMessage(message) {
   userBubble.textContent = message;
   log.appendChild(userBubble);
   log.scrollTop = log.scrollHeight;
-  saveAIConversationTurn('user', message);
+  const historyBeforeTurn = getAIConversationHistory();
 
   try {
     const response = await fetch('/api/assistant', {
@@ -503,7 +517,7 @@ async function aiSendMessage(message) {
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
         message,
-        history: getAIConversationHistory(),
+        history: historyBeforeTurn,
         pageContext: getAIPageContext(),
         formContext: getAIFormContext()
       })
@@ -513,6 +527,7 @@ async function aiSendMessage(message) {
 
     const reply = String(data.reply || '').trim();
     if (data.form) applyAIFormData(data.form);
+    saveAIConversationTurn('user', message);
 
     const aiBubble = document.createElement('div');
     aiBubble.className = 'bubble ai';
