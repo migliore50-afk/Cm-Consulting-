@@ -46,6 +46,37 @@ function openDetail(id) {
   const p = state.practices.find(x => String(x.id) === String(id));
   if (!p) return;
   const s = status(p.expiry);
+  let official = p.official_data || {};
+  if (typeof official === 'string') {
+    try { official = JSON.parse(official); } catch { official = {}; }
+  }
+  const releaseDate = official.release_date || '';
+  const releaseCondition = official.release_condition || '';
+  const beneficiary = official.beneficiary || '';
+  const expiryForEmail = p.expiry || official.end_date || '';
+  const email = p.email || '';
+  const formatDate = value => {
+    if (!value) return '—';
+    const parsed = new Date(String(value).includes('-') ? `${value}T00:00:00` : value);
+    return Number.isNaN(parsed.getTime()) ? String(value) : parsed.toLocaleDateString('it-IT');
+  };
+  const openReminderEmail = kind => {
+    if (!email) {
+      alert('La pratica non contiene un indirizzo e-mail del cliente.');
+      return;
+    }
+    const dateText = formatDate(expiryForEmail);
+    let subject = '';
+    let body = '';
+    if (kind === 'renewal') {
+      subject = `Scadenza garanzia/polizza — ${p.client}`;
+      body = `Gentile Cliente,\\n\\nla garanzia/polizza relativa alla pratica “${p.client}” risulta in scadenza il ${dateText}.\\n\\nLa invitiamo a comunicarci per tempo se intende procedere con il rinnovo, così da poter verificare la prosecuzione della copertura senza interruzioni.\\n\\nCordiali saluti\\nCM Consulting`;
+    } else {
+      subject = `Svincolo garanzia — ${p.client}`;
+      body = `Gentile Cliente,\\n\\nla garanzia/polizza relativa alla pratica “${p.client}” risulta prossima alla scadenza o alla conclusione dell'obbligazione garantita.\\n\\nPer poter procedere alla chiusura della pratica, La invitiamo a trasmetterci l'eventuale richiesta di svincolo/liberatoria rilasciata dal beneficiario.${beneficiary ? ` Il beneficiario indicato nel facsimile è: ${beneficiary}.` : ''}\\n\\nCordiali saluti\\nCM Consulting`;
+    }
+    window.location.href = 'mailto:' + encodeURIComponent(email) + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+  };
   const d = $('detail');
   d.classList.remove('hidden');
   // 21 settembre 2026 — l'id della pratica viene esposto qui, così il
@@ -63,6 +94,17 @@ function openDetail(id) {
     </div>
     <p><strong>Stato:</strong> <span class="status ${s[1]}">${s[0]}</span></p>
     <p><strong>Email cliente:</strong> ${escapeHtml(p.email || '—')}</p>
+    <div class="panel reminder-panel">
+      <h3>Scadenza, rinnovo e svincolo</h3>
+      <p><strong>Scadenza rilevata/confermata:</strong> ${escapeHtml(formatDate(expiryForEmail))}</p>
+      <p><strong>Data/termine svincolo rilevato:</strong> ${escapeHtml(formatDate(releaseDate))}</p>
+      ${releaseCondition ? `<p><strong>Indicazione facsimile:</strong> ${escapeHtml(releaseCondition)}</p>` : '<p class="muted">Nessuna indicazione di svincolo/liberatoria è stata rilevata nel facsimile confermato.</p>'}
+      <p class="muted">Il sistema usa la data confermata per la scadenza della pratica. La mail viene preparata per il cliente; non viene inviata automaticamente senza una successiva configurazione del servizio di posta.</p>
+      <div class="actions reminder-actions">
+        <button class="small-btn" type="button" id="emailRenewal">PREPARA EMAIL RINNOVO</button>
+        <button class="small-btn" type="button" id="emailRelease">PREPARA EMAIL SVINCOLO</button>
+      </div>
+    </div>
     <p><strong>Prezzo cliente:</strong> ${p.client_price != null && p.client_price !== '' ? escapeHtml(String(p.client_price)) : '—'}</p>
     <p><strong>Costo revisore:</strong> ${p.reviewer_cost != null && p.reviewer_cost !== '' ? escapeHtml(String(p.reviewer_cost)) : '—'}</p>
     <p><strong>MUP:</strong> ${p.mup_generated_at
@@ -102,7 +144,9 @@ function openDetail(id) {
     ['start_date','Decorrenza'],
     ['end_date','Scadenza'],
     ['policy_number','Numero polizza'],
-    ['beneficiary_reference','CIG / CUP / riferimento']
+    ['beneficiary_reference','CIG / CUP / riferimento'],
+    ['release_date','Data / termine svincolo'],
+    ['release_condition','Indicazione relativa a svincolo / liberatoria / restituzione']
   ];
 
   function facsimileEsc(value) { return escapeHtml(value); }
@@ -240,6 +284,8 @@ function openDetail(id) {
   $('downloadMupWord')?.addEventListener('click', () => downloadSavedMup('word'));
   $('downloadMupPdf')?.addEventListener('click', () => downloadSavedMup('pdf'));
   $('closeDetail').onclick = () => d.classList.add('hidden');
+  $('emailRenewal')?.addEventListener('click', () => openReminderEmail('renewal'));
+  $('emailRelease')?.addEventListener('click', () => openReminderEmail('release'));
 
   $('uploadFacsimileBtn')?.addEventListener('click', async () => {
     const file = $('facsimileFile')?.files?.[0];
