@@ -127,21 +127,34 @@
           <option value="Agisce su incarico del cliente">Agisce su incarico del cliente</option>
           <option value="Agisce in nome o per conto di una o più imprese di assicurazione">Agisce in nome o per conto di una o più imprese di assicurazione</option>
         </select>
+        <small class="muted">La scelta determina automaticamente quali informazioni ulteriori sono necessarie.</small>
       </label>
-      <label>Mandato del cliente<input id="mupMandate" required placeholder="SI / NO"></label>
-      <label>Collaborazione orizzontale<input id="mupHorizontal" required placeholder="SI / NO"></label>
-      <label>Intermediario collaborazione orizzontale<input id="mupHorizontalName"></label>
+      <label class="mup-req hidden" id="mupInsurerRow">Impresa/e di assicurazione <b class="mup-req-mark">*</b><input id="mupInsurer" required placeholder="Denominazione dell'impresa di assicurazione"></label>
+      <label class="mup-req">Collaborazione orizzontale <b class="mup-req-mark">*</b>
+        <select id="mupHorizontal" required><option value="">Seleziona…</option><option value="NO">NO</option><option value="SI">SI</option></select>
+      </label>
+      <label class="hidden" id="mupHorizontalNameRow">Intermediario/i collaborazione orizzontale <input id="mupHorizontalName" placeholder="Identità, sezione RUI e ruolo"></label>
 
-      <label>Intermediario detiene ≥10% di impresa<input id="mupConflictA" required placeholder="SI / NO"></label>
-      <label>Denominazione impresa interessata<input id="mupConflictAName"></label>
-      <label>Impresa detiene ≥10% dell’intermediario<input id="mupConflictB" required placeholder="SI / NO"></label>
-      <label>Denominazione impresa/controllante<input id="mupConflictBName"></label>
+      <label class="mup-req">Partecipazione ≥10% dell’intermediario in impresa di assicurazione <b class="mup-req-mark">*</b>
+        <select id="mupConflictA" required><option value="">Seleziona…</option><option value="NO">NO</option><option value="SI">SI</option></select>
+      </label>
+      <label class="hidden" id="mupConflictANameRow">Denominazione impresa interessata <input id="mupConflictAName"></label>
+      <label class="mup-req">Partecipazione ≥10% di impresa/controllante nell’intermediario <b class="mup-req-mark">*</b>
+        <select id="mupConflictB" required><option value="">Seleziona…</option><option value="NO">NO</option><option value="SI">SI</option></select>
+      </label>
+      <label class="hidden" id="mupConflictBNameRow">Denominazione impresa/controllante <input id="mupConflictBName"></label>
 
-      <label>Consulenza art. 119-ter, c.3<input id="mupAdvice" required placeholder="SI / NO"></label>
-      <label>Analisi imparziale art. 119-ter, c.4<input id="mupImpartial" required placeholder="SI / NO"></label>
-      <label>Contratto di distribuzione esclusiva<input id="mupExclusive" required placeholder="SI / NO"></label>
-      <label>Distribuzione non esclusiva<input id="mupNonExclusive" required placeholder="SI / NO"></label>
-      <label class="full">Imprese con cui esistono rapporti di affari<input id="mupBusinessRelationships"></label>
+      <label class="mup-req">Consulenza personalizzata ex art. 119-ter, c.3 <b class="mup-req-mark">*</b>
+        <select id="mupAdvice" required><option value="">Seleziona…</option><option value="NO">NO</option><option value="SI">SI</option></select>
+      </label>
+      <label class="mup-req">Analisi imparziale e personale ex art. 119-ter, c.4 <b class="mup-req-mark">*</b>
+        <select id="mupImpartial" required><option value="">Seleziona…</option><option value="NO">NO</option><option value="SI">SI</option></select>
+      </label>
+      <label class="mup-req">Distribuzione in esclusiva <b class="mup-req-mark">*</b>
+        <select id="mupExclusive" required><option value="">Seleziona…</option><option value="NO">NO</option><option value="SI">SI</option></select>
+      </label>
+      <label class="hidden" id="mupNonExclusiveRow">Distribuzione senza obblighi di esclusiva e senza analisi imparziale <input id="mupNonExclusive" readonly></label>
+      <label class="full hidden" id="mupBusinessRelationshipsRow">Imprese con cui esistono rapporti di affari <input id="mupBusinessRelationships"></label>
       <label class="full">Altre informazioni utili alla trasparenza ex art. 119-bis, c.7 CAP<input id="mupTransparency"></label>
 
       <label class="full mup-req">Remunerazione <b class="mup-req-mark">*</b>
