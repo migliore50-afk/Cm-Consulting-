@@ -134,27 +134,20 @@
       </label>
       <label class="hidden" id="mupHorizontalNameRow">Intermediario/i collaborazione orizzontale <input id="mupHorizontalName" placeholder="Identità, sezione RUI e ruolo"></label>
 
-      <label class="mup-req">Hai una partecipazione di almeno il 10% in una compagnia? <b class="mup-req-mark">*</b>
-        <select id="mupConflictA" required><option value="">Seleziona…</option><option value="NO">NO</option><option value="SI">SI</option></select>
-      </label>
-      <label class="hidden" id="mupConflictANameRow">Denominazione impresa interessata <input id="mupConflictAName"></label>
-      <label class="mup-req">Una compagnia possiede almeno il 10% dell’intermediario? <b class="mup-req-mark">*</b>
-        <select id="mupConflictB" required><option value="">Seleziona…</option><option value="NO">NO</option><option value="SI">SI</option></select>
-      </label>
-      <label class="hidden" id="mupConflictBNameRow">Denominazione impresa/controllante <input id="mupConflictBName"></label>
-
-      <label class="mup-req">Hai dato una raccomandazione personalizzata al cliente? <b class="mup-req-mark">*</b>
-        <select id="mupAdvice" required><option value="">Seleziona…</option><option value="NO">NO</option><option value="SI">SI</option></select>
-      </label>
-      <label class="mup-req">Hai confrontato un numero sufficiente di prodotti sul mercato in modo imparziale? <b class="mup-req-mark">*</b>
-        <select id="mupImpartial" required><option value="">Seleziona…</option><option value="NO">NO</option><option value="SI">SI</option></select>
-      </label>
-      <label class="mup-req">Sei vincolato a distribuire esclusivamente prodotti di una o più compagnie? <b class="mup-req-mark">*</b>
-        <select id="mupExclusive" required><option value="">Seleziona…</option><option value="NO">NO</option><option value="SI">SI</option></select>
-      </label>
-      <label class="hidden" id="mupNonExclusiveRow">Distribuzione senza obblighi di esclusiva e senza analisi imparziale <input id="mupNonExclusive" readonly></label>
-      <label class="full hidden" id="mupBusinessRelationshipsRow">Con quali compagnie hai rapporti d'affari? <input id="mupBusinessRelationships" placeholder="Indica le compagnie"></label>
-      <label class="full">Altre informazioni utili alla trasparenza <input id="mupTransparency" placeholder="Lascia vuoto se non necessario"></label>
+      <div class="full mup-auto-box">
+        <strong>Informazioni gestite automaticamente</strong>
+        <small class="muted">Le informazioni societarie e le caratteristiche stabili dell’attività di distribuzione non vengono più richieste nella singola pratica. Il sistema le utilizza dal profilo MUP/intermediario principale quando disponibili.</small>
+        <input type="hidden" id="mupConflictA">
+        <input type="hidden" id="mupConflictAName">
+        <input type="hidden" id="mupConflictB">
+        <input type="hidden" id="mupConflictBName">
+        <input type="hidden" id="mupAdvice">
+        <input type="hidden" id="mupImpartial">
+        <input type="hidden" id="mupExclusive">
+        <input type="hidden" id="mupNonExclusive">
+        <input type="hidden" id="mupBusinessRelationships">
+        <input type="hidden" id="mupTransparency">
+      </div>
 
       <label class="full mup-req">Come vieni remunerato per questa pratica? <b class="mup-req-mark">*</b>
         <select id="mupRemuneration" required>
