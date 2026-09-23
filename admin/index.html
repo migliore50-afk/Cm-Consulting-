@@ -90,7 +90,21 @@
     <div class="mup-legend"><span><b class="mup-req-mark">*</b> Campo obbligatorio</span><span>Gli altri campi sono facoltativi</span></div>
     <div class="form-grid">
       <label>Contraente / cliente<input id="mupClient" required></label>
-      <label>Tipologia / prodotto<input id="mupProduct" required></label>
+      <label>Tipologia / prodotto <b class="mup-req-mark">*</b>
+        <select id="mupProduct" required>
+          <option value="">Seleziona tipologia…</option>
+          <option value="Appalti pubblici">Appalti pubblici</option>
+          <option value="Affitti fra privati">Affitti fra privati</option>
+          <option value="Affitti commerciali">Affitti commerciali</option>
+          <option value="Rami d'azienda">Rami d'azienda</option>
+          <option value="Capacità finanziaria">Capacità finanziaria</option>
+          <option value="Dogane">Dogane</option>
+          <option value="Beneficiari pubblici">Beneficiari pubblici</option>
+          <option value="Contratti privati">Contratti privati</option>
+          <option value="__ALTRO__">Altro</option>
+        </select>
+      </label>
+      <label class="full hidden" id="mupProductOtherRow">Specificare la tipologia <b class="mup-req-mark">*</b><input id="mupProductOther" maxlength="180" placeholder="Descrivi brevemente la garanzia"></label>
       <label>Scadenza pratica<input id="mupExpiry" type="date"></label>
       <label>E-mail cliente<input id="mupEmail" type="email"></label>
 
@@ -176,7 +190,11 @@
       <label class="full">Modalità di pagamento ammesse<input id="mupPaymentMethods"></label>
       <label class="full">Pagamento a intermediario Sezione B, se applicabile<input id="mupSectionBPayment"></label>
 
-      <label class="full mup-req">RC professionale / estremi applicabili <b class="mup-req-mark">*</b><input id="mupRc" required placeholder="Es. compagnia ed estremi della polizza RC professionale"></label>
+      <div class="full mup-auto-box">
+        <strong>RC professionale — gestita automaticamente</strong>
+        <small class="muted">Per la Sezione E non devi inserire manualmente gli estremi della polizza: il MUP indica automaticamente che l'attività di distribuzione è garantita dalla copertura RC professionale prevista per l'intermediario.</small>
+        <input type="hidden" id="mupRc">
+      </div>
       <label class="full mup-req">Reclami: modalità e recapiti <b class="mup-req-mark">*</b><input id="mupComplaints" required></label>
       <label class="full mup-req">Arbitro Assicurativo <b class="mup-req-mark">*</b><input id="mupArbitro" required placeholder="Informativa e pagina/recapiti effettivi"></label>
       <label>FIN.NET, se applicabile<input id="mupFinNet"></label>
