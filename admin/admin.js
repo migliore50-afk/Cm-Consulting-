@@ -70,10 +70,10 @@ function openDetail(id) {
     let body = '';
     if (kind === 'renewal') {
       subject = `Scadenza garanzia/polizza — ${p.client}`;
-      body = `Gentile Cliente,\\n\\nla garanzia/polizza relativa alla pratica “${p.client}” risulta in scadenza il ${dateText}.\\n\\nLa invitiamo a comunicarci per tempo se intende procedere con il rinnovo, così da poter verificare la prosecuzione della copertura senza interruzioni.\\n\\nCordiali saluti\\nCM Consulting`;
+      body = `Gentile Cliente,\n\nla garanzia/polizza relativa alla pratica “${p.client}” risulta in scadenza il ${dateText}.\n\nLa invitiamo a comunicarci per tempo se intende procedere con il rinnovo, così da poter verificare la prosecuzione della copertura senza interruzioni.\n\nCordiali saluti\nCM Consulting`;
     } else {
       subject = `Svincolo garanzia — ${p.client}`;
-      body = `Gentile Cliente,\\n\\nla garanzia/polizza relativa alla pratica “${p.client}” risulta prossima alla scadenza o alla conclusione dell'obbligazione garantita.\\n\\nPer poter procedere alla chiusura della pratica, La invitiamo a trasmetterci l'eventuale richiesta di svincolo/liberatoria rilasciata dal beneficiario.${beneficiary ? ` Il beneficiario indicato nel facsimile è: ${beneficiary}.` : ''}\\n\\nCordiali saluti\\nCM Consulting`;
+      body = `Gentile Cliente,\n\nla garanzia/polizza relativa alla pratica “${p.client}” risulta prossima alla scadenza o alla conclusione dell'obbligazione garantita.\n\nPer poter procedere alla chiusura della pratica, La invitiamo a trasmetterci l'eventuale richiesta di svincolo/liberatoria rilasciata dal beneficiario.${beneficiary ? ` Il beneficiario indicato nel facsimile è: ${beneficiary}.` : ''}\n\nCordiali saluti\nCM Consulting`;
     }
     window.location.href = 'mailto:' + encodeURIComponent(email) + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
   };
