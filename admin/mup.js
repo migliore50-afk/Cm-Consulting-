@@ -212,13 +212,9 @@
       mupClientFee: '',
       mupRcAuto: '',
       mupHorizontalCompensation: '',
-      mupPayment: '',
-      mupSegregatedAssets: '',
-      // 23 settembre 2026 — testo fisso, dal testo ufficiale IVASS (Sezione
-      // VI, lettera b): le modalità di pagamento ammesse per legge sono le
-      // stesse per tutti, non variano per pratica — non ha senso lasciarle
-      // vuote ogni volta.
-      mupPaymentMethods: 'Assegni bancari, postali o circolari non trasferibili, intestati o girati all’impresa di assicurazione o all’intermediario espressamente in tale qualità; bonifici e altri strumenti di pagamento bancario, postale o elettronico con lo stesso beneficiario; denaro contante solo per polizze RC Auto (e relative garanzie accessorie riferite allo stesso veicolo) oppure, per gli altri rami danni, entro il limite di € 750 annui per contratto.',
+      mupPayment: 'I premi e le somme incassate costituiscono patrimonio autonomo e separato dal patrimonio dell\'intermediario',
+      mupSegregatedAssets: 'Patrimonio autonomo e separato dal patrimonio dell’intermediario',
+      mupPaymentMethods: 'Ordine di bonifico, altro mezzo di pagamento bancario o postale, incluso strumento di pagamento elettronico, con beneficiario l’impresa di assicurazione',
       mupSectionBPayment: '',
       mupRc: '',
       mupComplaints: 'Reclamo a CM Consulting via email (info@cm-consulting.info), PEC (carmelo.migliore@legalmail.it) o posta ordinaria (Via Spinoza n. 49, 00137 Roma) — risposta entro 45 giorni. Se non soddisfatto, reclamo all’IVASS (Via del Quirinale 21, 00187 Roma).',
@@ -326,7 +322,7 @@
       ['Sede legale intermediario principale', 'mupMainAddress'],
       ['Modello di distribuzione', 'mupDistribution'],
       ['Remunerazione', 'mupRemuneration'],
-      ['Tutela delle somme versate dal cliente', 'mupPayment'],
+      ['Modalità di pagamento del premio', 'mupPaymentMethods'],
       ['RC professionale', 'mupRc'],
       ['Reclami', 'mupComplaints'],
       ['Arbitro Assicurativo', 'mupArbitro']
@@ -465,6 +461,10 @@
   // quando cambia il tipo di remunerazione selezionato.
   $('mupProduct')?.addEventListener('change', updateProductTypeVisibility);
   $('mupRemuneration')?.addEventListener('change', updateRemunerationAmountVisibility);
+  $('mupPaymentMethods')?.addEventListener('change', () => {
+    const el = $('mupPaymentMethods');
+    if (el) set('mupPaymentMethods', el.value);
+  });
   ['mupDistribution','mupHorizontal']
     .forEach(id => $(id)?.addEventListener('change', updateDistributionAndTransparencyFields));
 
