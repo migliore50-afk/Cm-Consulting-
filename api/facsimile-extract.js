@@ -51,6 +51,12 @@ function extractFields(text) {
     end_date: normalizeDate(firstMatch(t, [
       /(?:Scadenza|Data\s+fine|Fine)\s*[:\-]\s*(\d{1,2}[./-]\d{1,2}[./-]\d{4}|\d{4}[./-]\d{1,2}[./-]\d{1,2})/i
     ])),
+    release_date: normalizeDate(firstMatch(t, [
+      /(?:Data\s+svincolo|Svincolo|Liberatoria|Restituzione)\s*(?:entro|prevista|previsto|entro\s+il)?\s*[:\-]?\s*(\d{1,2}[./-]\d{1,2}[./-]\d{4}|\d{4}[./-]\d{1,2}[./-]\d{1,2})/i
+    ])),
+    release_condition: firstMatch(t, [
+      /([^\n]*(?:svincolo|liberatoria|restituzione)[^\n]*)/i
+    ]),
     policy_number: firstMatch(t, [
       /(?:Numero\s+polizza|N\.\s*polizza|Polizza)\s*[:\-]\s*([^\n]+)/i
     ]),
