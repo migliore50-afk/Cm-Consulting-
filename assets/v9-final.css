@@ -582,3 +582,85 @@ body.privacy-modal-open{overflow:hidden}
   #cm-ai-fab,.cm-ai-fab{display:none!important}
   #cm-back-top{display:none!important}
 }
+
+
+/* CM CONSULTING — HEADER / NAVIGATION REFINEMENT 2026 */
+.header .links{align-items:center;gap:clamp(18px,2vw,30px)}
+.header .links>a,
+.header .nav-fideiussioni-trigger{
+  position:relative;
+  font-size:12px!important;
+  font-weight:800!important;
+  letter-spacing:.04em!important;
+  text-transform:uppercase;
+  color:#102a43!important;
+  text-decoration:none!important;
+  white-space:nowrap;
+}
+.header .links>a:not(.nav-admin-link)::after,
+.header .nav-fideiussioni-trigger::after{
+  content:'';
+  position:absolute;
+  left:0;right:0;bottom:-8px;
+  height:2px;
+  border-radius:2px;
+  background:#d4a846;
+  transform:scaleX(0);
+  transform-origin:center;
+  transition:transform .18s ease;
+}
+.header .links>a:hover::after,
+.header .links>a:focus-visible::after,
+.header .nav-fideiussioni-trigger:hover::after,
+.header .nav-fideiussioni-trigger:focus-visible::after{transform:scaleX(1)}
+.header .links .nav-admin-link{
+  margin-left:4px!important;
+  padding-left:18px!important;
+  border-left:1px solid rgba(16,42,67,.16)!important;
+  font-size:10px!important;
+  font-weight:800!important;
+  letter-spacing:.08em!important;
+  color:#5d7180!important;
+}
+.header .links .nav-admin-link::before{content:'⌂';margin-right:6px;font-size:11px}
+.header .links .nav-admin-link::after{display:none!important}
+.nav-fideiussioni-menu{
+  width:410px!important;
+  padding:10px!important;
+  border-radius:10px!important;
+  border:1px solid rgba(16,42,67,.10)!important;
+  box-shadow:0 16px 38px rgba(16,42,67,.12)!important;
+}
+.nav-fideiussioni-menu a{min-height:38px!important;font-size:11px!important;border-radius:7px!important}
+.nav-fideiussioni-menu .nav-fideiussioni-heading{font-size:11px!important;letter-spacing:.12em!important}
+.nav-fideiussioni-menu .nav-fideiussioni-subheading{font-size:10.5px!important}
+@media(max-width:1100px) and (min-width:761px){
+  .header .links,.header .header-cta{display:none}
+  .header .menu{display:block}
+}
+@media(max-width:760px){
+  .header .links>a,.header .nav-fideiussioni-trigger{font-size:13px!important}
+  .header .links .nav-admin-link{margin-top:8px!important;padding:12px 0 0!important;border-left:0!important;border-top:1px solid rgba(16,42,67,.10)!important}
+}
+
+/* Assistente CM — conversazione AI */
+.ai-chat-log{display:flex;flex-direction:column;gap:10px;margin:4px 0 10px}
+.ai-chat-log .bubble{margin:0}
+.ai-chat-form{display:flex;gap:8px;align-items:center;margin:4px 0 12px}
+.ai-chat-form input{
+  flex:1;min-width:0;height:44px;padding:0 13px;
+  border:1px solid #cbd7df;border-radius:10px;background:#fff;
+  color:#102a43;font:inherit;outline:none;
+}
+.ai-chat-form input:focus{border-color:#168fbd;box-shadow:0 0 0 3px rgba(22,143,189,.10)}
+.ai-chat-form button{
+  flex:0 0 auto;height:44px;padding:0 16px;border:0;border-radius:10px;
+  background:#d4a846;color:#102a43;font-weight:800;cursor:pointer;
+}
+.ai-chat-form button:disabled{opacity:.55;cursor:wait}
+.ai-route-actions{display:flex;margin:0 0 10px}
+.ai-route-actions .ai-choice{display:flex!important}
+@media(max-width:600px){
+  .ai-chat-form{gap:6px}
+  .ai-chat-form button{padding:0 13px}
+}
