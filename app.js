@@ -349,34 +349,215 @@ function closeAI() {
   stopAssistantRecognition();
 }
 
-function startAI() {
+function aiEscape(value) {
+  return String(value ?? '').replace(/[&<>'"]/g, ch => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'
+  }[ch]));
+}
+
+function aiNormalize(value) {
+  return String(value || '')
+    .toLocaleLowerCase('it-IT')
+    .normalize('NFD')
+    .replace(/[\\u0300-\\u036f]/g, '')
+    .replace(/[^a-z0-9\\s]/g, ' ')
+    .replace(/\\s+/g, ' ')
+    .trim();
+}
+
+const CM_AI_ROUTES = {
+  appalti: { label:'Appalti pubblici', url:'/richiedi-preventivo?tipo=appalti' },
+  locazioni: { label:'Locazioni', url:'/richiedi-preventivo?tipo=locazioni' },
+  dogane: { label:'Dogane', url:'/richiedi-preventivo?tipo=dogane' },
+  ambiente: { label:'Beneficiari pubblici / ambiente', url:'/richiedi-preventivo?tipo=ambiente' },
+  contributi: { label:'Contributi e agevolazioni', url:'/richiedi-preventivo?tipo=contributi' },
+  urbanistica: { label:'Urbanistica ed edilizia', url:'/richiedi-preventivo?tipo=urbanistica' },
+  fiscali: { label:'Garanzie fiscali', url:'/richiedi-preventivo?tipo=fiscali' },
+  'contratti-privati': { label:'Contratti privati', url:'/richiedi-preventivo?tipo=contratti-privati' },
+  trasporto: { label:'Capacità finanziaria', url:'/capacita-finanziaria' },
+  generica: { label:'Valutazione generica', url:'/richiedi-preventivo?esigenza=generica' }
+};
+
+function classifyAIRequest(text) {
+  const t = aiNormalize(text);
+  const rules = {
+    appalti: ['appalto','appalti','gara','gare','bando','stazione appaltante','cauzione provvisoria','cauzione definitiva','garanzia definitiva','anticipazione','svincolo ritenute','lavori pubblici','esecuzione contratto'],
+    trasporto: ['autotrasporto','autotrasportatore','trasportatore','albo trasportatori','capacita finanziaria','idoneita finanziaria','conto terzi','trasporto merci'],
+    locazioni: ['affitto','affitti','locazione','locazioni','locatore','conduttore','canone','negozio','ufficio','capannone','ramo d azienda'],
+    dogane: ['dogana','dogane','doganale','deposito fiscale','diritti doganali','aeo','import export','importazione','esportazione'],
+    ambiente: ['ambiente','ambientale','rifiuti','discarica','cava','cave','albo gestori ambientali','gestori ambientali','smaltimento'],
+    contributi: ['contributo','contributi','agevolazione','agevolazioni','finanziamento pubblico','bando regionale','fondo pubblico'],
+    urbanistica: ['urbanistica','urbanizzazione','oneri di urbanizzazione','edilizia','convenzione urbanistica','permesso di costruire'],
+    fiscali: ['fiscale','fiscali','fisco','iva','agenzia delle entrate','imposte','tributi','rimborso iva','garanzia iva'],
+    'contratti-privati': ['contratto privato','contratti privati','acconto','transazione','fornitura','forniture','prestazione di servizi','servizi continuativi','obbligazione contrattuale']
+  };
+  const scores = Object.entries(rules).map(([type, words]) => {
+    let score = 0;
+    for (const word of words) {
+      if (t.includes(word)) score += word.includes(' ') ? 3 : 2;
+    }
+    return { type, score };
+  }).sort((a,b)=>b.score-a.score);
+
+  const top=scores[0], second=scores[1];
+  if (!top || top.score < 2) return { type:'generica', confidence:'low', scores };
+  if (second && top.score === second.score) return { type:'ambiguous', confidence:'medium', candidates:[top.type,second.type], scores };
+  return { type:top.type, confidence:top.score >= 4 ? 'high' : 'medium', scores };
+}
+
+function saveAIAssistantContext(text, extra = {}) {
+  const context = {
+    genericDescription: String(text || '').trim(),
+    notes: extra.notes || '',
+    leaseType: extra.leaseType || '',
+    createdAt: new Date().toISOString()
+  };
+  try {
+    sessionStorage.setItem('cm_ai_form_context', JSON.stringify(context));
+  } catch {}
+}
+
+function goToAIRoute(type, text, extra = {}) {
+  const route = CM_AI_ROUTES[type] || CM_AI_ROUTES.generica;
+  saveAIAssistantContext(text, extra);
+  try { sessionStorage.setItem('cm_ai_route', route.url); } catch {}
+  window.location.href = route.url;
+}
+
+function renderAIInput(prefill = '') {
   const content = document.getElementById('aiContent');
   if (!content) return;
-
-  const greeting = `Buongiorno! Sono l'Assistente CM. Posso aiutarti a trovare il percorso più adatto alla tua esigenza. Da dove vuoi iniziare?`;
   content.innerHTML = `
-    <div class="bubble ai"><b>Buongiorno!</b><br> Sono l'Assistente CM.<br>Posso aiutarti a trovare il percorso più adatto alla tua esigenza.<br><br><b>Da dove vuoi iniziare?</b></div>
-    <div class="ai-choices">
-      <button class="ai-choice" type="button" data-ai="appalto">🏗️ Devo partecipare a un appalto <span>›</span></button>
-      <button class="ai-choice" type="button" data-ai="trasporto">🚛 Ho un'esigenza per autotrasporto <span>›</span></button>
-      <button class="ai-choice" type="button" data-ai="locazione">🏠 Mi chiedono una garanzia per una locazione <span>›</span></button>
-      <button class="ai-choice" type="button" data-ai="dogana">🛃 Ho un'esigenza doganale <span>›</span></button>
-      <button class="ai-choice" type="button" data-ai="ambiente">🌱 Ho un'esigenza ambientale <span>›</span></button>
-      <button class="ai-choice" type="button" data-ai="altro">💬 Non so ancora quale garanzia mi serve <span>›</span></button>
+    <div class="bubble ai"><b>Raccontami la tua necessità.</b><br>
+      Non devi conoscere il nome tecnico della garanzia. Scrivi con parole tue cosa devi fare e cosa ti è stato richiesto.
+    </div>
+    <div class="ai-free-input">
+      <textarea id="aiNeedInput" rows="4" maxlength="2000" placeholder="Es. Devo partecipare a una gara del Comune e mi chiedono una fideiussione…">${aiEscape(prefill)}</textarea>
+      <button class="ai-choice ai-submit" id="aiNeedSubmit" type="button">Continua →</button>
+      <div class="ai-free-hint">L'assistente serve a orientare la richiesta; non formula una raccomandazione assicurativa.</div>
     </div>
     <div class="ai-voice-row">
       <button class="ai-mic" id="aiMic" type="button" aria-label="Spiega a voce la tua esigenza">🎙️ <span>Spiega a voce la tua esigenza</span></button>
       <span class="ai-voice-status" id="aiVoiceStatus" role="status" aria-live="polite"></span>
-    </div>`;
-
-  content.querySelectorAll('[data-ai]').forEach(button => {
-    button.addEventListener('click', () => aiChoose(button.dataset.ai));
+    </div>
+    <button class="ai-choice" type="button" id="aiCancelInput">Chiudi percorso</button>`;
+  const input=document.getElementById('aiNeedInput');
+  document.getElementById('aiNeedSubmit')?.addEventListener('click',()=>handleAIRequest(input?.value||''));
+  document.getElementById('aiCancelInput')?.addEventListener('click',startAI);
+  input?.addEventListener('keydown',e=>{
+    if((e.ctrlKey||e.metaKey)&&e.key==='Enter') handleAIRequest(input.value);
   });
-  content.querySelector('#aiMic')?.addEventListener('click', startAssistantRecognition);
+  document.getElementById('aiMic')?.addEventListener('click',startAssistantRecognition);
+  input?.focus();
+}
+
+function startAI() {
+  const content = document.getElementById('aiContent');
+  if (!content) return;
+  const greeting = `Buongiorno! Sono l'Assistente CM. Posso aiutarti a capire quale percorso di richiesta utilizzare. Raccontami semplicemente cosa ti serve.`;
+  content.innerHTML = `
+    <div class="bubble ai"><b>Buongiorno.</b><br>
+      Non devi conoscere il nome della garanzia.<br><br>
+      <b>Scrivimi cosa devi fare o cosa ti è stato richiesto.</b>
+    </div>
+    <button class="ai-choice" type="button" id="aiStartWriting">Scrivi la tua necessità →</button>
+    <div class="ai-voice-row">
+      <button class="ai-mic" id="aiMic" type="button" aria-label="Spiega a voce la tua esigenza">🎙️ <span>Oppure spiegala a voce</span></button>
+      <span class="ai-voice-status" id="aiVoiceStatus" role="status" aria-live="polite"></span>
+    </div>`;
+  document.getElementById('aiStartWriting')?.addEventListener('click',()=>renderAIInput());
+  document.getElementById('aiMic')?.addEventListener('click',startAssistantRecognition);
   speakAI(greeting);
 }
 
-let assistantRecognition = null;
+function handleAIRequest(text) {
+  const clean=String(text||'').trim();
+  if(!clean) {
+    renderAIInput();
+    const input=document.getElementById('aiNeedInput');
+    if(input) { input.classList.add('cm-field-error'); input.focus(); }
+    return;
+  }
+  const result=classifyAIRequest(clean);
+  if(result.type==='ambiguous') {
+    renderAIAmbiguous(clean,result.candidates);
+    return;
+  }
+  if(result.type==='locazioni') {
+    renderAILeaseChoice(clean);
+    return;
+  }
+  if(result.type==='appalti') {
+    renderAIAppaltoChoice(clean);
+    return;
+  }
+  renderAIRouteConfirmation(clean,result.type);
+}
+
+function renderAIAmbiguous(text,candidates) {
+  const content=document.getElementById('aiContent');
+  const labels=candidates.map(t=>CM_AI_ROUTES[t]?.label||t);
+  content.innerHTML=`
+    <div class="bubble ai"><b>Ho individuato più percorsi possibili.</b><br>
+      La tua descrizione può rientrare in ${aiEscape(labels.join(' oppure '))}. Quale descrive meglio il caso?
+    </div>
+    <div class="ai-choices">${candidates.map(t=>`<button class="ai-choice" type="button" data-ai-route="${t}">${aiEscape(CM_AI_ROUTES[t].label)} <span>›</span></button>`).join('')}</div>
+    <button class="ai-choice" type="button" id="aiBackToText">← Modifica la descrizione</button>`;
+  content.querySelectorAll('[data-ai-route]').forEach(b=>b.addEventListener('click',()=>renderAIRouteConfirmation(text,b.dataset.aiRoute)));
+  document.getElementById('aiBackToText')?.addEventListener('click',()=>renderAIInput(text));
+}
+
+function renderAILeaseChoice(text) {
+  const content=document.getElementById('aiContent');
+  content.innerHTML=`
+    <div class="bubble ai"><b>Ho capito che si tratta di una locazione.</b><br>Che tipo di locazione è?</div>
+    <div class="ai-choices">
+      <button class="ai-choice" type="button" data-lease="abitativo">Uso abitativo <span>›</span></button>
+      <button class="ai-choice" type="button" data-lease="commerciale">Uso commerciale <span>›</span></button>
+      <button class="ai-choice" type="button" data-lease="rami-azienda">Ramo d'azienda <span>›</span></button>
+    </div>
+    <button class="ai-choice" type="button" id="aiBackToText">← Modifica la descrizione</button>`;
+  content.querySelectorAll('[data-lease]').forEach(b=>b.addEventListener('click',()=>renderAIRouteConfirmation(text,'locazioni',{leaseType:b.dataset.lease})));
+  document.getElementById('aiBackToText')?.addEventListener('click',()=>renderAIInput(text));
+}
+
+function renderAIAppaltoChoice(text) {
+  const content=document.getElementById('aiContent');
+  content.innerHTML=`
+    <div class="bubble ai"><b>Ho capito che si tratta di un appalto.</b><br>Che tipo di garanzia ti è stata richiesta, se lo sai?</div>
+    <div class="ai-choices">
+      <button class="ai-choice" type="button" data-guarantee="provvisoria">Partecipazione / provvisoria <span>›</span></button>
+      <button class="ai-choice" type="button" data-guarantee="definitiva">Definitiva / esecuzione <span>›</span></button>
+      <button class="ai-choice" type="button" data-guarantee="anticipazione">Anticipazione <span>›</span></button>
+      <button class="ai-choice" type="button" data-guarantee="altro">Non lo so / altro <span>›</span></button>
+    </div>
+    <button class="ai-choice" type="button" id="aiBackToText">← Modifica la descrizione</button>`;
+  content.querySelectorAll('[data-guarantee]').forEach(b=>b.addEventListener('click',()=>{
+    const g=b.dataset.guarantee;
+    const note=`Garanzia richiesta per appalto: ${g}.`;
+    renderAIRouteConfirmation(text,'appalti',{notes:note});
+  }));
+  document.getElementById('aiBackToText')?.addEventListener('click',()=>renderAIInput(text));
+}
+
+function renderAIRouteConfirmation(text,type,extra={}) {
+  const content=document.getElementById('aiContent');
+  const route=CM_AI_ROUTES[type]||CM_AI_ROUTES.generica;
+  content.innerHTML=`
+    <div class="bubble ai"><b>Ho individuato il percorso di richiesta.</b><br>
+      ${aiEscape(route.label)}.<br><br>
+      Ti porto al modulo pertinente, mantenendo nella richiesta la descrizione che hai appena fornito.
+    </div>
+    <div class="ai-choices">
+      <button class="ai-choice" type="button" id="aiGoRoute">Apri il percorso →</button>
+      <button class="ai-choice" type="button" id="aiEditRoute">← Modifica la descrizione</button>
+      <button class="ai-choice" type="button" id="aiGenericRoute">Preferisco una valutazione generica</button>
+    </div>`;
+  document.getElementById('aiGoRoute')?.addEventListener('click',()=>goToAIRoute(type,text,extra));
+  document.getElementById('aiEditRoute')?.addEventListener('click',()=>renderAIInput(text));
+  document.getElementById('aiGenericRoute')?.addEventListener('click',()=>goToAIRoute('generica',text));
+  speakAI(`Ho individuato il percorso ${route.label}. Puoi aprirlo oppure scegliere una valutazione generica.`);
+}
 
 function startAssistantRecognition() {
   const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -396,12 +577,11 @@ function startAssistantRecognition() {
   assistantRecognition.onresult = event => {
     const transcript = String(event.results?.[0]?.[0]?.transcript || '').trim();
     if (!transcript) return;
-    sessionStorage.setItem('cm_voice_request', transcript);
-    if (status) status.textContent = 'Richiesta acquisita. Apro la valutazione generica…';
-    speakAI(`Ho acquisito la tua richiesta: ${transcript}. Apro la valutazione generica.`);
-    window.setTimeout(() => {
-      window.location.href = 'richiedi-preventivo.html?esigenza=generica';
-    }, isVoiceEnabled() ? 700 : 0);
+    if (status) status.textContent = 'Richiesta acquisita.';
+    renderAIInput(transcript);
+    const input=document.getElementById('aiNeedInput');
+    if(input) input.value=transcript;
+    speakAI('Ho acquisito la tua richiesta. Controlliamola insieme.');
   };
   assistantRecognition.onerror = event => {
     if (status) status.textContent = event.error === 'not-allowed' ? "Consenti l'uso del microfono per parlare con l'assistente." : "Non ho potuto acquisire l'audio. Riprova.";
@@ -410,7 +590,7 @@ function startAssistantRecognition() {
     if (mic) mic.classList.remove('listening');
     assistantRecognition = null;
   };
-  try { assistantRecognition.start(); } catch (error) {
+  try { assistantRecognition.start(); } catch {
     if (status) status.textContent = 'Microfono non disponibile. Riprova.';
     if (mic) mic.classList.remove('listening');
   }
@@ -423,36 +603,10 @@ function stopAssistantRecognition() {
   document.getElementById('aiMic')?.classList.remove('listening');
 }
 
-function aiChoose(type) {
-  const content = document.getElementById('aiContent');
-  if (!content) return;
-
-  const map = {
-    appalto: ['Per un appalto posso indirizzarti alle garanzie collegate alla gara e agli obblighi contrattuali.', 'appalti-pubblici.html'],
-    trasporto: ["Per l'autotrasporto possiamo distinguere tra capacità finanziaria e altre esigenze di garanzia.", 'capacita-finanziaria.html'],
-    locazione: ['Per la locazione partiamo dalle condizioni richieste dal contratto o dal locatore.', 'locazioni.html'],
-    dogana: ['Per una pratica doganale partiamo dal tipo di obbligo e dalla documentazione ricevuta.', 'dogane.html'],
-    ambiente: ["Per l'ambiente partiamo dall'obbligo specifico e dal soggetto che richiede la garanzia.", 'ambiente.html'],
-    altro: ['Va bene. Raccontami il caso concreto e allega la documentazione che hai: apriamo direttamente la valutazione generica.', 'richiedi-preventivo.html?esigenza=generica']
-  };
-
-  const [message, destination] = map[type] || map.altro;
-  const directGeneric = destination === 'richiedi-preventivo.html?esigenza=generica';
-  content.innerHTML = `
-    <div class="bubble ai"><b>Perfetto.</b><br>${message}</div>
-    <div class="ai-choices">
-      <a class="ai-choice" href="${destination}">Vai al percorso <span>›</span></a>
-      <a class="ai-choice" href="richiedi-preventivo.html?esigenza=generica">Racconta direttamente la tua esigenza <span>›</span></a>
-      <button class="ai-choice" type="button" id="aiRestart">← Cambia esigenza</button>
-    </div>`;
-  document.getElementById('aiRestart')?.addEventListener('click', startAI);
-  speakAI(directGeneric ? 'Apro il percorso di valutazione generica.' : message);
-}
-
 window.openAI = openAI;
 window.closeAI = closeAI;
 window.startAI = startAI;
-window.aiChoose = aiChoose;
+window.aiChoose = handleAIRequest;
 
 function initAssistantFab() {
   if (document.getElementById('cm-ai-fab')) return;
