@@ -119,43 +119,42 @@
       <label>E-mail intermediario<input id="mupMainEmail" type="email" readonly></label>
       <label>PEC intermediario<input id="mupMainPec" type="email" readonly></label>
       <label>Sito internet intermediario<input id="mupMainWebsite" type="url" readonly></label>
-      <label class="mup-req">Impresa/e di assicurazione <b class="mup-req-mark">*</b><input id="mupInsurer" required placeholder="Es. denominazione della compagnia"></label>
-
-      <label class="full mup-req">Modello di distribuzione <b class="mup-req-mark">*</b>
+      <label class="full mup-req">Come operi in questa pratica? <b class="mup-req-mark">*</b>
         <select id="mupDistribution" required>
           <option value="">Seleziona…</option>
-          <option value="Agisce su incarico del cliente">Agisce su incarico del cliente</option>
-          <option value="Agisce in nome o per conto di una o più imprese di assicurazione">Agisce in nome o per conto di una o più imprese di assicurazione</option>
+          <option value="Agisce su incarico del cliente">Su incarico del cliente</option>
+          <option value="Agisce in nome o per conto di una o più imprese di assicurazione">Per conto di una o più compagnie</option>
         </select>
-        <small class="muted">La scelta determina automaticamente quali informazioni ulteriori sono necessarie.</small>
+        <small class="muted"><strong>In parole semplici:</strong> scegli “Su incarico del cliente” se il cliente ti incarica di cercare/proporre la soluzione assicurativa. Scegli “Per conto di una o più compagnie” solo quando operi formalmente per conto dell'impresa.</small>
       </label>
-      <label class="mup-req hidden" id="mupInsurerRow">Impresa/e di assicurazione <b class="mup-req-mark">*</b><input id="mupInsurer" required placeholder="Denominazione dell'impresa di assicurazione"></label>
-      <label class="mup-req">Collaborazione orizzontale <b class="mup-req-mark">*</b>
-        <select id="mupHorizontal" required><option value="">Seleziona…</option><option value="NO">NO</option><option value="SI">SI</option></select>
+      <label class="mup-req hidden" id="mupInsurerRow">Quale impresa di assicurazione? <b class="mup-req-mark">*</b><input id="mupInsurer" required placeholder="Nome della compagnia"></label>
+      <label class="mup-req">Collaborazione con un altro intermediario per questa pratica? <b class="mup-req-mark">*</b>
+        <select id="mupHorizontal" required><option value="">Seleziona…</option><option value="NO">No</option><option value="SI">Sì</option></select>
+        <small class="muted"><strong>In parole semplici:</strong> “Sì” solo se questa pratica viene distribuita insieme a un altro intermediario tramite una collaborazione orizzontale.</small>
       </label>
       <label class="hidden" id="mupHorizontalNameRow">Intermediario/i collaborazione orizzontale <input id="mupHorizontalName" placeholder="Identità, sezione RUI e ruolo"></label>
 
-      <label class="mup-req">Partecipazione ≥10% dell’intermediario in impresa di assicurazione <b class="mup-req-mark">*</b>
+      <label class="mup-req">Hai una partecipazione di almeno il 10% in una compagnia? <b class="mup-req-mark">*</b>
         <select id="mupConflictA" required><option value="">Seleziona…</option><option value="NO">NO</option><option value="SI">SI</option></select>
       </label>
       <label class="hidden" id="mupConflictANameRow">Denominazione impresa interessata <input id="mupConflictAName"></label>
-      <label class="mup-req">Partecipazione ≥10% di impresa/controllante nell’intermediario <b class="mup-req-mark">*</b>
+      <label class="mup-req">Una compagnia possiede almeno il 10% dell’intermediario? <b class="mup-req-mark">*</b>
         <select id="mupConflictB" required><option value="">Seleziona…</option><option value="NO">NO</option><option value="SI">SI</option></select>
       </label>
       <label class="hidden" id="mupConflictBNameRow">Denominazione impresa/controllante <input id="mupConflictBName"></label>
 
-      <label class="mup-req">Consulenza personalizzata ex art. 119-ter, c.3 <b class="mup-req-mark">*</b>
+      <label class="mup-req">Hai dato una raccomandazione personalizzata al cliente? <b class="mup-req-mark">*</b>
         <select id="mupAdvice" required><option value="">Seleziona…</option><option value="NO">NO</option><option value="SI">SI</option></select>
       </label>
-      <label class="mup-req">Analisi imparziale e personale ex art. 119-ter, c.4 <b class="mup-req-mark">*</b>
+      <label class="mup-req">Hai confrontato un numero sufficiente di prodotti sul mercato in modo imparziale? <b class="mup-req-mark">*</b>
         <select id="mupImpartial" required><option value="">Seleziona…</option><option value="NO">NO</option><option value="SI">SI</option></select>
       </label>
-      <label class="mup-req">Distribuzione in esclusiva <b class="mup-req-mark">*</b>
+      <label class="mup-req">Sei vincolato a distribuire esclusivamente prodotti di una o più compagnie? <b class="mup-req-mark">*</b>
         <select id="mupExclusive" required><option value="">Seleziona…</option><option value="NO">NO</option><option value="SI">SI</option></select>
       </label>
       <label class="hidden" id="mupNonExclusiveRow">Distribuzione senza obblighi di esclusiva e senza analisi imparziale <input id="mupNonExclusive" readonly></label>
-      <label class="full hidden" id="mupBusinessRelationshipsRow">Imprese con cui esistono rapporti di affari <input id="mupBusinessRelationships"></label>
-      <label class="full">Altre informazioni utili alla trasparenza ex art. 119-bis, c.7 CAP<input id="mupTransparency"></label>
+      <label class="full hidden" id="mupBusinessRelationshipsRow">Con quali compagnie hai rapporti d'affari? <input id="mupBusinessRelationships" placeholder="Indica le compagnie"></label>
+      <label class="full">Altre informazioni utili alla trasparenza <input id="mupTransparency" placeholder="Lascia vuoto se non necessario"></label>
 
       <label class="full mup-req">Remunerazione <b class="mup-req-mark">*</b>
         <select id="mupRemuneration" required>
