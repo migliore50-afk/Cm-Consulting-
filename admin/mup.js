@@ -71,18 +71,12 @@
   function updateDistributionAndTransparencyFields() {
     const distribution = val('mupDistribution');
     const horizontal = val('mupHorizontal');
-    const conflictA = val('mupConflictA');
-    const conflictB = val('mupConflictB');
-    const advice = val('mupAdvice');
     const impartial = val('mupImpartial');
     const exclusive = val('mupExclusive');
 
     const insurerRow = $('mupInsurerRow');
     const horizontalRow = $('mupHorizontalNameRow');
-    const conflictARow = $('mupConflictANameRow');
-    const conflictBRow = $('mupConflictBNameRow');
     const nonExclusiveRow = $('mupNonExclusiveRow');
-    const relationshipsRow = $('mupBusinessRelationshipsRow');
 
     // Sezione II, lett. a: la denominazione dell'impresa è richiesta quando
     // si agisce in nome o per conto di una o più imprese.
@@ -102,14 +96,13 @@
       $('mupHorizontalName')?.classList.remove('field-error');
     }
 
-    // Sezione III: denominazione solo se la relativa partecipazione >=10%
-    // esiste.
-    const needsConflictA = conflictA === 'SI';
-    const needsConflictB = conflictB === 'SI';
-    conflictARow?.classList.toggle('hidden', !needsConflictA);
-    conflictBRow?.classList.toggle('hidden', !needsConflictB);
-    if (!needsConflictA) set('mupConflictAName', '');
-    if (!needsConflictB) set('mupConflictBName', '');
+    // Sezione III: per la Sezione E le partecipazioni societarie non sono
+    // una domanda della singola pratica. Il profilo viene valorizzato
+    // automaticamente; per CM Consulting il valore attuale è "NO".
+    set('mupConflictA', 'NO');
+    set('mupConflictAName', '');
+    set('mupConflictB', 'NO');
+    set('mupConflictBName', '');
 
     // Sezione IV: l'analisi imparziale è una forma di consulenza
     // personalizzata; quando è SI, il punto c.3 è automaticamente SI.
@@ -128,7 +121,6 @@
 
     // Le denominazioni delle imprese con rapporti d'affari servono nel caso
     // previsto dal punto d.
-    relationshipsRow?.classList.toggle('hidden', !nonExclusive);
     if (!nonExclusive) set('mupBusinessRelationships', '');
   }
 
@@ -307,13 +299,7 @@
     if (val('mupHorizontal') === 'SI') {
       fields.push(['Intermediario/i collaborazione orizzontale', 'mupHorizontalName']);
     }
-    if (val('mupConflictA') === 'SI') fields.push(['Denominazione impresa interessata', 'mupConflictAName']);
-    if (val('mupConflictB') === 'SI') fields.push(['Denominazione impresa/controllante', 'mupConflictBName']);
-    if (val('mupImpartial') !== 'SI') fields.push(['Consulenza personalizzata ex art. 119-ter, c.3', 'mupAdvice']);
-    if (val('mupExclusive') === '') fields.push(['Distribuzione in esclusiva', 'mupExclusive']);
-    if (val('mupExclusive') === 'NO' && val('mupImpartial') === 'NO') {
-      fields.push(['Imprese con cui esistono rapporti di affari', 'mupBusinessRelationships']);
-    }
+
     if (remuneration === 'Onorario corrisposto direttamente dal cliente' ||
         remuneration === 'Combinazione delle diverse tipologie di compenso') {
       fields.push(['Importo del compenso o metodo per calcolarlo', 'mupRemunerationAmount']);
@@ -434,7 +420,7 @@
   // 23 settembre 2026 — mostra/nasconde il campo "Importo del compenso"
   // quando cambia il tipo di remunerazione selezionato.
   $('mupRemuneration')?.addEventListener('change', updateRemunerationAmountVisibility);
-  ['mupDistribution','mupHorizontal','mupConflictA','mupConflictB','mupAdvice','mupImpartial','mupExclusive']
+  ['mupDistribution','mupHorizontal']
     .forEach(id => $(id)?.addEventListener('change', updateDistributionAndTransparencyFields));
 
   $('mupOpen')?.addEventListener('input', e => {
