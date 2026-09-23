@@ -1,7 +1,7 @@
 # STATO-PROGETTO.md
 ## CM Consulting — Registro tecnico ufficiale
 
-**Ultimo aggiornamento:** 23 settembre 2026 — §27 registra le idee di automazione discusse dopo la chiusura del MUP; nessuna di esse è considerata una fase decisa. — vedi §26 per il generatore MUP (Word/PDF veri, CHIUSO), l'archivio intermediari, e la Fase 1 facsimile (costruita ma CONGELATA, non autorizzata)  
+**Ultimo aggiornamento:** 23 settembre 2026 — §27 aggiornato con il principio guida MUP e l'elenco dei campi ancora da verificare (nessuna decisione presa, nessun codice modificato oltre a tre menu a tendina non ancora confermati caricati). Fase 1 facsimile ancora congelata. — vedi §26 per il generatore MUP (CHIUSO)  
 **Repository:** `migliore50-afk/Cm-Consulting-`  
 **Branch:** `main` (per il sito pubblico) — **vedi anche `feat/mup-generator-2026`, branch di sviluppo separato per l'area admin/MUP, mai mergiato su `main`, §26**  
 **Deploy:** Vercel — Production (dominio Aruba non ancora collegato, in attesa — vedi §23 e §24)  
@@ -566,3 +566,47 @@ Sono state inoltre menzionate idee più ampie, tra cui consegna automatica della
 ## Regola di continuità
 
 Dopo la chiusura del MUP, il punto di ripartenza non è predefinito. Prima di sviluppare qualunque automazione, verificare questa sezione e ottenere una decisione esplicita su **se** procedere e **quale** attività affrontare.
+
+## Principio guida MUP per le prossime sessioni (23 settembre 2026)
+
+Prima di riprendere qualunque lavoro sui campi del MUP, questo è il criterio concordato con Carmelo, da applicare in ordine:
+
+1. **A norma di legge** — normativa vigente, Regolamento IVASS applicabile, Provvedimenti aggiornati, Allegato 3/MUP nella versione vigente. Nessuna semplificazione che alteri un obbligo normativo.
+2. **Massima automazione dove è sicura** — dati già noti di CM Consulting e dell'intermediario principale: precompilati. Dati ricavabili dal facsimile: estratti automaticamente solo quando tecnicamente affidabile. L'utente deve controllare e confermare, non interpretare la normativa.
+3. **Campi intelligenti** — dove il testo IVASS prevede opzioni definite, menu guidato invece di testo libero; campi condizionali che compaiono solo quando servono; nessun campo tecnico incomprensibile lasciato all'utente senza spiegazione in linguaggio semplice.
+4. **Flusso ideale**: Pratica → caricamento facsimile → estrazione dati → precompilazione → controlli normativi → richiesta solo delle informazioni realmente mancanti → riepilogo → conferma → generazione MUP PDF + Word.
+5. **Nessuna automazione a rischio** — il sistema non deve mai inventare dati né prendere decisioni giuridiche non supportate dal testo normativo verificato. Se un'informazione non può essere determinata con sicurezza, va segnalata chiaramente, chiedendo conferma e spiegando cosa serve.
+6. **Semplicità per Carmelo** — l'obiettivo è che possa gestire una pratica senza dover conoscere a memoria art. 119-ter, collaborazione orizzontale, ruolo dell'intermediario, ADR, rapporti di partecipazione, RC professionale, ecc. Deve essere il sistema a guidare, non lui a dover interpretare il modello.
+
+Metodo di lavoro per ogni campo, quando si riprenderà: **prima verifica della fonte normativa (testo ufficiale IVASS, non riassunti), poi decisione per quel campo tra AUTO → MENU → CONDIZIONALE → CONFERMA → MANUALE**, un campo alla volta.
+
+## Campi/questioni MUP ancora da verificare — nessuno approvato (23 settembre 2026)
+
+Elenco delle osservazioni raccolte durante la sessione, **da verificare sulla normativa IVASS vigente una alla volta prima di qualunque modifica al codice**. Nessuna di queste è una decisione presa, solo un promemoria di cosa resta da affrontare:
+
+- Tutela delle somme versate (già trasformato in menu il 23 settembre — vedi sotto — ma da verificare ulteriormente in Fase 2, collegamento al documento generato)
+- RC professionale — oggi campo libero obbligatorio, valutare se automatizzabile o resta manuale
+- Impresa/e di assicurazione — campo libero, dipende dalla pratica
+- Scadenza pratica, tipologia/prodotto — già collegati alla pratica, valutare se serve altro
+- Modello di distribuzione (già trasformato in menu il 23 settembre — vedi sotto)
+- Ruolo intermediario — oggi campo libero facoltativo
+- Mandato del cliente — oggi SI/NO libero, valutare se legarlo al Modello di distribuzione
+- Collaborazione orizzontale — già presente come campo SI/NO + nome, valutare se sufficiente
+- Partecipazioni ≥10% (conflitto d'interesse) — oggi SI/NO libero
+- Consulenza/analisi imparziale (art. 119-ter) — oggi SI/NO libero
+- Distribuzione esclusiva/non esclusiva — oggi SI/NO libero
+- Rapporti di affari — oggi campo libero facoltativo
+- FIN.NET, altri sistemi ADR — oggi campi liberi facoltativi
+- Diritto all'oblio oncologico (Sezione VIII) — testo attuale "Non applicabile" da riverificare: il testo ufficiale IVASS sembra richiedere un'informativa sempre presente, non condizionata al tipo di prodotto — **punto verificato da Claude il 23 settembre leggendo il PDF ufficiale, ma non ancora deciso con Carmelo**
+- Problemi di usabilità/visualizzazione su iPhone dell'area admin (menu superiore che scorre orizzontalmente in Pratica, campi che si spostano quando compare la tastiera) — segnalati, non ancora corretti
+
+## Fase 1 del nuovo criterio — parzialmente avviata il 23 settembre 2026, solo interfaccia
+
+Applicando il principio guida sopra, sono già stati convertiti in menu a tendina (solo `admin/index.html` e `admin/mup.js`, **nessuna modifica a `api/mup-docx.js` o `api/mup-pdf.js`**) tre campi, verificati sul testo ufficiale dell'Allegato 3 (versione aggiornata al Provvedimento 169/2026, letto direttamente dal PDF IVASS):
+
+- **Modello di distribuzione** → menu con le due sole opzioni previste (incarico del cliente / in nome-per conto di imprese)
+- **Remunerazione** → menu con le 4 categorie ufficiali (onorario diretto, commissione nel premio, altro compenso, combinazione); se onorario diretto o combinazione, compare un campo obbligatorio aggiuntivo per l'importo/metodo di calcolo
+- **Tutela delle somme versate** (ex "Pagamento premi") → menu con le due opzioni ufficiali (patrimonio separato / fideiussione bancaria, minimo € 23.480 aggiornato annualmente); "Modalità di pagamento ammesse" ora precompilato con il testo fisso ufficiale (assegni non trasferibili, bonifici/mezzi elettronici, contanti nei limiti di legge)
+
+**Importante**: il nuovo campo "Importo del compenso" **non è ancora incluso nel documento Word/PDF generato** — solo l'interfaccia è stata aggiornata, la Fase 2 (verifica e collegamento di ogni valore al documento) non è stata affrontata. Caricamento su GitHub non confermato da Carmelo alla chiusura di questa sessione — verificare lo stato reale del branch `feat/mup-generator-2026` alla ripresa.
+
