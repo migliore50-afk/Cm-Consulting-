@@ -106,7 +106,7 @@ export function generateMupPdf(data) {
       ['Altri sistemi ADR, se applicabili', d.mupOtherAdr]
     ]);
     addSection(doc, '8. Informazioni sul diritto all’oblio oncologico', [
-      ['Informativa', 'Non applicabile: CM Consulting non colloca prodotti assicurativi vita/salute per i quali sia richiesta una dichiarazione sullo stato di salute del contraente.']
+      ['Informativa', d.mupOncology]
     ]);
 
     if (doc.y > 680) doc.addPage();
