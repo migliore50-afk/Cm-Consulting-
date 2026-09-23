@@ -145,8 +145,7 @@ export async function generateMupDocx(data) {
       ['Reclami: modalità e recapiti', d.mupComplaints],
       ['Arbitro Assicurativo', d.mupArbitro],
       ['FIN.NET, se applicabile', d.mupFinNet],
-      ['Altri sistemi ADR, se applicabili', d.mupOtherAdr],
-      ['SEZIONE VIII — Informazioni sul diritto all’oblio oncologico', d.mupOncology]
+      ['Altri sistemi ADR, se applicabili', d.mupOtherAdr]
     ]),
     ...section('8. Informazioni sul diritto all’oblio oncologico', [
       ['Informativa', d.mupOncology]
