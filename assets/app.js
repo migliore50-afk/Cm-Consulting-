@@ -273,7 +273,7 @@ function initAssistantUI() {
 
   aiPanel.querySelector('.ai-close')?.addEventListener('click', closeAI);
   const voiceButton = aiPanel.querySelector('.ai-voice-toggle');
-  const enabled = localStorage.getItem('cm_ai_voice') === '1';
+  const enabled = localStorage.getItem('cm_ai_voice') !== '0';
   setVoiceState(enabled, voiceButton);
   voiceButton?.addEventListener('click', () => setVoiceState(!isVoiceEnabled(), voiceButton));
 
@@ -287,7 +287,7 @@ function initAssistantUI() {
 }
 
 function isVoiceEnabled() {
-  return localStorage.getItem('cm_ai_voice') === '1';
+  return localStorage.getItem('cm_ai_voice') !== '0';
 }
 
 function setVoiceState(enabled, button) {
@@ -564,10 +564,12 @@ async function aiSendMessage(message) {
     log.scrollTop = log.scrollHeight;
     speakAI(reply);
   } catch (error) {
+    console.error('Assistente CM: richiesta AI non riuscita', error);
     const aiBubble = document.createElement('div');
     aiBubble.className = 'bubble ai';
-    aiBubble.textContent = 'Il collegamento all’assistente AI non è disponibile in questo momento. Puoi riprovare tra poco.';
+    aiBubble.textContent = 'In questo momento non riesco a collegarmi al servizio AI. Riprova tra poco.';
     log.appendChild(aiBubble);
+    speakAI('In questo momento non riesco a collegarmi al servizio AI. Riprova tra poco.');
   } finally {
     if (send) send.disabled = false;
   }
@@ -698,156 +700,3 @@ function simplifyLegalBar() {
     bar.innerHTML = '<p>CM Consulting di Carmelo Migliore &ndash; P.IVA/C.F. 14416401009 / MGLCML71M25L219S &middot; REA RM &ndash; 1519347 &middot; Carmelo Migliore, R.U.I. Sezione E n. E000437237 dal 24/01/2013 &middot; <a href="https://www.ivass.it/consumatori/rui/index.html" target="_blank" rel="noopener noreferrer">Verificabile su IVASS</a></p>';
     bar.style.cssText = 'display:block!important;text-align:left!important;justify-items:normal!important;grid-template-columns:none!important;max-width:none!important;margin:28px 0 0!important;padding:16px 24px!important;border-top:1px solid rgba(255,255,255,.15)!important;box-sizing:border-box!important';
     const p = bar.querySelector('p');
-    if (p) p.style.cssText = 'margin:0!important;color:#8fa2b3!important;font-size:11.5px!important;line-height:1.6!important';
-    const a = bar.querySelector('a');
-    if (a) a.style.cssText = 'color:#e0b84e!important;text-decoration:none!important;font-weight:700!important';
-    bar.dataset.cmCompact = '1';
-  });
-}
-
-// 20 settembre 2026 — rimozione dei due pulsanti arancioni ridondanti nella colonna
-// "Contatti" del footer ("Verifica iscrizione RUI", "Reclami e Arbitro Assicurativo").
-// Non sono richiesti in quella forma dalla normativa IVASS: entrambe le informazioni
-// restano comunque accessibili altrove (link "Verificabile su IVASS" nella riga
-// compatta del footer, voce "Reclami e Arbitro Assicurativo" nella colonna
-// "Informazioni" dello stesso footer). Rimozione via JS, non tocca l'HTML statico.
-function removeRedundantFooterButtons() {
-  document.querySelectorAll('.cm-footer-contact .cm-rui-link').forEach(a => a.remove());
-}
-
-// 21 settembre 2026 — barra di navigazione fissa in fondo, solo su mobile, su
-// richiesta di Carmelo (ispirata a un pattern comune nel settore, es.
-// mondocauzioni.it): 5 voci sempre a portata di pollice, con "Preventivo" in
-// evidenza al centro. WhatsApp volutamente assente — nessun numero attivo
-// ancora, vedi registro tecnico (eSIM non ancora attiva).
-function initMobileBottomNav() {
-  if (document.getElementById('cmMobileNav')) return;
-  const icons = {
-    home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg>',
-    servizi: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><path d="M2 13h20"/></svg>',
-    preventivo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><circle cx="8" cy="11" r=".7" fill="currentColor" stroke="none"/><circle cx="12" cy="11" r=".7" fill="currentColor" stroke="none"/><circle cx="16" cy="11" r=".7" fill="currentColor" stroke="none"/><circle cx="8" cy="15" r=".7" fill="currentColor" stroke="none"/><circle cx="12" cy="15" r=".7" fill="currentColor" stroke="none"/><circle cx="16" cy="15" r=".7" fill="currentColor" stroke="none"/><circle cx="8" cy="19" r=".7" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r=".7" fill="currentColor" stroke="none"/></svg>',
-    contatti: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>',
-    aiuto: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>'
-  };
-  const nav = document.createElement('nav');
-  nav.id = 'cmMobileNav';
-  nav.className = 'cm-mobile-nav';
-  nav.setAttribute('aria-label', 'Navigazione rapida');
-  nav.innerHTML = `
-    <a href="/" class="cm-mn-item"><span class="cm-mn-icon" aria-hidden="true">${icons.home}</span><span>Home</span></a>
-    <a href="/fideiussioni" class="cm-mn-item"><span class="cm-mn-icon" aria-hidden="true">${icons.servizi}</span><span>Servizi</span></a>
-    <a href="/richiedi-preventivo" class="cm-mn-item cm-mn-cta"><span class="cm-mn-icon" aria-hidden="true">${icons.preventivo}</span><span>Preventivo</span></a>
-    <a href="/contatti" class="cm-mn-item"><span class="cm-mn-icon" aria-hidden="true">${icons.contatti}</span><span>Contatti</span></a>
-    <button type="button" class="cm-mn-item" id="cmMobileNavAiuto"><span class="cm-mn-icon" aria-hidden="true">${icons.aiuto}</span><span>Aiuto</span></button>
-  `;
-  document.body.appendChild(nav);
-  // 21 settembre 2026 — su richiesta di Carmelo, l'Assistente CM su mobile si apre
-  // da qui invece che dal pallone fluttuante, che copriva il contenuto della
-  // pagina. Il pallone resta nascosto su mobile via CSS. Voce "Menu" rimossa
-  // (ridondante con l'hamburger già presente nell'header) — con 5 voci
-  // "Preventivo" torna esattamente al centro della barra.
-  document.getElementById('cmMobileNavAiuto')?.addEventListener('click', () => {
-    if (typeof window.openAI === 'function') window.openAI();
-  });
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  initMenu();
-  initSlider();
-  initAssistantUI();
-  restoreAIPageContext();
-  initAssistantFab();
-  initAssistantFabFooterHide();
-  initClickableCards();
-  initBasicFormValidation();
-  initBackToTop();
-  simplifyLegalBar();
-  removeRedundantFooterButtons();
-  initMobileBottomNav();
-});
-
-
-/* UX BATCH — SERVIZI dropdown (17 settembre 2026: sostituisce il precedente dropdown
-   agganciato alla voce "FIDEIUSSIONI". Ora si aggancia alla voce "SERVIZI" del menu:
-   il testo resta un link vero verso /fideiussioni (la pagina generale con tutte le
-   tipologie), e in piu' rivela un sottomenu al passaggio del mouse — niente piu'
-   pulsante che blocca la navigazione diretta. */
-(function initServiziDropdown(){
-  function init(){
-    const links=document.querySelectorAll('.links a');
-    const fidLink=[...links].find(a=>a.textContent.trim().toUpperCase()==='FIDEIUSSIONI' && (a.getAttribute('href')||'').replace(/\/$/,'')==='/fideiussioni');
-    if(fidLink) fidLink.remove();
-    const capLink=[...links].find(a=>a.textContent.trim().toUpperCase()==='CAPACITÀ FINANZIARIA' && (a.getAttribute('href')||'').replace(/\/$/,'')==='/capacita-finanziaria');
-    if(capLink) capLink.remove();
-    const chiSiamoLink=[...links].find(a=>a.textContent.trim().toUpperCase()==='CHI SIAMO');
-    if(chiSiamoLink) chiSiamoLink.setAttribute('href','/chi-siamo');
-    links.querySelector('a[href="/faq"]')?.remove();
-    const navEl=document.querySelector('.links');
-    navEl?.querySelector('.nav-generic-cta')?.remove();
-    // 20 settembre 2026 — link "Accedi Area Privata" su richiesta di Carmelo,
-    // ultima voce del menu, verso /admin (login con password + TOTP, area
-    // gia' esistente e funzionante — vedi api/admin.js e cartella admin/).
-    const hasAdminLink=[...links].some(a=>(a.getAttribute('href')||'').replace(/\/$/,'')==='/admin');
-    if(!hasAdminLink && navEl){
-      const adminLink=document.createElement('a');
-      adminLink.href='/admin';
-      adminLink.className='nav-admin-link';
-      adminLink.textContent='AREA ADMIN';
-      navEl.appendChild(adminLink);
-    }
-    document.querySelectorAll('a[href^="tel:+393286382612"]').forEach(a=>{
-      const line=a.closest('.contact-line') || a.closest('p') || a;
-      line.remove();
-    });
-    document.querySelectorAll('.cm-footer-legalbar p').forEach(p=>{
-      const t=p.textContent.trim();
-      if(t==='Telefono:' || t==='Email:' || t==='PEC:') p.remove();
-    });
-    document.querySelectorAll('.cm-footer-bottom p').forEach(p=>{
-      if(p.textContent.trim()==='Registro Unico degli Intermediari — IVASS') p.remove();
-    });
-    const anchor=[...links].find(a=>a.textContent.trim().toUpperCase()==='SERVIZI');
-    if(!anchor || anchor.closest('.nav-fideiussioni')) return;
-    const wrap=document.createElement('div');
-    wrap.className='nav-fideiussioni';
-    const trigger=document.createElement('a');
-    trigger.href='/fideiussioni';
-    trigger.className='nav-fideiussioni-trigger';
-    trigger.setAttribute('aria-haspopup','true');
-    trigger.setAttribute('aria-expanded','false');
-    trigger.textContent='SERVIZI';
-    const menu=document.createElement('div');
-    menu.className='nav-fideiussioni-menu';
-    menu.setAttribute('role','menu');
-    const heading=document.createElement('div');
-    heading.className='nav-fideiussioni-heading';
-    heading.textContent='Le nostre garanzie';
-    const subheading=document.createElement('div');
-    subheading.className='nav-fideiussioni-subheading';
-    subheading.textContent='Scegli la tipologia che ti interessa, o vai alla pagina generale.';
-    menu.append(heading,subheading);
-    const items=[
-      ['Tutte le garanzie →','/fideiussioni'],
-      ['Appalti pubblici','/appalti-pubblici'],
-      ['Contratti privati','/fideiussioni-contratti-privati'],
-      ['Affitti fra privati','/locazioni'],
-      ['Affitti commerciali','/affitti-commerciali'],
-      ["Rami d'azienda",'/affitti-rami-azienda'],
-      ['Dogane','/dogane'],
-      ['Beneficiari pubblici','/ambiente'],
-      ['Capacità finanziaria','/capacita-finanziaria']
-    ];
-    items.forEach(([label,href])=>{const a=document.createElement('a');a.href=href;a.textContent=label;a.setAttribute('role','menuitem');menu.appendChild(a);});
-    wrap.append(trigger,menu);
-    anchor.replaceWith(wrap);
-    const close=()=>{wrap.classList.remove('open');trigger.setAttribute('aria-expanded','false');};
-    const open=()=>{document.querySelectorAll('.nav-fideiussioni.open').forEach(x=>x.classList.remove('open'));wrap.classList.add('open');trigger.setAttribute('aria-expanded','true');};
-    wrap.addEventListener('mouseenter',open);
-    wrap.addEventListener('mouseleave',close);
-    wrap.addEventListener('focusin',open);
-    wrap.addEventListener('focusout',e=>{if(!wrap.contains(e.relatedTarget))close();});
-    document.addEventListener('click',e=>{if(!wrap.contains(e.target))close();});
-    document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
-  }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
-})();
