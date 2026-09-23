@@ -83,7 +83,7 @@
 </main>
 
 <div id="mupOpen" class="modal hidden">
-  <div class="modal-card" style="max-width:980px">
+  <div class="modal-card mup-modal-card">
     <button id="mupClose" class="modal-close" aria-label="Chiudi">×</button>
     <h2>Generatore MUP 2026</h2>
     <p class="muted">Pratica: <strong id="mupPracticeTitle">—</strong>. Compilare i dati della singola distribuzione; non usare valori inventati o generici.</p>
@@ -105,10 +105,7 @@
         </select>
       </label>
       <label class="full hidden" id="mupProductOtherRow">Specificare la tipologia <b class="mup-req-mark">*</b><input id="mupProductOther" maxlength="180" placeholder="Descrivi brevemente la garanzia"></label>
-      <label class="mup-date-field">Scadenza pratica / scadenza polizza
-        <input id="mupExpiry" type="date" readonly>
-        <small class="muted">Viene valorizzata automaticamente dalla pratica e, dopo la conferma del facsimile, dalla data di scadenza rilevata nel documento.</small>
-      </label>
+      <input type="hidden" id="mupExpiry">
       <label>E-mail cliente<input id="mupEmail" type="email"></label>
 
       <div class="full mup-auto-box">
@@ -218,11 +215,15 @@
         <small class="muted">Per la Sezione E non devi inserire manualmente gli estremi della polizza: il MUP indica automaticamente che l'attività di distribuzione è garantita dalla copertura RC professionale prevista per l'intermediario.</small>
         <input type="hidden" id="mupRc">
       </div>
-      <label class="full mup-req">Reclami: modalità e recapiti <b class="mup-req-mark">*</b><input id="mupComplaints" required></label>
-      <label class="full mup-req">Arbitro Assicurativo <b class="mup-req-mark">*</b><input id="mupArbitro" required placeholder="Informativa e pagina/recapiti effettivi"></label>
-      <label>FIN.NET, se applicabile<input id="mupFinNet"></label>
-      <label>Altri sistemi ADR, se applicabili<input id="mupOtherAdr"></label>
-      <label class="full">Diritto all’oblio oncologico<input id="mupOncology" required></label>
+      <div class="full mup-auto-box">
+        <strong>Tutele del contraente — gestite automaticamente</strong>
+        <small class="muted">Reclami, Arbitro Assicurativo, FIN.NET/ADR e informativa sul diritto all’oblio oncologico sono gestiti dal profilo MUP e inseriti automaticamente nel documento finale quando pertinenti. Non devi compilare questi dati nella singola pratica.</small>
+        <input type="hidden" id="mupComplaints">
+        <input type="hidden" id="mupArbitro">
+        <input type="hidden" id="mupFinNet">
+        <input type="hidden" id="mupOtherAdr">
+        <input type="hidden" id="mupOncology">
+      </div>
     </div>
     <div id="mupMsg" class="message" aria-live="polite"></div>
     <div class="actions" style="display:flex;gap:8px;justify-content:flex-end">
