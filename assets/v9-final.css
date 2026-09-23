@@ -664,3 +664,12 @@ body.privacy-modal-open{overflow:hidden}
   .ai-chat-form{gap:6px}
   .ai-chat-form button{padding:0 13px}
 }
+
+
+/* CM ASSISTANT — free-form requirement intake */
+.ai-free-input{display:grid;gap:10px;margin:12px 0 4px}
+.ai-free-input textarea{width:100%;min-height:112px;resize:vertical;box-sizing:border-box;padding:14px 15px;border:1px solid #c9d8e1;border-radius:12px;background:#fff;color:#092b43;font:inherit;font-size:14px;line-height:1.5;outline:none}
+.ai-free-input textarea:focus{border-color:#168fbd;box-shadow:0 0 0 3px rgba(22,143,189,.12)}
+.ai-free-input .ai-submit{width:100%;justify-content:center}
+.ai-free-hint{font-size:11px;line-height:1.45;color:#718596}
+.ai-choice.ai-submit{border:0}
