@@ -1269,13 +1269,20 @@ export default async function handler(req, res) {
       });
       if (!saved.response.ok) return json(res,503,{ok:false,error:{code:'CONFIRMATION_SAVE_FAILED',message:'Conferma non salvata.'}});
 
+      // La data di scadenza del facsimile, una volta verificata e confermata,
+      // diventa la scadenza operativa della pratica. Non viene mai aggiornata
+      // automaticamente sulla sola estrazione: serve prima la conferma dell'utente.
+      const confirmedExpiry = str(confirmedData.end_date);
+      const confirmedExpiryValid = /^\\d{4}-\\d{2}-\\d{2}$/.test(confirmedExpiry);
+      const practicePatch = {
+        official_data: confirmedData,
+        official_data_source_document_id: documentId,
+        official_data_confirmed_at: confirmedAt,
+        ...(confirmedExpiryValid ? { expiry: confirmedExpiry } : {})
+      };
       const practiceSaved = await dbRequest(`admin_practices?id=eq.${encodeURIComponent(doc.practice_id)}`, {
         method:'PATCH',
-        body:{
-          official_data:confirmedData,
-          official_data_source_document_id:documentId,
-          official_data_confirmed_at:confirmedAt
-        }
+        body:practicePatch
       });
       if (!practiceSaved.response.ok) {
         return json(res,503,{ok:false,error:{code:'PRACTICE_CONFIRMATION_SAVE_FAILED',message:'Dati confermati salvati nel documento ma non nella pratica.'}});
