@@ -105,7 +105,10 @@
         </select>
       </label>
       <label class="full hidden" id="mupProductOtherRow">Specificare la tipologia <b class="mup-req-mark">*</b><input id="mupProductOther" maxlength="180" placeholder="Descrivi brevemente la garanzia"></label>
-      <label>Scadenza pratica<input id="mupExpiry" type="date"></label>
+      <label class="mup-date-field">Scadenza pratica / scadenza polizza
+        <input id="mupExpiry" type="date" readonly>
+        <small class="muted">Viene valorizzata automaticamente dalla pratica e, dopo la conferma del facsimile, dalla data di scadenza rilevata nel documento.</small>
+      </label>
       <label>E-mail cliente<input id="mupEmail" type="email"></label>
 
       <div class="full mup-auto-box">
@@ -180,7 +183,8 @@
         <small class="muted">Se il cliente paga direttamente un compenso, il sistema chiederà anche importo o criterio di calcolo.</small>
       </label>
       <label class="full mup-req hidden" id="mupRemunerationAmountRow">Importo del compenso o metodo per calcolarlo <b class="mup-req-mark">*</b><input id="mupRemunerationAmount" placeholder="Es. € 250 a pratica, oppure 2% dell'importo garantito"></label>
-      <label class="full">Eventuale compenso pagato direttamente dal cliente<input id="mupClientFee"></label>
+      <!-- Il compenso/fattura di gestione è gestito dal menu dedicato più sotto. -->
+
       <input type="hidden" id="mupRcAuto">
       <input type="hidden" id="mupHorizontalCompensation">
 
