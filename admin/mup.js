@@ -76,7 +76,14 @@
       'Capacità finanziaria',
       'Dogane',
       'Beneficiari pubblici',
-      'Contratti privati'
+      'Contratti privati',
+      'CAR Merloni / CAR 210',
+      'Polizza decennale postuma appalti pubblici',
+      'Garanzie ambientali',
+      'Contributi e agevolazioni',
+      'Garanzie urbanistiche ed edilizie',
+      'Garanzie fiscali',
+      'Forniture di beni e prestazioni di servizi'
     ];
     const normalized = String(value || '').trim();
     if (known.includes(normalized)) {
@@ -221,7 +228,7 @@
       mupArbitro: 'Diritto di ricorso all’Arbitro Assicurativo per le controversie in materia assicurativa e/o di intermediazione, operativo dal 15 gennaio 2026 — dettagli e modalità sulla pagina “Reclami e Arbitro Assicurativo” di cm-consulting.info.',
       mupFinNet: '',
       mupOtherAdr: '',
-      mupOncology: 'Non applicabile: CM Consulting non colloca prodotti assicurativi vita/salute per i quali sia richiesta una dichiarazione sullo stato di salute del contraente.'
+      mupOncology: 'Il contraente può esercitare il diritto all’oblio oncologico previsto dall’art. 2 della Legge 7 dicembre 2023, n. 193, secondo le modalità previste dagli artt. 56-bis e 56-ter del Regolamento IVASS n. 40/2018, rinviando al DIP aggiuntivo per le informazioni pertinenti. Le clausole contrattuali stipulate in contrasto con l’art. 2, commi da 1 a 5, della Legge n. 193/2023 sono nulle, fatta salva l’efficacia e la validità del contratto; la nullità opera a vantaggio del contraente o dell’assicurato ed è rilevabile d’ufficio.'
     };
 
     Object.entries(stableDefaults).forEach(([id, fallback]) => {
