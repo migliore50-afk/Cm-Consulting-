@@ -8,7 +8,7 @@
   const val = (id) => $(id)?.value?.trim() || '';
   const set = (id, value) => { const el = $(id); if (el) el.value = value ?? ''; };
 
-  const DEFAULTS_KEY = 'cm_mup_defaults_v1';
+  const DEFAULTS_KEY = 'cm_mup_defaults_v2';
 
   const PRACTICE_SPECIFIC_IDS = new Set([
     'mupClient', 'mupProduct', 'mupExpiry', 'mupEmail'
