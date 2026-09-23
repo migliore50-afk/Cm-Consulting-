@@ -55,14 +55,14 @@
           <div class="section-head"><div><div class="eyebrow">AREA INTERNA</div><h1>Pratiche e scadenze</h1></div><button id="newPracticeBtn" class="btn primary">+ NUOVA PRATICA</button></div>
           <div class="security-strip"><strong>Sessione protetta:</strong> MFA attiva · timeout inattività 15 minuti · sessione massima 8 ore · dati salvati sul database server-side.</div>
           <div class="metrics"><div><b id="mTot">0</b><span>Pratiche</span></div><div><b id="mSoon">0</b><span>In scadenza entro 30 giorni</span></div><div><b id="mOpen">0</b><span>Da verificare</span></div></div>
-          <div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Tipologia</th><th>Scadenza</th><th>Stato</th><th></th></tr></thead><tbody id="practiceBody"></tbody></table></div>
+          <div class="table-wrap"><table class="stack-table"><thead><tr><th>Cliente</th><th>Tipologia</th><th>Scadenza</th><th>Stato</th><th></th></tr></thead><tbody id="practiceBody"></tbody></table></div>
           <div id="detail" class="detail hidden"></div>
         </div>
 
         <div id="requestsSection" class="hidden">
           <div class="section-head"><div><div class="eyebrow">AREA INTERNA</div><h1>Richieste ricevute</h1></div></div>
           <div class="security-strip"><strong>Richieste dal sito:</strong> archiviate sul database server-side e accessibili solo dopo autenticazione amministratore.</div>
-          <div class="table-wrap"><table><thead><tr><th>Data</th><th>Cliente</th><th>Tipologia</th><th>Email</th><th>Allegati</th><th>Stato</th><th></th></tr></thead><tbody id="requestBody"><tr><td colspan="7" style="text-align:center;padding:36px;color:#65717d">Nessuna richiesta visualizzata.</td></tr></tbody></table></div>
+          <div class="table-wrap"><table class="stack-table"><thead><tr><th>Data</th><th>Cliente</th><th>Tipologia</th><th>Email</th><th>Allegati</th><th>Stato</th><th></th></tr></thead><tbody id="requestBody"><tr><td colspan="7" style="text-align:center;padding:36px;color:#65717d">Nessuna richiesta visualizzata.</td></tr></tbody></table></div>
           <div id="requestDetail" class="detail hidden"></div>
         </div>
 
@@ -73,7 +73,7 @@
             <article class="panel"><h2>Autenticazione a due fattori</h2><p class="muted">Il TOTP è obbligatorio per l'accesso. Puoi aggiungere un secondo dispositivo Authenticator senza rimuovere il fattore principale.</p><button id="addMfaBtn" class="btn secondary">AGGIUNGI DISPOSITIVO MFA</button><div id="settingsQr" class="qr-wrap hidden"><img id="settingsQrImage" alt="QR code MFA"><code id="settingsSecret"></code><form id="settingsMfaForm" class="stack"><label>Codice del nuovo dispositivo<input id="settingsMfaCode" inputmode="numeric" maxlength="6" autocomplete="one-time-code" required></label><button class="btn primary" type="submit">CONFERMA DISPOSITIVO</button></form></div><div id="mfaSettingsMsg" class="message"></div></article>
             <article class="panel" style="grid-column:1/-1">
               <div class="section-head" style="margin-bottom:10px"><div><h2 style="margin:0">Intermediari collaboratori</h2><p class="muted" style="margin:6px 0 0">Sezione A/B con cui collabori. Solo quelli "Attivo" compaiono nel generatore MUP — nessuna modifica al codice necessaria per aggiungerne o toglierne uno.</p></div><button id="newIntermediaryBtn" class="btn secondary" type="button">+ NUOVO INTERMEDIARIO</button></div>
-              <div class="table-wrap"><table><thead><tr><th>Denominazione</th><th>RUI</th><th>Sezione</th><th>Stato</th><th></th></tr></thead><tbody id="intermediaryBody"></tbody></table></div>
+              <div class="table-wrap"><table class="stack-table"><thead><tr><th>Denominazione</th><th>RUI</th><th>Sezione</th><th>Stato</th><th></th></tr></thead><tbody id="intermediaryBody"></tbody></table></div>
             </article>
           </div>
         </div>
