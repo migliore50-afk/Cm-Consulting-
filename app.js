@@ -394,7 +394,10 @@ function classifyAIRequest(text) {
   const scores = Object.entries(rules).map(([type, words]) => {
     let score = 0;
     for (const word of words) {
-      if (t.includes(word)) score += word.includes(' ') ? 3 : 2;
+      const matched = word.includes(' ')
+        ? t.includes(word)
+        : new RegExp('\\b' + word + '\\b').test(t);
+      if (matched) score += word.includes(' ') ? 3 : 2;
     }
     return { type, score };
   }).sort((a,b)=>b.score-a.score);
