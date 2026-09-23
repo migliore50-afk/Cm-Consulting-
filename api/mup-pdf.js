@@ -94,9 +94,8 @@ export function generateMupPdf(data) {
       ['Compensi complessivi in caso di collaborazione orizzontale / Sezione E', d.mupHorizontalCompensation]
     ]);
     addSection(doc, '6. Informazioni sul pagamento dei premi', [
-      ['Regime applicabile', d.mupPayment],
-      ['Gestione separata / garanzia bancaria, se applicabile', d.mupSegregatedAssets],
-      ['Modalità di pagamento ammesse', d.mupPaymentMethods],
+      ['Tutela delle somme e dei premi incassati', d.mupPayment],
+      ['Modalità di pagamento dei premi ammesse', d.mupPaymentMethods],
       ['Pagamento a intermediario Sezione B, se applicabile', d.mupSectionBPayment]
     ]);
     addSection(doc, '7. Informazioni sugli strumenti di tutela del contraente', [
