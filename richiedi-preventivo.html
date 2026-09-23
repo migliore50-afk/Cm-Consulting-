@@ -410,6 +410,37 @@ function submitRequest(){
   });
 }
 
+function restoreAIAssistantContext(){
+  let saved=null;
+  try { saved=JSON.parse(sessionStorage.getItem('cm_ai_form_context') || 'null'); } catch {}
+  if(!saved || typeof saved!=='object') return;
+
+  const route=sessionStorage.getItem('cm_ai_route') || '';
+  const routeType=(route.match(/[?&]tipo=([^&]+)/i)||[])[1] || '';
+  const normalized=decodeURIComponent(routeType);
+  if(normalized && labels[normalized] && !type){
+    type=normalized;
+    applyType();
+  }
+
+  const ids=['genericDescription','beneficiary','company','amount','duration','contactName','contactEmail','contactPhone','startDate','endDate','beneficiaryTax','beneficiaryAddress','beneficiaryPec','companyTax','refs','object','notes'];
+  ids.forEach(id=>{
+    const value=String(saved[id] ?? '').trim();
+    const el=document.getElementById(id);
+    if(el && value) el.value=value;
+  });
+
+  const lease=String(saved.leaseType || '');
+  if(lease){
+    const radio=document.querySelector(`input[name="leaseType"][value="${CSS.escape(lease)}"]`);
+    if(radio) radio.checked=true;
+  }
+
+  refreshAll();
+  sessionStorage.removeItem('cm_ai_form_context');
+  sessionStorage.removeItem('cm_ai_route');
+}
+
 (function init(){
   const qs=new URLSearchParams(location.search);
   if(qs.get('tipo')==='trasporti'){
@@ -428,6 +459,7 @@ function submitRequest(){
     type=qs.get('tipo');
     applyType();
   }
+  restoreAIAssistantContext();
 })();
 
 (function(){
