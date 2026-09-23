@@ -108,31 +108,37 @@
       <label>Scadenza pratica<input id="mupExpiry" type="date"></label>
       <label>E-mail cliente<input id="mupEmail" type="email"></label>
 
-      <label class="mup-req">Nome distributore <b class="mup-req-mark">*</b><input id="mupDistributorName" required></label>
-      <label class="mup-req">RUI distributore <b class="mup-req-mark">*</b><input id="mupDistributorRui" required></label>
-      <label>Data iscrizione RUI<input id="mupDistributorDate" required></label>
-      <label class="mup-req">Sezione RUI <b class="mup-req-mark">*</b><input id="mupDistributorSection" required></label>
-      <label>Ruolo<input id="mupDistributorRole" required></label>
-      <label class="mup-req">Sede legale / domicilio professionale <b class="mup-req-mark">*</b><input id="mupDistributorAddress" required></label>
-      <label>Telefono<input id="mupDistributorPhone"></label>
-      <label>E-mail distributore<input id="mupDistributorEmail" type="email"></label>
-      <label>PEC distributore<input id="mupDistributorPec" type="email"></label>
-      <label>Sito internet distributore<input id="mupDistributorWebsite" type="url"></label>
-      <label>Autorità di vigilanza<input id="mupIvass" required></label>
+      <div class="full mup-auto-box">
+        <strong>Dati identificativi MUP — gestiti automaticamente</strong>
+        <small class="muted">I dati di CM Consulting, RUI, recapiti, sito e i dati dell’intermediario principale non vengono mostrati come campi da compilare. Vengono inseriti automaticamente nel MUP finale.</small>
+        <input type="hidden" id="mupDistributorName">
+        <input type="hidden" id="mupDistributorRui">
+        <input type="hidden" id="mupDistributorDate">
+        <input type="hidden" id="mupDistributorSection">
+        <input type="hidden" id="mupDistributorRole">
+        <input type="hidden" id="mupDistributorAddress">
+        <input type="hidden" id="mupDistributorPhone">
+        <input type="hidden" id="mupDistributorEmail">
+        <input type="hidden" id="mupDistributorPec">
+        <input type="hidden" id="mupDistributorWebsite">
+        <input type="hidden" id="mupIvass">
+      </div>
 
       <label class="mup-req full">Intermediario per cui opera la Sezione E <b class="mup-req-mark">*</b>
         <select id="mupMainIntermediarySelect"><option value="">Seleziona intermediario…</option></select>
         <input type="hidden" id="mupMainIntermediary">
+        <small class="muted">Seleziona l’intermediario principale. Tutti i suoi dati identificativi verranno inseriti automaticamente nel MUP finale.</small>
       </label>
       <div id="mupMainSummary" class="mup-summary hidden full"></div>
-      <label class="mup-req">RUI intermediario <b class="mup-req-mark">*</b><input id="mupMainRui" required readonly></label>
-      <label class="mup-req">Sezione intermediario <b class="mup-req-mark">*</b><input id="mupMainSection" required readonly></label>
-      <label>Ruolo intermediario<input id="mupMainRole"></label>
-      <label class="mup-req">Sede legale intermediario <b class="mup-req-mark">*</b><input id="mupMainAddress" required readonly></label>
-      <label>Telefono intermediario<input id="mupMainPhone" readonly></label>
-      <label>E-mail intermediario<input id="mupMainEmail" type="email" readonly></label>
-      <label>PEC intermediario<input id="mupMainPec" type="email" readonly></label>
-      <label>Sito internet intermediario<input id="mupMainWebsite" type="url" readonly></label>
+      <input type="hidden" id="mupMainRui">
+      <input type="hidden" id="mupMainSection">
+      <input type="hidden" id="mupMainRole">
+      <input type="hidden" id="mupMainAddress">
+      <input type="hidden" id="mupMainPhone">
+      <input type="hidden" id="mupMainEmail">
+      <input type="hidden" id="mupMainPec">
+      <input type="hidden" id="mupMainWebsite">
+
       <label class="full mup-req">Come operi in questa pratica? <b class="mup-req-mark">*</b>
         <select id="mupDistribution" required>
           <option value="">Seleziona…</option>
@@ -175,21 +181,34 @@
       </label>
       <label class="full mup-req hidden" id="mupRemunerationAmountRow">Importo del compenso o metodo per calcolarlo <b class="mup-req-mark">*</b><input id="mupRemunerationAmount" placeholder="Es. € 250 a pratica, oppure 2% dell'importo garantito"></label>
       <label class="full">Eventuale compenso pagato direttamente dal cliente<input id="mupClientFee"></label>
-      <label>Provvigioni RC Auto, se applicabile<input id="mupRcAuto"></label>
-      <label>Compensi complessivi collaborazione orizzontale / Sezione E<input id="mupHorizontalCompensation"></label>
+      <input type="hidden" id="mupRcAuto">
+      <input type="hidden" id="mupHorizontalCompensation">
 
-      <label class="full mup-req">Come sono tutelate le somme eventualmente incassate? <b class="mup-req-mark">*</b>
-        <select id="mupPayment" required>
+      <div class="full mup-auto-box">
+        <strong>Tutela delle somme — gestita automaticamente</strong>
+        <small class="muted">Per CM Consulting il MUP utilizza il regime di patrimonio autonomo e separato. La fideiussione bancaria non è una modalità di pagamento e non viene proposta come scelta nella compilazione della singola pratica.</small>
+        <input type="hidden" id="mupPayment" value="I premi e le somme incassate costituiscono patrimonio autonomo e separato dal patrimonio dell'intermediario">
+      </div>
+      <label class="full mup-req">Modalità di pagamento del premio <b class="mup-req-mark">*</b>
+        <select id="mupPaymentMethods" required>
           <option value="">Seleziona…</option>
-          <option value="I premi e le somme incassate costituiscono patrimonio autonomo e separato dal patrimonio dell'intermediario">Patrimonio separato — le somme restano separate dal patrimonio dell’intermediario</option>
-          <option value="Le somme incassate sono garantite da fideiussione bancaria idonea a garantire una capacità finanziaria pari al 4% dei premi incassati, con un minimo di € 23.480 (aggiornato annualmente)">Fideiussione bancaria — garanzia finanziaria prevista dalla normativa</option>
+          <option value="Ordine di bonifico, altro mezzo di pagamento bancario o postale, incluso strumento di pagamento elettronico, con beneficiario l’impresa di assicurazione">Bonifico bancario / pagamento elettronico — direttamente alla compagnia</option>
+          <option value="Ordine di bonifico, altro mezzo di pagamento bancario o postale, incluso strumento di pagamento elettronico, con beneficiario l’intermediario, espressamente in tale qualità">Bonifico bancario / pagamento elettronico — all’intermediario, in qualità di intermediario</option>
+          <option value="Assegno bancario, postale o circolare, munito della clausola di non trasferibilità, intestato o girato all’impresa di assicurazione oppure all’intermediario, espressamente in tale qualità">Assegno non trasferibile — nei casi previsti</option>
+          <option value="Denaro contante esclusivamente nei casi consentiti dalla Sezione VI, lettera b), dell’Allegato 3 al Regolamento IVASS n. 40/2018">Contanti — solo nei casi consentiti dalla normativa</option>
         </select>
-        <small class="muted">Non scegliere in base a ciò che “sembra giusto”: questo valore deve corrispondere al regime effettivamente applicabile alla tua attività.</small>
+        <small class="muted">La scelta riguarda il pagamento del <strong>premio assicurativo</strong>. Il compenso per la gestione della pratica è indicato separatamente nella sezione “Remunerazione”.</small>
       </label>
-      <label>Gestione separata / garanzia bancaria, se applicabile<input id="mupSegregatedAssets"></label>
-      <label class="full">Modalità di pagamento ammesse<input id="mupPaymentMethods"></label>
-      <label class="full">Pagamento a intermediario Sezione B, se applicabile<input id="mupSectionBPayment"></label>
-
+      <input type="hidden" id="mupSegregatedAssets">
+      <input type="hidden" id="mupSectionBPayment">
+      <label class="full">Pagamento dell’eventuale fattura per la gestione pratica
+        <select id="mupClientFee">
+          <option value="">Nessun compenso/fattura separata</option>
+          <option value="Fattura emessa da CM Consulting">Fattura emessa da CM Consulting</option>
+          <option value="Fattura emessa dall’intermediario collaboratore principale">Fattura emessa dall’intermediario collaboratore principale</option>
+        </select>
+        <small class="muted">Questo dato riguarda il compenso per la gestione/intermediazione e non il pagamento del premio alla compagnia.</small>
+      </label>
       <div class="full mup-auto-box">
         <strong>RC professionale — gestita automaticamente</strong>
         <small class="muted">Per la Sezione E non devi inserire manualmente gli estremi della polizza: il MUP indica automaticamente che l'attività di distribuzione è garantita dalla copertura RC professionale prevista per l'intermediario.</small>
