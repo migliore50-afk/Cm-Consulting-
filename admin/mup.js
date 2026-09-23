@@ -15,7 +15,7 @@
   ]);
 
   function allFieldIds() {
-    return Array.from(document.querySelectorAll('#mupOpen .form-grid input'))
+    return Array.from(document.querySelectorAll('#mupOpen .form-grid input, #mupOpen .form-grid select'))
       .map(el => el.id)
       .filter(Boolean);
   }
@@ -44,6 +44,28 @@
     try { localStorage.removeItem(DEFAULTS_KEY); } catch {}
     open(currentPractice || {});
     $('mupMsg').textContent = 'Valori salvati azzerati. I campi sono tornati vuoti.';
+  }
+
+  // 23 settembre 2026 — Fase 1 della revisione campi MUP, basata sul testo
+  // ufficiale verificato dell'Allegato 3 al Regolamento IVASS 40/2018
+  // (versione aggiornata al Provvedimento 169/2026, letta direttamente dal
+  // PDF ufficiale IVASS, non da un riassunto). Modello di distribuzione,
+  // Remunerazione e la tutela delle somme (ex "Pagamento premi") sono ora
+  // menu a tendina con le sole formulazioni previste dalla norma, non testo
+  // libero. Nessuna modifica alla generazione del documento Word/PDF in
+  // questa fase — solo l'interfaccia del modulo. Nessuna modifica alla
+  // Sezione VIII, al login o alla sicurezza.
+  function updateRemunerationAmountVisibility() {
+    const value = val('mupRemuneration');
+    const needsAmount = value === 'Onorario corrisposto direttamente dal cliente' ||
+      value === 'Combinazione delle diverse tipologie di compenso';
+    const row = $('mupRemunerationAmountRow');
+    if (!row) return;
+    row.classList.toggle('hidden', !needsAmount);
+    if (!needsAmount) {
+      row.classList.remove('field-error');
+      $('mupRemunerationAmount')?.classList.remove('field-error');
+    }
   }
 
   function open(practice = {}) {
@@ -93,12 +115,17 @@
       mupBusinessRelationships: '',
       mupTransparency: '',
       mupRemuneration: '',
+      mupRemunerationAmount: '',
       mupClientFee: '',
       mupRcAuto: '',
       mupHorizontalCompensation: '',
       mupPayment: '',
       mupSegregatedAssets: '',
-      mupPaymentMethods: '',
+      // 23 settembre 2026 — testo fisso, dal testo ufficiale IVASS (Sezione
+      // VI, lettera b): le modalità di pagamento ammesse per legge sono le
+      // stesse per tutti, non variano per pratica — non ha senso lasciarle
+      // vuote ogni volta.
+      mupPaymentMethods: 'Assegni bancari, postali o circolari non trasferibili, intestati o girati all’impresa di assicurazione o all’intermediario espressamente in tale qualità; bonifici e altri strumenti di pagamento bancario, postale o elettronico con lo stesso beneficiario; denaro contante solo per polizze RC Auto (e relative garanzie accessorie riferite allo stesso veicolo) oppure, per gli altri rami danni, entro il limite di € 750 annui per contratto.',
       mupSectionBPayment: '',
       mupRc: '',
       mupComplaints: 'Reclamo a CM Consulting via email (info@cm-consulting.info), PEC (carmelo.migliore@legalmail.it) o posta ordinaria (Via Spinoza n. 49, 00137 Roma) — risposta entro 45 giorni. Se non soddisfatto, reclamo all’IVASS (Via del Quirinale 21, 00187 Roma).',
@@ -113,6 +140,7 @@
     });
 
     populateIntermediarySelect();
+    updateRemunerationAmountVisibility();
 
     document.querySelectorAll('#mupOpen .field-error').forEach(el => el.classList.remove('field-error'));
     $('mupMsg').textContent = '';
@@ -187,7 +215,7 @@
   function close() { $('mupOpen').classList.add('hidden'); }
 
   function requiredValues() {
-    return [
+    const fields = [
       ['Nome distributore', 'mupDistributorName'],
       ['RUI distributore', 'mupDistributorRui'],
       ['Sezione distributore', 'mupDistributorSection'],
@@ -199,11 +227,21 @@
       ['Modello di distribuzione', 'mupDistribution'],
       ['Impresa/e di assicurazione / rapporti rilevanti', 'mupInsurer'],
       ['Remunerazione', 'mupRemuneration'],
-      ['Pagamento premi', 'mupPayment'],
+      ['Tutela delle somme versate dal cliente', 'mupPayment'],
       ['RC professionale', 'mupRc'],
       ['Reclami', 'mupComplaints'],
       ['Arbitro Assicurativo', 'mupArbitro']
-    ].map(([label, id]) => [label, id, val(id)]);
+    ];
+    // 23 settembre 2026 — l'importo/metodo di calcolo dell'onorario è
+    // obbligatorio solo quando la remunerazione lo prevede (onorario diretto
+    // o combinazione), come indicato dalla Sezione V, lettera b, del testo
+    // IVASS — non è un campo sempre richiesto.
+    const remuneration = val('mupRemuneration');
+    if (remuneration === 'Onorario corrisposto direttamente dal cliente' ||
+        remuneration === 'Combinazione delle diverse tipologie di compenso') {
+      fields.push(['Importo del compenso o metodo per calcolarlo', 'mupRemunerationAmount']);
+    }
+    return fields.map(([label, id]) => [label, id, val(id)]);
   }
 
   // 22 settembre 2026 — su segnalazione di Carmelo: su iPhone il secondo di
@@ -270,7 +308,7 @@
       downloadBase64(result.docxBase64, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', result.documentId + '_' + safeClient + '.docx');
 
       if (typeof loadPractices === 'function') await loadPractices();
-      $('mupMsg').textContent = 'MUP generato e salvato nella pratica. Se uno dei due file (in genere il Word) non si è scaricato, apri la pratica e usa "Scarica Word" / "Scarica PDF" per riprenderlo singolarmente.';
+      $('mupMsg').textContent = 'MUP generato e salvato nella pratica. Se uno dei due file (in genere il Word) non si è scaricato, apri la pratica e usa "Scarica Word" / "Scarica PDF" per riprenderlo singolarmente. Nota: il nuovo campo "Importo del compenso" non è ancora incluso nel documento generato — arriva nella prossima fase.';
     } catch (err) {
       $('mupMsg').textContent = err?.message || 'Generazione dei file MUP non riuscita.';
     } finally {
@@ -316,7 +354,14 @@
     applyIntermediarySelection(this.value);
   });
 
+  // 23 settembre 2026 — mostra/nasconde il campo "Importo del compenso"
+  // quando cambia il tipo di remunerazione selezionato.
+  $('mupRemuneration')?.addEventListener('change', updateRemunerationAmountVisibility);
+
   $('mupOpen')?.addEventListener('input', e => {
+    if (e.target?.classList?.contains('field-error')) e.target.classList.remove('field-error');
+  });
+  $('mupOpen')?.addEventListener('change', e => {
     if (e.target?.classList?.contains('field-error')) e.target.classList.remove('field-error');
   });
 
