@@ -43,3 +43,7 @@ html:has(#mupOpen:not(.hidden)), body:has(#mupOpen:not(.hidden)){overflow-x:hidd
 @media(min-width:1101px){
   #mupOpen .mup-modal-card{width:min(980px,calc(100vw - 64px))}
 }
+/* Download MUP — comandi uniformi e responsive. */
+.mup-download-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0 0}
+.mup-download-actions .small-btn{min-width:132px;text-align:center}
+@media(max-width:640px){.mup-download-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}.mup-download-actions .small-btn{width:100%;min-width:0}}
