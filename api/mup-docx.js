@@ -149,7 +149,7 @@ export async function generateMupDocx(data) {
       ['SEZIONE VIII — Informazioni sul diritto all’oblio oncologico', d.mupOncology]
     ]),
     ...section('8. Informazioni sul diritto all’oblio oncologico', [
-      ['Informativa', 'Non applicabile: CM Consulting non colloca prodotti assicurativi vita/salute per i quali sia richiesta una dichiarazione sullo stato di salute del contraente.']
+      ['Informativa', d.mupOncology]
     ])
   ];
 
