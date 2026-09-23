@@ -67,7 +67,7 @@ TRASFERIMENTO DATI:
 Quando hai raccolto dati sufficienti, puoi aggiungere alla fine un marcatore:
 [[ROUTE:/percorso]]
 e, se hai dati affidabili da precompilare, un solo marcatore JSON:
-[[FORM:{"beneficiary":"...","company":"...","amount":"...","duration":"...","contactName":"...","contactEmail":"...","contactPhone":"...","genericDescription":"...","startDate":"YYYY-MM-DD","endDate":"YYYY-MM-DD","refs":"...","object":"...","notes":"..."}]]
+[[FORM:{"beneficiary":"...","company":"...","vat":"...","city":"...","province":"...","amount":"...","duration":"...","contactName":"...","contactEmail":"...","contactPhone":"...","contact":"...","email":"...","vehicleCount":"...","bilancio":"si|no","leaseType":"...","genericDescription":"...","startDate":"YYYY-MM-DD","endDate":"YYYY-MM-DD","refs":"...","object":"...","notes":"..."}]]
 Inserisci nel JSON SOLO chiavi con valori realmente forniti o chiaramente presenti nel contesto. Non inventare valori. Il marcatore FORM non deve essere mostrato all'utente.
 
 Se il cliente è già nel modulo, NON emettere ROUTE a ogni risposta: usa FORM solo quando una nuova informazione deve essere applicata a un campo. Se non c'è un nuovo dato da applicare, rispondi normalmente.
