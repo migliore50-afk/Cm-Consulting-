@@ -20,7 +20,7 @@ function renderPractices() {
   const rows = state.practices;
   $('practiceBody').innerHTML = rows.length ? rows.map(p => {
     const s = status(p.expiry);
-    return `<tr><td><strong>${escapeHtml(p.client)}</strong></td><td>${escapeHtml(p.type)}</td><td>${new Date(`${p.expiry}T00:00:00`).toLocaleDateString('it-IT')}</td><td><span class="status ${s[1]}">${s[0]}</span></td><td><button class="small-btn" data-open="${p.id}">APRI</button></td></tr>`;
+    return `<tr><td data-label="Cliente"><strong>${escapeHtml(p.client)}</strong></td><td data-label="Tipologia">${escapeHtml(p.type)}</td><td data-label="Scadenza">${new Date(`${p.expiry}T00:00:00`).toLocaleDateString('it-IT')}</td><td data-label="Stato"><span class="status ${s[1]}">${s[0]}</span></td><td class="stack-actions"><button class="small-btn" data-open="${p.id}">APRI</button></td></tr>`;
   }).join('') : '<tr><td colspan="5" style="text-align:center;padding:36px;color:#65717d">Nessuna pratica registrata.</td></tr>';
   $('mTot').textContent = rows.length;
   $('mSoon').textContent = rows.filter(p => daysUntil(p.expiry) >= 0 && daysUntil(p.expiry) <= 30).length;
