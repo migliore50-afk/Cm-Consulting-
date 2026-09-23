@@ -108,8 +108,9 @@ function openDetail(id) {
     <p><strong>Prezzo cliente:</strong> ${p.client_price != null && p.client_price !== '' ? escapeHtml(String(p.client_price)) : '—'}</p>
     <p><strong>Costo revisore:</strong> ${p.reviewer_cost != null && p.reviewer_cost !== '' ? escapeHtml(String(p.reviewer_cost)) : '—'}</p>
     <p><strong>MUP:</strong> ${p.mup_generated_at
-      ? `generato il ${new Date(p.mup_generated_at).toLocaleString('it-IT')} — <button class="link-btn" id="downloadMupWord" type="button">Scarica Word</button> <button class="link-btn" id="downloadMupPdf" type="button">Scarica PDF</button>`
+      ? `generato il ${new Date(p.mup_generated_at).toLocaleString('it-IT')}`
       : 'non ancora generato'}</p>
+    ${p.mup_generated_at ? '<div class="mup-download-actions"><button class="small-btn" id="downloadMupWord" type="button">SCARICA WORD</button><button class="small-btn" id="downloadMupPdf" type="button">SCARICA PDF</button></div>' : ''}
     <div class="panel" id="facsimilePanel">
       <h3>Facsimile collaboratore</h3>
       <p class="muted">Carica il facsimile ricevuto dal collaboratore. Il sistema estrae i dati e li presenta per la tua verifica; nulla diventa ufficiale senza conferma.</p>
