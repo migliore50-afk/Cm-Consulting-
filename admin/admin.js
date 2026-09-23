@@ -16,6 +16,12 @@ function daysUntil(date) { return Math.ceil((new Date(`${date}T23:59:59`) - new 
 function status(date) { const d = daysUntil(date); if (d < 0) return ['Scaduta','bad']; if (d <= 30) return ['In scadenza','warn']; return ['Attiva','ok']; }
 function escapeHtml(v) { return String(v ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
 
+// 23 settembre 2026 — su richiesta di Carmelo: aggiunti gli attributi
+// data-label alle celle delle tre tabelle (Pratiche, Richieste, Intermediari)
+// e la classe stack-actions sulla cella con i pulsanti. Servono solo al CSS
+// mobile (admin.css) per trasformare ogni riga in una scheda verticale su
+// schermi stretti, senza scorrimento laterale. Nessun cambiamento di
+// comportamento: stessi dati, stesse azioni, stessi pulsanti.
 function renderPractices() {
   const rows = state.practices;
   $('practiceBody').innerHTML = rows.length ? rows.map(p => {
@@ -293,13 +299,13 @@ function renderRequests() {
     const attachments = Number(r?.attachments_count ?? 0);
     const requestStatus = requestValue(r, 'status') || 'Nuova';
     return `<tr>
-      <td>${formatRequestDate(r?.created_at)}</td>
-      <td><strong>${escapeHtml(customer || '—')}</strong></td>
-      <td>${escapeHtml(type || '—')}</td>
-      <td>${escapeHtml(email || '—')}</td>
-      <td>${attachments}</td>
-      <td><span class="status ${requestStatus.toLowerCase() === 'nuova' ? 'warn' : 'ok'}">${escapeHtml(requestStatus)}</span></td>
-      <td><button class="small-btn" data-request-open="${escapeHtml(r?.id || '')}">APRI</button></td>
+      <td data-label="Data">${formatRequestDate(r?.created_at)}</td>
+      <td data-label="Cliente"><strong>${escapeHtml(customer || '—')}</strong></td>
+      <td data-label="Tipologia">${escapeHtml(type || '—')}</td>
+      <td data-label="Email">${escapeHtml(email || '—')}</td>
+      <td data-label="Allegati">${attachments}</td>
+      <td data-label="Stato"><span class="status ${requestStatus.toLowerCase() === 'nuova' ? 'warn' : 'ok'}">${escapeHtml(requestStatus)}</span></td>
+      <td class="stack-actions"><button class="small-btn" data-request-open="${escapeHtml(r?.id || '')}">APRI</button></td>
     </tr>`;
   }).join('') : '<tr><td colspan="7" style="text-align:center;padding:36px;color:#65717d">Nessuna richiesta ricevuta.</td></tr>';
 }
@@ -352,11 +358,11 @@ async function loadRequests() { const data = await api('requests'); state.reques
 function renderIntermediaries() {
   const rows = state.intermediaries;
   $('intermediaryBody').innerHTML = rows.length ? rows.map(i => `<tr>
-    <td><strong>${escapeHtml(i.name)}</strong></td>
-    <td>${escapeHtml(i.rui)}</td>
-    <td>${escapeHtml(i.section)}</td>
-    <td><span class="status ${i.active ? 'ok' : 'bad'}">${i.active ? 'Attivo' : 'Non attivo'}</span></td>
-    <td>
+    <td data-label="Denominazione"><strong>${escapeHtml(i.name)}</strong></td>
+    <td data-label="RUI">${escapeHtml(i.rui)}</td>
+    <td data-label="Sezione">${escapeHtml(i.section)}</td>
+    <td data-label="Stato"><span class="status ${i.active ? 'ok' : 'bad'}">${i.active ? 'Attivo' : 'Non attivo'}</span></td>
+    <td class="stack-actions">
       <button class="small-btn" data-edit-intermediary="${i.id}">MODIFICA</button>
       <button class="small-btn" data-toggle-intermediary="${i.id}">${i.active ? 'DISATTIVA' : 'ATTIVA'}</button>
     </td>
