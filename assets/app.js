@@ -349,34 +349,81 @@ function closeAI() {
   stopAssistantRecognition();
 }
 
+function getAIConversationHistory() {
+  try {
+    const raw = sessionStorage.getItem('cm_ai_history');
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed.slice(-12) : [];
+  } catch { return []; }
+}
+
+function saveAIConversationTurn(role, content) {
+  const history = getAIConversationHistory();
+  history.push({role, content: String(content || '').slice(0, 2000)});
+  sessionStorage.setItem('cm_ai_history', JSON.stringify(history.slice(-12)));
+}
+
+function getAIFormContext() {
+  const ids = ['genericDescription','beneficiary','company','amount','duration','contactName','contactEmail','contactPhone','startDate','endDate','beneficiaryTax','beneficiaryAddress','beneficiaryPec','companyTax','refs','object','notes'];
+  const out = {};
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && String(el.value || '').trim()) out[id] = String(el.value).trim();
+  });
+  const lease = document.querySelector('input[name="leaseType"]:checked');
+  if (lease) out.leaseType = lease.value;
+  return out;
+}
+
+function applyAIFormData(data) {
+  if (!data || typeof data !== 'object') return;
+  Object.entries(data).forEach(([key, value]) => {
+    const el = document.getElementById(key);
+    if (!el || value == null || typeof value === 'object') return;
+    const text = String(value).trim();
+    if (!text) return;
+    if (el.tagName === 'INPUT' && el.type === 'radio') return;
+    el.value = text;
+    el.dispatchEvent(new Event('input', {bubbles:true}));
+    el.dispatchEvent(new Event('change', {bubbles:true}));
+  });
+  const lease = String(data.leaseType || '');
+  if (lease) {
+    const radio = document.querySelector(`input[name="leaseType"][value="${CSS.escape(lease)}"]`);
+    if (radio) { radio.checked = true; radio.dispatchEvent(new Event('change', {bubbles:true})); }
+  }
+}
+
+function getAIPageContext() {
+  return {
+    path: window.location.pathname + window.location.search,
+    title: document.title,
+    onRequestForm: Boolean(document.querySelector('#step2') && document.querySelector('#contactEmail'))
+  };
+}
+
 function startAI() {
   const content = document.getElementById('aiContent');
   if (!content) return;
 
-  const greeting = `Buongiorno! Sono l'Assistente CM. Posso aiutarti a trovare il percorso più adatto alla tua esigenza. Da dove vuoi iniziare?`;
+  const onRequestForm = Boolean(document.querySelector('#step2') && document.querySelector('#contactEmail'));
+  const formContext = getAIFormContext();
+  const greeting = onRequestForm
+    ? 'Sono qui per seguirti nella compilazione. Dimmi cosa vuoi inserire, oppure chiedimi quale dato serve nel campo che stai compilando.'
+    : 'Raccontami con parole semplici cosa devi fare. Non è necessario conoscere il nome della garanzia.';
+
   content.innerHTML = `
-    <div class="bubble ai"><b>Ciao, sono l'Assistente CM.</b><br>Raccontami con parole semplici cosa devi fare. Non è necessario conoscere il nome della garanzia.</div>
+    <div class="bubble ai"><b>Ciao, sono l'Assistente CM.</b><br>${greeting}</div>
     <div class="ai-chat-log" id="aiChatLog" aria-live="polite"></div>
     <form class="ai-chat-form" id="aiChatForm">
-      <input id="aiChatInput" type="text" maxlength="1200" autocomplete="off" placeholder="Es. Devo partecipare a una gara..." aria-label="Descrivi la tua esigenza">
+      <input id="aiChatInput" type="text" maxlength="1200" autocomplete="off" placeholder="${onRequestForm ? 'Es. Non so dove trovare l’importo...' : 'Scrivi qui la tua necessità...'}" aria-label="Scrivi la tua necessità">
       <button type="submit" aria-label="Invia richiesta">Invia</button>
     </form>
-    <div class="ai-choices">
-      <button class="ai-choice" type="button" data-ai="appalto">Appalto pubblico <span>›</span></button>
-      <button class="ai-choice" type="button" data-ai="trasporto">Autotrasporto <span>›</span></button>
-      <button class="ai-choice" type="button" data-ai="locazione">Locazione <span>›</span></button>
-      <button class="ai-choice" type="button" data-ai="dogana">Dogana <span>›</span></button>
-      <button class="ai-choice" type="button" data-ai="ambiente">Ambiente <span>›</span></button>
-      <button class="ai-choice" type="button" data-ai="altro">Altra esigenza <span>›</span></button>
-    </div>
     <div class="ai-voice-row">
-      <button class="ai-mic" id="aiMic" type="button" aria-label="Spiega a voce la tua esigenza">🎙️ <span>Spiega a voce la tua esigenza</span></button>
+      <button class="ai-mic" id="aiMic" type="button" aria-label="Spiega a voce la tua esigenza">🎙️ <span>Parla con l'assistente</span></button>
       <span class="ai-voice-status" id="aiVoiceStatus" role="status" aria-live="polite"></span>
     </div>`;
 
-  content.querySelectorAll('[data-ai]').forEach(button => {
-    button.addEventListener('click', () => aiChoose(button.dataset.ai));
-  });
   content.querySelector('#aiMic')?.addEventListener('click', startAssistantRecognition);
   content.querySelector('#aiChatForm')?.addEventListener('submit', event => {
     event.preventDefault();
@@ -448,75 +495,70 @@ async function aiSendMessage(message) {
   userBubble.textContent = message;
   log.appendChild(userBubble);
   log.scrollTop = log.scrollHeight;
+  saveAIConversationTurn('user', message);
 
   try {
     const response = await fetch('/api/assistant', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({message})
+      body: JSON.stringify({
+        message,
+        history: getAIConversationHistory(),
+        pageContext: getAIPageContext(),
+        formContext: getAIFormContext()
+      })
     });
     const data = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(data?.error || 'Servizio temporaneamente non disponibile.');
 
-    const routeMatch = String(data.reply || '').match(/\[\[ROUTE:(\/[^\]]+)\]\]/i);
-    const route = routeMatch ? routeMatch[1] : '';
-    const reply = String(data.reply || '').replace(/\s*\[\[ROUTE:\/[^\]]+\]\]\s*/ig, ' ').trim();
+    const reply = String(data.reply || '').trim();
+    if (data.form) applyAIFormData(data.form);
 
     const aiBubble = document.createElement('div');
     aiBubble.className = 'bubble ai';
-    aiBubble.innerHTML = reply.replace(/\n/g, '<br>');
+    aiBubble.textContent = reply || 'Ho aggiornato le informazioni disponibili.';
     log.appendChild(aiBubble);
+    saveAIConversationTurn('assistant', reply);
 
-    if (route) {
-      const safeRoute = route.startsWith('/') ? route : '/';
+    if (data.route) {
+      const safeRoute = String(data.route).startsWith('/') ? String(data.route) : '/';
       const actions = document.createElement('div');
       actions.className = 'ai-route-actions';
       const link = document.createElement('a');
       link.className = 'ai-choice';
       link.href = safeRoute;
-      link.textContent = safeRoute.includes('richiedi-preventivo') ? 'Apri la richiesta →' : 'Apri la sezione consigliata →';
+      link.textContent = safeRoute.includes('capacita-finanziaria') ? 'Apri Capacità finanziaria →' : 'Apri il modulo corretto →';
       actions.appendChild(link);
       log.appendChild(actions);
+
+      const formData = getAIFormContext();
+      sessionStorage.setItem('cm_ai_route', safeRoute);
+      sessionStorage.setItem('cm_ai_form_context', JSON.stringify(formData));
     }
+
     log.scrollTop = log.scrollHeight;
     speakAI(reply);
   } catch (error) {
-    const fallback = document.createElement('div');
-    fallback.className = 'bubble ai';
-    fallback.innerHTML = '<b>Posso aiutarti.</b><br>Il collegamento all’assistente AI non è disponibile in questo momento. Puoi scegliere una delle aree qui sotto oppure descrivere la tua esigenza nel modulo.';
-    log.appendChild(fallback);
-    log.scrollTop = log.scrollHeight;
+    const aiBubble = document.createElement('div');
+    aiBubble.className = 'bubble ai';
+    aiBubble.textContent = 'Il collegamento all’assistente AI non è disponibile in questo momento. Puoi riprovare tra poco.';
+    log.appendChild(aiBubble);
   } finally {
     if (send) send.disabled = false;
-    input?.focus();
   }
 }
 
 function aiChoose(type) {
-  const content = document.getElementById('aiContent');
-  if (!content) return;
-
-  const map = {
-    appalto: ['Per un appalto posso indirizzarti alle garanzie collegate alla gara e agli obblighi contrattuali.', 'appalti-pubblici.html'],
-    trasporto: ["Per l'autotrasporto possiamo distinguere tra capacità finanziaria e altre esigenze di garanzia.", '/capacita-finanziaria'],
-    locazione: ['Per la locazione partiamo dalle condizioni richieste dal contratto o dal locatore.', '/locazioni'],
-    dogana: ['Per una pratica doganale partiamo dal tipo di obbligo e dalla documentazione ricevuta.', '/dogane'],
-    ambiente: ["Per l'ambiente partiamo dall'obbligo specifico e dal soggetto che richiede la garanzia.", '/ambiente'],
-    altro: ['Va bene. Raccontami il caso concreto e allega la documentazione che hai: apriamo direttamente la valutazione generica.', 'richiedi-preventivo.html?esigenza=generica']
+  const prompts = {
+    appalto: 'Devo partecipare a un appalto pubblico.',
+    trasporto: 'Ho bisogno di capacità finanziaria per l’autotrasporto.',
+    locazione: 'Ho bisogno di una garanzia per una locazione.',
+    dogana: 'Ho una richiesta di garanzia doganale.',
+    ambiente: 'Ho una richiesta di garanzia in ambito ambientale.'
   };
-
-  const [message, destination] = map[type] || map.altro;
-  const directGeneric = destination === 'richiedi-preventivo.html?esigenza=generica';
-  content.innerHTML = `
-    <div class="bubble ai"><b>Perfetto.</b><br>${message}</div>
-    <div class="ai-choices">
-      <a class="ai-choice" href="${destination}">Vai al percorso <span>›</span></a>
-      <a class="ai-choice" href="richiedi-preventivo.html?esigenza=generica">Racconta direttamente la tua esigenza <span>›</span></a>
-      <button class="ai-choice" type="button" id="aiRestart">← Cambia esigenza</button>
-    </div>`;
-  document.getElementById('aiRestart')?.addEventListener('click', startAI);
-  speakAI(directGeneric ? 'Apro il percorso di valutazione generica.' : message);
+  aiSendMessage(prompts[type] || 'Non so quale garanzia mi serve.');
 }
+
 
 window.openAI = openAI;
 window.closeAI = closeAI;
