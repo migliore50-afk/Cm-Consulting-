@@ -55,6 +55,43 @@
   // libero. Nessuna modifica alla generazione del documento Word/PDF in
   // questa fase — solo l'interfaccia del modulo. Nessuna modifica alla
   // Sezione VIII, al login o alla sicurezza.
+  function updateProductTypeVisibility() {
+    const value = val('mupProduct');
+    const row = $('mupProductOtherRow');
+    if (!row) return;
+    const needsOther = value === '__ALTRO__';
+    row.classList.toggle('hidden', !needsOther);
+    if (!needsOther) {
+      set('mupProductOther', '');
+      $('mupProductOther')?.classList.remove('field-error');
+    }
+  }
+
+  function applyProductType(value) {
+    const known = [
+      'Appalti pubblici',
+      'Affitti fra privati',
+      'Affitti commerciali',
+      "Rami d'azienda",
+      'Capacità finanziaria',
+      'Dogane',
+      'Beneficiari pubblici',
+      'Contratti privati'
+    ];
+    const normalized = String(value || '').trim();
+    if (known.includes(normalized)) {
+      set('mupProduct', normalized);
+      set('mupProductOther', '');
+    } else if (normalized) {
+      set('mupProduct', '__ALTRO__');
+      set('mupProductOther', normalized);
+    } else {
+      set('mupProduct', '');
+      set('mupProductOther', '');
+    }
+    updateProductTypeVisibility();
+  }
+
   function updateRemunerationAmountVisibility() {
     const value = val('mupRemuneration');
     const needsAmount = value === 'Onorario corrisposto direttamente dal cliente' ||
@@ -128,7 +165,7 @@
     currentPractice = practice;
     $('mupPracticeTitle').textContent = practice.client || 'Pratica';
     set('mupClient', practice.client);
-    set('mupProduct', practice.type);
+    applyProductType(practice.type);
     set('mupExpiry', practice.expiry);
     set('mupEmail', practice.email);
 
@@ -196,6 +233,7 @@
     });
 
     populateIntermediarySelect();
+    updateProductTypeVisibility();
     updateRemunerationAmountVisibility();
     updateDistributionAndTransparencyFields();
 
@@ -246,6 +284,7 @@
       set('mupMainEmail', '');
       set('mupMainPec', '');
       set('mupMainWebsite', '');
+      set('mupRc', '');
       if (summary) summary.classList.add('hidden');
       return;
     }
@@ -259,6 +298,7 @@
     set('mupMainEmail', inter.email || '');
     set('mupMainPec', inter.pec || '');
     set('mupMainWebsite', inter.website || '');
+    set('mupRc', 'Attività di distribuzione garantita dalla copertura di responsabilità civile professionale prevista per l’intermediario principale e per l’attività svolta in Sezione E.');
     if (summary) {
       summary.classList.remove('hidden');
       summary.innerHTML = '<strong>Intermediario selezionato</strong><br>' + esc(inter.name) +
@@ -272,7 +312,10 @@
   function close() { $('mupOpen').classList.add('hidden'); }
 
   function requiredValues() {
+    const product = val('mupProduct') === '__ALTRO__' ? val('mupProductOther') : val('mupProduct');
+    const productFieldId = val('mupProduct') === '__ALTRO__' ? 'mupProductOther' : 'mupProduct';
     const fields = [
+      ['Tipologia / prodotto', productFieldId, product],
       ['Nome distributore', 'mupDistributorName'],
       ['RUI distributore', 'mupDistributorRui'],
       ['Sezione distributore', 'mupDistributorSection'],
@@ -304,7 +347,7 @@
         remuneration === 'Combinazione delle diverse tipologie di compenso') {
       fields.push(['Importo del compenso o metodo per calcolarlo', 'mupRemunerationAmount']);
     }
-    return fields.map(([label, id]) => [label, id, val(id)]);
+    return fields.map(([label, id, explicitValue]) => [label, id, explicitValue !== undefined ? explicitValue : val(id)]);
   }
 
   // 22 settembre 2026 — su segnalazione di Carmelo: su iPhone il secondo di
@@ -349,6 +392,7 @@
     document.querySelectorAll('#mupOpen input, #mupOpen select, #mupOpen textarea').forEach(el => {
       if (el.id) payload[el.id] = el.value || '';
     });
+    payload.mupProduct = val('mupProduct') === '__ALTRO__' ? val('mupProductOther') : val('mupProduct');
     payload.documentId = documentId;
 
     $('mupGenerate').disabled = true;
@@ -419,6 +463,7 @@
 
   // 23 settembre 2026 — mostra/nasconde il campo "Importo del compenso"
   // quando cambia il tipo di remunerazione selezionato.
+  $('mupProduct')?.addEventListener('change', updateProductTypeVisibility);
   $('mupRemuneration')?.addEventListener('change', updateRemunerationAmountVisibility);
   ['mupDistribution','mupHorizontal']
     .forEach(id => $(id)?.addEventListener('change', updateDistributionAndTransparencyFields));
