@@ -52,6 +52,18 @@
 .privacy-check a{color:var(--ink);font-weight:800;text-decoration:underline}
 .success-box{display:none;text-align:center;padding:40px}
 .success-box.show{display:block}
+
+/* Notebook: compatta la pagina della capacita finanziaria per rendere il modulo subito percepibile.
+   Non modifica il layout desktop grande e non cambia la resa mobile. */
+@media (min-width:1101px) and (max-height:920px){
+  .cm-confirmed-hero{padding:40px 0}
+  .cm-confirmed-hero-grid{gap:24px}
+  .cm-confirmed-hero-media img{height:270px}
+  .cm-confirmed-hero-copy h1{font-size:clamp(42px,4.2vw,54px)}
+  .cm-confirmed-hero-copy p{font-size:15px}
+  .cm-confirmed-hero + .section{padding-top:42px}
+  .cm-confirmed-hero + .section .request-card{padding-top:24px}
+}
 </style><link href="favicon.ico" rel="icon" sizes="any"/><link href="assets/images/logo-cm-symbol.png" rel="icon" sizes="512x512" type="image/png"/><link href="assets/apple-touch-icon.png" rel="apple-touch-icon"/></head><body>
 <header class="header"><div class="wrap nav"><a class="brand" href="/"><img alt="CM Consulting" decoding="async" height="559" src="assets/images/logo-cm-consulting.webp" width="1494"/></a><button aria-label="Apri menu di navigazione" class="menu" id="menu">☰</button><nav class="links" id="links"><a href="/">HOME</a><a href="/fideiussioni">FIDEIUSSIONI</a><a class="active" href="/capacita-finanziaria">CAPACITÀ FINANZIARIA</a><a href="/#metodo">CHI SIAMO</a><a href="/#servizi">SERVIZI</a><a href="/contatti">CONTATTI</a></nav><a class="header-cta" href="/richiedi-preventivo?tipo=capacita">RICHIEDI PREVENTIVO</a></div></header>
 <section class="page-hero cm-confirmed-hero"><div class="wrap"><div class="cm-confirmed-hero-grid"><div class="cm-confirmed-hero-copy"><div class="crumb"><a href="/">Home</a> / Capacità finanziaria</div><div class="eyebrow">Percorso dedicato all'autotrasporto</div><h1>Capacità finanziaria</h1><p>Una schermata semplice: leggi la spiegazione, compila i dati essenziali, invia la documentazione via email.</p></div><div class="cm-confirmed-hero-media"><img alt="Capacità finanziaria" decoding="async" fetchpriority="high" src="assets/capacita-retina-1920.webp"/></div></div></div></section>
