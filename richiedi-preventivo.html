@@ -75,7 +75,7 @@
 <meta content="it_IT" property="og:locale"/>
 <link href="assets/v9-final.css" rel="stylesheet"/><link href="favicon.ico" rel="icon" sizes="any"/><link href="assets/images/logo-cm-symbol.png" rel="icon" sizes="512x512" type="image/png"/><link href="assets/apple-touch-icon.png" rel="apple-touch-icon"/></head><body>
 <header class="header"><div class="wrap nav"><a class="brand" href="/"><img alt="CM Consulting" decoding="async" height="559" src="assets/images/logo-cm-consulting.webp" width="1494"/></a><button aria-label="Menu" class="menu" id="menu">☰</button><nav class="links" id="links"><a href="/">HOME</a><a href="/fideiussioni">FIDEIUSSIONI</a><a href="/capacita-finanziaria">CAPACITÀ FINANZIARIA</a><a href="/#metodo">CHI SIAMO</a><a href="/#servizi">SERVIZI</a><a href="/contatti">CONTATTI</a></nav><a class="header-cta" href="/richiedi-preventivo">RICHIEDI PREVENTIVO</a></div></header>
-<section class="page-hero"><div class="wrap"><div class="crumb"><a href="/">Home</a> / Richiesta</div><div class="eyebrow">Valutazione della richiesta</div><h1 id="heroTitle">Raccontaci cosa ti serve.</h1><p id="heroText">Scegli l'area, leggi una breve spiegazione, e compila solo i dati essenziali. Il resto puoi completarlo dopo, anche via email.</p></div></section>
+<section class="page-hero"><div class="wrap"><div class="crumb"><a href="/">Home</a> / Richiesta</div><div class="eyebrow">Valutazione della richiesta</div><h1 id="heroTitle">Raccontaci cosa ti serve.</h1><p id="heroText">Non devi conoscere il nome della fideiussione. Descrivi la tua esigenza e compila solo i dati essenziali. Il resto può essere completato dopo.</p></div></section>
 
 <section class="section"><div class="wrap request-shell"><div class="progressbar"><span class="on" id="bar1"></span><span id="bar2"></span></div>
 
@@ -289,12 +289,6 @@ function applyType(){
   img.src=typeImages[type]||typeImages.altro;
   img.alt=labels[type]||'CM Consulting';
 
-  const fl=fieldLabels[type]||fieldLabels.default;
-  document.getElementById('beneficiaryLabel').innerHTML=fl.beneficiary+' <strong>*</strong>';
-  document.getElementById('beneficiaryTaxLabel').textContent=fl.beneficiaryTax;
-  document.getElementById('beneficiaryAddressLabel').textContent=fl.beneficiaryAddress;
-  document.getElementById('companyTaxLabel').textContent=fl.companyTax;
-
   const typeSelect=document.getElementById('requestTypeSelect');
   if(typeSelect) typeSelect.value=labels[type] ? type : 'generica';
 
@@ -304,10 +298,14 @@ function applyType(){
 
 function go(n){
   document.querySelectorAll('.step').forEach(x=>x.classList.remove('active'));
-  document.getElementById('step'+n).classList.add('active');
+  const target=document.getElementById('step'+n);
+  if(!target) return;
+  target.classList.add('active');
   document.getElementById('bar1').classList.toggle('on',n>=1);
   document.getElementById('bar2').classList.toggle('on',n>=2);
-  window.scrollTo({top:150,behavior:'smooth'});
+  window.setTimeout(()=>{
+    target.scrollIntoView({behavior:'smooth',block:'start'});
+  },40);
 }
 
 function val(id){return document.getElementById(id)?.value||''}
