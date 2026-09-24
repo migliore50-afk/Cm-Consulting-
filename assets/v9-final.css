@@ -431,6 +431,22 @@ body.privacy-modal-open{overflow:hidden}
   .ai-portrait.speaking img{animation:none}
 }
 
+/* 24 settembre 2026 — Assistente CM nel modulo: pannello piu' compatto
+   per lasciare visibili riepilogo/documenti e mantenere la conversazione disponibile. */
+@media(min-width:1101px){
+  .ai-panel.cm-ai-form-mode{
+    width:min(360px,calc(100vw - 24px));
+    max-height:min(520px,calc(100vh - 40px));
+  }
+  .ai-panel.cm-ai-form-mode .ai-portrait{aspect-ratio:16/7}
+  .ai-panel.cm-ai-form-mode .ai-content{font-size:13px}
+}
+@media(max-width:1100px){
+  .ai-panel.cm-ai-form-mode{
+    max-height:min(560px,calc(100vh - 24px));
+  }
+}
+
 /* 18 settembre 2026 — pulsante "torna su", visibile dopo un po' di scroll su ogni pagina */
 #cm-back-top{position:fixed;left:22px;bottom:20px;width:48px;height:48px;border-radius:50%;border:1px solid rgba(16,42,67,.15);background:#fff;color:#102a43;font-size:20px;line-height:1;display:flex;align-items:center;justify-content:center;box-shadow:0 12px 30px rgba(16,42,67,.18);cursor:pointer;z-index:999;opacity:0;pointer-events:none;transform:translateY(8px);transition:opacity .2s ease,transform .2s ease}
 #cm-back-top.show{opacity:1;pointer-events:auto;transform:none}
