@@ -546,7 +546,7 @@ async function aiSendMessage(message) {
   userBubble.className = 'bubble user';
   userBubble.textContent = message;
   log.appendChild(userBubble);
-  log.scrollTop = log.scrollHeight;
+  content.scrollTop = content.scrollHeight;
   const historyBeforeTurn = getAIConversationHistory();
 
   try {
@@ -592,7 +592,7 @@ async function aiSendMessage(message) {
       sessionStorage.setItem('cm_ai_form_context', JSON.stringify(formData));
     }
 
-    log.scrollTop = log.scrollHeight;
+    content.scrollTop = content.scrollHeight;
     speakAI(reply);
   } catch (error) {
     console.error('Assistente CM: richiesta AI non riuscita', error);
