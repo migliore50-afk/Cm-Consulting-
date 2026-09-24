@@ -829,13 +829,27 @@ document.addEventListener('DOMContentLoaded', () => {
     // 20 settembre 2026 — link "Accedi Area Privata" su richiesta di Carmelo,
     // ultima voce del menu, verso /admin (login con password + TOTP, area
     // gia' esistente e funzionante — vedi api/admin.js e cartella admin/).
-    const hasAdminLink=[...links].some(a=>(a.getAttribute('href')||'').replace(/\/$/,'')==='/admin');
-    if(!hasAdminLink && navEl){
-      const adminLink=document.createElement('a');
-      adminLink.href='/admin';
-      adminLink.className='nav-admin-link';
-      adminLink.textContent='ACCEDI AREA PRIVATA';
-      navEl.appendChild(adminLink);
+    // Area privata: resta separata dal menu di navigazione e viene collocata
+    // nel blocco strumenti a destra, accanto a "Richiedi preventivo".
+    const navWrap=navEl?.closest('.nav');
+    const headerCta=navWrap?.querySelector('.header-cta');
+    if(navWrap && headerCta){
+      let utilities=navWrap.querySelector('.header-utilities');
+      if(!utilities){
+        utilities=document.createElement('div');
+        utilities.className='header-utilities';
+        headerCta.parentNode.insertBefore(utilities,headerCta);
+        utilities.appendChild(headerCta);
+      }
+      const existingAdmin=utilities.querySelector('.nav-admin-link');
+      if(!existingAdmin){
+        const adminLink=document.createElement('a');
+        adminLink.href='/admin';
+        adminLink.className='nav-admin-link';
+        adminLink.setAttribute('aria-label','Accedi all’area privata');
+        adminLink.innerHTML='<span class="nav-admin-lock" aria-hidden="true">🔒</span><span>AREA PRIVATA</span>';
+        utilities.insertBefore(adminLink,headerCta);
+      }
     }
     document.querySelectorAll('a[href^="tel:+393286382612"]').forEach(a=>{
       const line=a.closest('.contact-line') || a.closest('p') || a;
