@@ -18,6 +18,12 @@ export default async function handler(req, res) {
     const message = privacySafe(String(body.message || '').trim()).slice(0, 1200);
     if (!message) return res.status(400).json({ error: 'Richiesta vuota' });
 
+    // Intento esplicito: quando l'utente nomina già la "capacità finanziaria"
+    // per trasporto/mezzi, il percorso è determinato e non va introdotta una
+    // domanda estranea (es. merci o persone) prima dell'inoltro.
+    const explicitFinancialCapacity = /capacità\s+finanziaria/i.test(message) &&
+      /(trasport|autotrasport|mezzi|veicol|albo)/i.test(message);
+
     const history = Array.isArray(body.history)
       ? body.history
           .filter(item => item && (item.role === 'user' || item.role === 'assistant'))
@@ -71,6 +77,9 @@ PERCORSI CONSENTITI:
 
 CLASSIFICAZIONE:
 - Appalto/gara/ente appaltante/garanzia provvisoria o definitiva -> appalti.
+- Se il cliente indica esplicitamente "capacità finanziaria" in relazione all'autotrasporto/trasporto o ai mezzi, -> capacita-finanziaria.
+- In questo caso NON chiedere se trasporta merci o persone: tale domanda non è necessaria per classificare il percorso "Capacità finanziaria".
+- Se il cliente ha già indicato "capacità finanziaria" e il numero dei mezzi, non chiedere ulteriori dettagli sul tipo di trasporto prima di indirizzarlo al percorso corretto.
 - Autotrasporto/idoneità/capacità finanziaria per albo -> capacita-finanziaria.
 - Affitto/locazione -> locazioni.
 - Dogana -> dogane.
@@ -151,7 +160,11 @@ ${JSON.stringify(formContext)}`;
       '/richiedi-preventivo?esigenza=generica'
     ]);
     const requestedRoute = routeMatch ? routeMatch[1] : '';
-    const safeRoute = allowedRoutes.has(requestedRoute) ? requestedRoute : '';
+    let safeRoute = allowedRoutes.has(requestedRoute) ? requestedRoute : '';
+
+    // Protezione deterministica del percorso: un'esigenza già esplicitata
+    // come capacità finanziaria per trasporto/mezzi non deve essere riclassificata.
+    if (explicitFinancialCapacity) safeRoute = '/capacita-finanziaria';
     const formMatch = rawReply.match(/\[\[FORM:(\{[\s\S]*?\})\]\]/i);
     const reply = rawReply
       .replace(/\s*\[\[ROUTE:\/[^\]]+\]\]\s*/ig, ' ')
