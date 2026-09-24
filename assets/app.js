@@ -582,7 +582,8 @@ async function aiSendMessage(message) {
       actions.className = 'ai-route-actions';
       const link = document.createElement('a');
       link.className = 'ai-choice';
-      link.href = safeRoute;
+      const targetRoute = safeRoute.includes('#') ? safeRoute : safeRoute + '#step2';
+      link.href = targetRoute;
       link.textContent = safeRoute.includes('capacita-finanziaria') ? 'Apri Capacità finanziaria →' : 'Apri il modulo corretto →';
       actions.appendChild(link);
       log.appendChild(actions);
@@ -590,6 +591,8 @@ async function aiSendMessage(message) {
       const formData = getAIFormContext();
       sessionStorage.setItem('cm_ai_route', safeRoute);
       sessionStorage.setItem('cm_ai_form_context', JSON.stringify(formData));
+      sessionStorage.setItem('cm_ai_open_after_route', '1');
+      sessionStorage.setItem('cm_ai_scroll_to_form', '1');
     }
 
     content.scrollTop = content.scrollHeight;
@@ -668,6 +671,34 @@ function initClickableCards() {
       }
     });
   });
+}
+
+function initAIAfterRoute() {
+  if (sessionStorage.getItem('cm_ai_open_after_route') !== '1') return;
+  sessionStorage.removeItem('cm_ai_open_after_route');
+
+  const isRequestForm = Boolean(document.querySelector('#step2') && document.querySelector('#contactEmail'));
+  if (!isRequestForm) return;
+
+  // Il passaggio dall'assistente al modulo non deve lasciare il cliente in cima
+  // alla pagina: il punto di lavoro è direttamente il modulo.
+  const scrollToForm = () => {
+    const target = document.getElementById('step2');
+    if (target) {
+      target.scrollIntoView({behavior: 'smooth', block: 'start'});
+    }
+  };
+
+  if (sessionStorage.getItem('cm_ai_scroll_to_form') === '1') {
+    sessionStorage.removeItem('cm_ai_scroll_to_form');
+    window.setTimeout(scrollToForm, 120);
+  }
+
+  // Mantiene l'assistente disponibile sulla pagina di destinazione, così il
+  // cliente può continuare a chiedere aiuto mentre compila.
+  window.setTimeout(() => {
+    if (typeof window.openAI === 'function') window.openAI();
+  }, 220);
 }
 
 function initBasicFormValidation() {
@@ -791,6 +822,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initAssistantUI();
   initAssistantFab();
   initAssistantFabFooterHide();
+  initAIAfterRoute();
   initClickableCards();
   initBasicFormValidation();
   initBackToTop();
