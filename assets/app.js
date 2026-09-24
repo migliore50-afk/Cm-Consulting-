@@ -821,7 +821,7 @@ document.addEventListener('DOMContentLoaded', () => {
       faqLink.textContent='FAQ';
       contattiLink.parentElement.insertBefore(faqLink,contattiLink);
     }
-    // La voce "NON SAI QUALE GARANZIA?" non fa più parte del menu principale.
+    // La precedente voce generica non fa più parte del menu principale.
     // Il percorso generico resta disponibile tramite /altre-esigenze e Assistente CM.
     const navEl=document.querySelector('.links');
     [...links].filter(a=>a.textContent.trim().toUpperCase()==='NON SAI QUALE GARANZIA?')
