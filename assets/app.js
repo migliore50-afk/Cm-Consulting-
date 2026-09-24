@@ -461,14 +461,26 @@ function startAI() {
   if (!content) return;
 
   const onRequestForm = Boolean(document.querySelector('#step2') && document.querySelector('#contactEmail'));
+  const panel = document.getElementById('aiPanel');
+  panel?.classList.toggle('cm-ai-form-mode', onRequestForm);
   const formContext = getAIFormContext();
   const greeting = onRequestForm
     ? 'Sono qui per seguirti nella compilazione. Dimmi cosa vuoi inserire, oppure chiedimi quale dato serve nel campo che stai compilando.'
     : 'Raccontami con parole semplici cosa devi fare. Non è necessario conoscere il nome della garanzia.';
 
+  const history = getAIConversationHistory();
+  const historyMarkup = history.length
+    ? history.map(item => {
+        const role = item.role === 'user' ? 'user' : 'ai';
+        const safe = String(item.content || '')
+          .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+          .replace(/"/g,'&quot;').replace(/'/g,'&#039;').replace(/\\n/g,'<br>');
+        return `<div class="bubble ${role}">${safe}</div>`;
+      }).join('')
+    : `<div class="bubble ai"><b>Ciao, sono l'Assistente CM.</b><br>${greeting}</div>`;
+
   content.innerHTML = `
-    <div class="bubble ai"><b>Ciao, sono l'Assistente CM.</b><br>${greeting}</div>
-    <div class="ai-chat-log" id="aiChatLog" aria-live="polite"></div>
+    <div class="ai-chat-log" id="aiChatLog" aria-live="polite">${historyMarkup}</div>
     <form class="ai-chat-form" id="aiChatForm">
       <input id="aiChatInput" type="text" maxlength="1200" autocomplete="off" placeholder="${onRequestForm ? 'Es. Non so dove trovare l’importo...' : 'Scrivi qui la tua necessità...'}" aria-label="Scrivi la tua necessità">
       <button type="submit" aria-label="Invia richiesta">Invia</button>
@@ -485,7 +497,11 @@ function startAI() {
     const message = String(input?.value || '').trim();
     if (message) aiSendMessage(message);
   });
-  speakAI(greeting);
+  if (!history.length) speakAI(greeting);
+  else {
+    const lastAI = [...history].reverse().find(item => item.role === 'assistant');
+    if (lastAI) speakAI(lastAI.content);
+  }
 }
 
 let assistantRecognition = null;
