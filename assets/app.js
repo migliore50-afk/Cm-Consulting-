@@ -497,6 +497,7 @@ function startAI() {
     const message = String(input?.value || '').trim();
     if (message) aiSendMessage(message);
   });
+  scrollAssistantToLatest('auto');
   if (!history.length) speakAI(greeting);
   else {
     const lastAI = [...history].reverse().find(item => item.role === 'assistant');
@@ -505,6 +506,18 @@ function startAI() {
 }
 
 let assistantRecognition = null;
+
+function scrollAssistantToLatest(behavior = 'auto') {
+  const content = document.getElementById('aiContent');
+  if (!content) return;
+  const scroll = () => {
+    content.scrollTo({top: content.scrollHeight, behavior});
+  };
+  requestAnimationFrame(() => {
+    scroll();
+    requestAnimationFrame(scroll);
+  });
+}
 
 function startAssistantRecognition() {
   const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -562,7 +575,7 @@ async function aiSendMessage(message) {
   userBubble.className = 'bubble user';
   userBubble.textContent = message;
   log.appendChild(userBubble);
-  content.scrollTop = content.scrollHeight;
+  scrollAssistantToLatest('auto');
   const historyBeforeTurn = getAIConversationHistory();
 
   try {
@@ -611,7 +624,7 @@ async function aiSendMessage(message) {
       sessionStorage.setItem('cm_ai_scroll_to_form', '1');
     }
 
-    content.scrollTop = content.scrollHeight;
+    scrollAssistantToLatest('auto');
     speakAI(reply);
   } catch (error) {
     console.error('Assistente CM: richiesta AI non riuscita', error);
@@ -620,6 +633,7 @@ async function aiSendMessage(message) {
     const message = String(error?.message || 'Servizio AI temporaneamente non disponibile.');
     aiBubble.textContent = message;
     log.appendChild(aiBubble);
+    scrollAssistantToLatest('auto');
     speakAI(message);
   } finally {
     if (send) send.disabled = false;
