@@ -177,6 +177,74 @@ Documenti:
 - Richiesta ricevuta / bozza contratto / bando / altro documento disponibile
 - Visura camerale aggiornata se pertinente all'impresa
 
+
+## 11. AGEA / contributi agricoli
+Pagina informativa: `/fideiussione-agea`
+Modulo operativo: `/richiedi-preventivo?tipo=contributi`
+
+Dati preliminari utili da raccogliere localmente:
+- Misura / programma AGEA
+- Ente o organismo pagatore
+- Importo dell'anticipo
+- Durata richiesta
+- Presenza dello schema fideiussorio
+- Eventuale scadenza della pratica
+
+Alias naturali da riconoscere: AGEA, fideiussione AGEA, garanzia AGEA, anticipo contributo agricolo, OCM Vino.
+
+## 12. Attività regolamentate
+Pagine informative:
+- `/fideiussione-istituti-vigilanza`
+- `/fideiussione-investigazioni`
+- `/garanzie-agenzie-di-viaggio`
+- `/capacita-finanziaria-autoscuole`
+- `/capacita-finanziaria-scuole-nautiche`
+- `/capacita-finanziaria-centri-revisione`
+
+Modulo operativo iniziale: richiesta generica o modulo capacità finanziaria, secondo la tipologia.
+
+Dati preliminari da raccogliere localmente:
+- attività svolta;
+- nuova autorizzazione / rinnovo / variazione;
+- ente o ufficio competente;
+- importo e durata se già indicati;
+- eventuale schema o richiesta ricevuta.
+
+Alias da riconoscere:
+- vigilanza privata, istituto di vigilanza, cauzione prefettura;
+- investigatore, agenzia investigativa, investigazioni private;
+- agenzia viaggi, tour operator;
+- autoscuola, capacità finanziaria autoscuola;
+- scuola nautica, capacità finanziaria scuola nautica;
+- centro revisioni, capacità finanziaria revisione auto.
+
+## 13. Stranieri
+Pagine informative:
+- `/stranieri`
+- `/fideiussione-visto-turistico`
+- `/fideiussione-ricongiungimento-familiare`
+
+Modulo operativo iniziale: `/richiedi-preventivo?tipo=altro` finché non viene creato un modulo specialistico.
+
+Dati preliminari da raccogliere localmente:
+- tipo di ingresso/procedura;
+- paese di cittadinanza;
+- durata del soggiorno, se pertinente;
+- fase della pratica;
+- eventuale richiesta dell'autorità/consolato.
+
+Alias da riconoscere: visto turistico, visto Italia, fideiussione visto, ingresso straniero, ricongiungimento familiare, fideiussione ricongiungimento.
+
+## 14. Regola di sicurezza per nuove tipologie
+Se l'utente nomina una tipologia presente nel catalogo ma non ancora collegata a un modulo specialistico, l'Assistente CM deve:
+1. riconoscere la tipologia;
+2. aprire la pagina informativa pertinente;
+3. raccogliere solo informazioni non identificative necessarie a orientare la richiesta;
+4. trasferire l'utente al modulo generico appropriato;
+5. non dichiarare che la garanzia è obbligatoria senza una fonte o un documento della pratica;
+6. non inventare importi, durate, beneficiari o requisiti;
+7. mantenere i dati identificativi nel modulo locale e non inviarli a Gemini Free.
+
 ## Regola futura del motore
 1. Individuare la tipologia.
 2. Caricare lo schema della tipologia.
