@@ -1,8 +1,11 @@
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Metodo non consentito' });
 
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) return res.status(503).json({ error: 'Assistente AI non configurato' });
+  const apiKeys = [process.env.GEMINI_API_KEY, process.env.GEMINI_API_KEY_BACKUP]
+    .map(value => String(value || '').trim())
+    .filter(Boolean);
+  if (!apiKeys.length) return res.status(503).json({ error: 'Assistente AI non configurato', code: 'GEMINI_NOT_CONFIGURED' });
+  const model = String(process.env.GEMINI_MODEL || 'gemini-3.5-flash-lite').trim();
 
   try {
     const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
@@ -115,38 +118,59 @@ ${JSON.stringify(formContext)}`;
       { role: 'user', parts: [{ text: message }] }
     ];
 
-    const upstream = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-goog-api-key': apiKey
-      },
-      body: JSON.stringify({
-        systemInstruction: {
-          parts: [{ text: system }]
+    let upstream = null;
+    let data = {};
+    let lastStatus = 502;
+    let lastMessage = '';
+    let lastProviderStatus = '';
+
+    for (let index = 0; index < apiKeys.length; index += 1) {
+      const apiKey = apiKeys[index];
+      upstream = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-goog-api-key': apiKey
         },
-        contents,
-        generationConfig: {
-          maxOutputTokens: 700
-        }
-      })
-    });
+        body: JSON.stringify({
+          systemInstruction: {
+            parts: [{ text: system }]
+          },
+          contents,
+          generationConfig: {
+            maxOutputTokens: 700
+          }
+        })
+      });
 
-    const data = await upstream.json().catch(() => ({}));
-    if (!upstream.ok) {
-      const upstreamMessage = String(data?.error?.message || '');
-      const upstreamStatus = String(data?.error?.status || '');
-      console.error('Gemini assistant error', upstream.status, upstreamStatus, upstreamMessage || data);
+      data = await upstream.json().catch(() => ({}));
+      if (upstream.ok) break;
 
+      lastStatus = upstream.status;
+      lastMessage = String(data?.error?.message || '');
+      lastProviderStatus = String(data?.error?.status || '');
+      console.error('Gemini assistant error', upstream.status, lastProviderStatus, lastMessage || data);
+
+      // La chiave di riserva viene usata solo per errori di autenticazione/autorizzazione.
+      // Non viene usata per 429/5xx, evitando retry che possano aumentare traffico o costi.
+      const canTryBackup = index === 0 && apiKeys.length > 1 && (upstream.status === 401 || upstream.status === 403);
+      if (!canTryBackup) break;
+    }
+
+    if (!upstream?.ok) {
       let publicError = 'Servizio AI temporaneamente non disponibile';
-      if (upstream.status === 400 || upstream.status === 401 || upstream.status === 403) {
+      let code = 'GEMINI_UPSTREAM_ERROR';
+      if (lastStatus === 400 || lastStatus === 401 || lastStatus === 403) {
         publicError = 'Configurazione della chiave Gemini non valida o non autorizzata';
-      } else if (upstream.status === 429) {
+        code = 'GEMINI_AUTH';
+      } else if (lastStatus === 429) {
         publicError = 'Limite temporaneo del servizio Gemini raggiunto. Riprova tra poco';
-      } else if (upstream.status >= 500) {
+        code = 'GEMINI_RATE_LIMIT';
+      } else if (lastStatus >= 500) {
         publicError = 'Servizio Gemini temporaneamente non disponibile';
+        code = 'GEMINI_UPSTREAM_ERROR';
       }
-      return res.status(502).json({ error: publicError });
+      return res.status(502).json({ error: publicError, code });
     }
 
     const rawReply = String(
