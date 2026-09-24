@@ -6,18 +6,32 @@ export default async function handler(req, res) {
 
   try {
     const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
-    const message = String(body.message || '').trim().slice(0, 1200);
+    const message = privacySafe(String(body.message || '').trim()).slice(0, 1200);
     if (!message) return res.status(400).json({ error: 'Richiesta vuota' });
+
+    const privacySafe = value => String(value || '')
+      .replace(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, '[email omessa]')
+      .replace(/\b(?:IBAN\s*)?[A-Z]{2}\d{2}[A-Z0-9]{11,30}\b/gi, '[iban omesso]')
+      .replace(/\b\d{11}\b/g, '[numero omesso]')
+      .replace(/\b[A-Z]{6}\d{2}[A-Z]\d{2}[A-Z]\d{3}[A-Z]\b/gi, '[codice fiscale omesso]')
+      .replace(/\b(?:\+?39[\s.-]?)?(?:3\d{2}[\s.-]?\d{3}[\s.-]?\d{4}|0\d{1,3}[\s.-]?\d{5,8})\b/g, '[telefono omesso]')
+      .replace(/\b(?:mi chiamo|sono)\s+[A-ZÀ-ÖØ-Ý][A-Za-zÀ-ÖØ-öø-ÿ'’-]*(?:\s+[A-ZÀ-ÖØ-Ý][A-Za-zÀ-ÖØ-öø-ÿ'’-]*){0,3}/gi, '[nome omesso]');
 
     const history = Array.isArray(body.history)
       ? body.history
           .filter(item => item && (item.role === 'user' || item.role === 'assistant'))
-          .map(item => ({ role: item.role, content: String(item.content || '').slice(0, 2000) }))
+          .map(item => ({ role: item.role, content: privacySafe(item.content).slice(0, 1600) }))
           .slice(-12)
       : [];
 
     const pageContext = body.pageContext && typeof body.pageContext === 'object' ? body.pageContext : {};
-    const formContext = body.formContext && typeof body.formContext === 'object' ? body.formContext : {};
+    const incomingFormContext = body.formContext && typeof body.formContext === 'object' ? body.formContext : {};
+    const formContext = {};
+    ['amount','duration','vehicleCount','bilancio','leaseType','startDate','endDate'].forEach(key => {
+      if (incomingFormContext[key] != null && String(incomingFormContext[key]).trim()) {
+        formContext[key] = String(incomingFormContext[key]).trim().slice(0, 200);
+      }
+    });
 
     const system = `Sei l'Assistente CM Consulting, assistente digitale di orientamento e supporto alla compilazione del sito italiano di CM Consulting.
 
@@ -35,7 +49,10 @@ REGOLE:
 - Se un dato non è noto, chiedilo oppure indica che può essere lasciato da verificare.
 - Mantieni il contesto della conversazione.
 - Se il cliente corregge un dato già raccolto, usa il nuovo dato.
-- Se sei già nel modulo, considera i dati presenti nel modulo come contesto e aiutalo a completare ciò che manca.
+- NON chiedere né richiedere al cliente nome, cognome, ragione sociale, partita IVA, codice fiscale, telefono, email, PEC, indirizzo o altri identificativi personali tramite la chat.
+- Se il cliente inserisce spontaneamente identificativi personali, non ripeterli, non memorizzarli nella risposta e non trasferirli nel modulo tramite FORM.
+- I dati personali devono essere inseriti direttamente nei campi del modulo CM Consulting, non nella conversazione AI.
+- Se sei già nel modulo, considera solo il contesto non identificativo disponibile e aiutalo a completare ciò che manca.
 - Puoi spiegare dove trovare un dato nel bando, contratto o documento, ma senza inventare il contenuto del documento.
 - Rispondi in italiano, in modo professionale, breve e naturale.
 
@@ -67,7 +84,7 @@ TRASFERIMENTO DATI:
 Quando hai raccolto dati sufficienti, puoi aggiungere alla fine un marcatore:
 [[ROUTE:/percorso]]
 e, se hai dati affidabili da precompilare, un solo marcatore JSON:
-[[FORM:{"beneficiary":"...","company":"...","vat":"...","city":"...","province":"...","amount":"...","duration":"...","contactName":"...","contactEmail":"...","contactPhone":"...","contact":"...","email":"...","vehicleCount":"...","bilancio":"si|no","leaseType":"...","genericDescription":"...","startDate":"YYYY-MM-DD","endDate":"YYYY-MM-DD","refs":"...","object":"...","notes":"..."}]]
+[[FORM:{"amount":"...","duration":"...","vehicleCount":"...","bilancio":"si|no","leaseType":"...","startDate":"YYYY-MM-DD","endDate":"YYYY-MM-DD"}]]
 Inserisci nel JSON SOLO chiavi con valori realmente forniti o chiaramente presenti nel contesto. Non inventare valori. Il marcatore FORM non deve essere mostrato all'utente.
 
 Se il cliente è già nel modulo, NON emettere ROUTE a ogni risposta: usa FORM solo quando una nuova informazione deve essere applicata a un campo. Se non c'è un nuovo dato da applicare, rispondi normalmente.
@@ -142,7 +159,15 @@ ${JSON.stringify(formContext)}`;
 
     let form = null;
     if (formMatch) {
-      try { form = JSON.parse(formMatch[1]); } catch (error) {
+      try {
+        const parsed = JSON.parse(formMatch[1]);
+        const safeKeys = new Set(['amount','duration','vehicleCount','bilancio','leaseType','startDate','endDate']);
+        form = Object.fromEntries(
+          Object.entries(parsed || {}).filter(([key, value]) =>
+            safeKeys.has(key) && value != null && String(value).trim()
+          )
+        );
+      } catch (error) {
         console.warn('Assistant FORM marker non valido');
       }
     }
