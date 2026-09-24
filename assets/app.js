@@ -273,7 +273,7 @@ function initAssistantUI() {
 
   aiPanel.querySelector('.ai-close')?.addEventListener('click', closeAI);
   const voiceButton = aiPanel.querySelector('.ai-voice-toggle');
-  const enabled = localStorage.getItem('cm_ai_voice') === '1';
+  const enabled = localStorage.getItem('cm_ai_voice') !== '0';
   setVoiceState(enabled, voiceButton);
   voiceButton?.addEventListener('click', () => setVoiceState(!isVoiceEnabled(), voiceButton));
 
@@ -287,7 +287,7 @@ function initAssistantUI() {
 }
 
 function isVoiceEnabled() {
-  return localStorage.getItem('cm_ai_voice') === '1';
+  return localStorage.getItem('cm_ai_voice') !== '0';
 }
 
 function setVoiceState(enabled, button) {
@@ -349,30 +349,142 @@ function closeAI() {
   stopAssistantRecognition();
 }
 
+function getAIConversationHistory() {
+  try {
+    const raw = sessionStorage.getItem('cm_ai_history');
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed.slice(-12) : [];
+  } catch { return []; }
+}
+
+function sanitizeAIText(text) {
+  return String(text || '')
+    .replace(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, '[email omessa]')
+    .replace(/\b(?:IBAN\s*)?[A-Z]{2}\d{2}[A-Z0-9]{11,30}\b/gi, '[iban omesso]')
+    .replace(/\b\d{11}\b/g, '[numero omesso]')
+    .replace(/\b[A-Z]{6}\d{2}[A-Z]\d{2}[A-Z]\d{3}[A-Z]\b/gi, '[codice fiscale omesso]')
+    .replace(/\b(?:\+?39[\s.-]?)?(?:3\d{2}[\s.-]?\d{3}[\s.-]?\d{4}|0\d{1,3}[\s.-]?\d{5,8})\b/g, '[telefono omesso]')
+    .replace(/\b(?:mi chiamo|il mio nome è)\s+[A-ZÀ-ÖØ-Ý][A-Za-zÀ-ÖØ-öø-ÿ'’-]*(?:\s+[A-ZÀ-ÖØ-Ý][A-Za-zÀ-ÖØ-öø-ÿ'’-]*){0,3}/gi, '[nome omesso]')
+    .slice(0, 1200);
+}
+
+function getAIPrivacySafeHistory() {
+  return getAIConversationHistory().map(item => ({
+    role: item.role,
+    content: sanitizeAIText(item.content).slice(0, 1600)
+  })).slice(-12);
+}
+
+function getAIPrivacySafeFormContext() {
+  const full = getAIFormContext();
+  const safe = {};
+  ['amount','duration','vehicleCount','bilancio','leaseType','startDate','endDate'].forEach(key => {
+    if (full[key]) safe[key] = full[key];
+  });
+  return safe;
+}
+
+function saveAIConversationTurn(role, content) {
+  const history = getAIConversationHistory();
+  const safeContent = role === 'user' ? sanitizeAIText(content) : String(content || '').slice(0, 2000);
+  history.push({role, content: safeContent});
+  sessionStorage.setItem('cm_ai_history', JSON.stringify(history.slice(-12)));
+}
+
+function getAIFormContext() {
+  const ids = ['genericDescription','beneficiary','company','vat','city','province','amount','duration','contactName','contactPhone','contact','contactEmail','email','startDate','endDate','beneficiaryTax','beneficiaryAddress','beneficiaryPec','companyTax','refs','object','notes'];
+  const out = {};
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && String(el.value || '').trim()) out[id] = String(el.value).trim();
+  });
+  const lease = document.querySelector('input[name="leaseType"]:checked');
+  if (lease) out.leaseType = lease.value;
+  const vehicleCount = document.getElementById('vehicleCount');
+  if (vehicleCount) out.vehicleCount = String(vehicleCount.textContent || '').trim();
+  const bilancio = document.querySelector('input[name="bilancio"]:checked');
+  if (bilancio) out.bilancio = bilancio.value;
+  return out;
+}
+
+function applyAIFormData(data) {
+  if (!data || typeof data !== 'object') return;
+  Object.entries(data).forEach(([key, value]) => {
+    const el = document.getElementById(key);
+    if (!el || value == null || typeof value === 'object') return;
+    const text = String(value).trim();
+    if (!text) return;
+    if (el.tagName === 'INPUT' && el.type === 'radio') return;
+    el.value = text;
+    el.dispatchEvent(new Event('input', {bubbles:true}));
+    el.dispatchEvent(new Event('change', {bubbles:true}));
+  });
+  const lease = String(data.leaseType || '');
+  if (lease) {
+    const radio = document.querySelector(`input[name="leaseType"][value="${CSS.escape(lease)}"]`);
+    if (radio) { radio.checked = true; radio.dispatchEvent(new Event('change', {bubbles:true})); }
+  }
+  const bilancio = String(data.bilancio || '');
+  if (bilancio) {
+    const radio = document.querySelector(`input[name="bilancio"][value="${CSS.escape(bilancio)}"]`);
+    if (radio) { radio.checked = true; radio.dispatchEvent(new Event('change', {bubbles:true})); }
+  }
+  const vehicles = Number.parseInt(data.vehicleCount, 10);
+  if (Number.isFinite(vehicles) && vehicles > 0 && typeof window.changeVehicles === 'function') {
+    const current = Number.parseInt(document.getElementById('vehicleCount')?.textContent || '1', 10) || 1;
+    window.changeVehicles(vehicles - current);
+  }
+}
+
+function restoreAIPageContext() {
+  const route = sessionStorage.getItem('cm_ai_route') || '';
+  if (!route || !window.location.pathname.includes('capacita-finanziaria')) return;
+  let saved = null;
+  try { saved = JSON.parse(sessionStorage.getItem('cm_ai_form_context') || 'null'); } catch {}
+  if (!saved || typeof saved !== 'object') return;
+  applyAIFormData(saved);
+  if (typeof window.refreshAll === 'function') window.refreshAll();
+  sessionStorage.removeItem('cm_ai_form_context');
+  sessionStorage.removeItem('cm_ai_route');
+}
+
+function getAIPageContext() {
+  return {
+    path: window.location.pathname + window.location.search,
+    title: document.title,
+    onRequestForm: Boolean(document.querySelector('#step2') && document.querySelector('#contactEmail'))
+  };
+}
+
 function startAI() {
   const content = document.getElementById('aiContent');
   if (!content) return;
 
-  const greeting = `Buongiorno! Sono l'Assistente CM. Posso aiutarti a trovare il percorso più adatto alla tua esigenza. Da dove vuoi iniziare?`;
+  const onRequestForm = Boolean(document.querySelector('#step2') && document.querySelector('#contactEmail'));
+  const formContext = getAIFormContext();
+  const greeting = onRequestForm
+    ? 'Sono qui per seguirti nella compilazione. Dimmi cosa vuoi inserire, oppure chiedimi quale dato serve nel campo che stai compilando.'
+    : 'Raccontami con parole semplici cosa devi fare. Non è necessario conoscere il nome della garanzia.';
+
   content.innerHTML = `
-    <div class="bubble ai"><b>Buongiorno!</b><br> Sono l'Assistente CM.<br>Posso aiutarti a trovare il percorso più adatto alla tua esigenza.<br><br><b>Da dove vuoi iniziare?</b></div>
-    <div class="ai-choices">
-      <button class="ai-choice" type="button" data-ai="appalto">🏗️ Devo partecipare a un appalto <span>›</span></button>
-      <button class="ai-choice" type="button" data-ai="trasporto">🚛 Ho un'esigenza per autotrasporto <span>›</span></button>
-      <button class="ai-choice" type="button" data-ai="locazione">🏠 Mi chiedono una garanzia per una locazione <span>›</span></button>
-      <button class="ai-choice" type="button" data-ai="dogana">🛃 Ho un'esigenza doganale <span>›</span></button>
-      <button class="ai-choice" type="button" data-ai="ambiente">🌱 Ho un'esigenza ambientale <span>›</span></button>
-      <button class="ai-choice" type="button" data-ai="altro">💬 Non so ancora quale garanzia mi serve <span>›</span></button>
-    </div>
+    <div class="bubble ai"><b>Ciao, sono l'Assistente CM.</b><br>${greeting}</div>
+    <div class="ai-chat-log" id="aiChatLog" aria-live="polite"></div>
+    <form class="ai-chat-form" id="aiChatForm">
+      <input id="aiChatInput" type="text" maxlength="1200" autocomplete="off" placeholder="${onRequestForm ? 'Es. Non so dove trovare l’importo...' : 'Scrivi qui la tua necessità...'}" aria-label="Scrivi la tua necessità">
+      <button type="submit" aria-label="Invia richiesta">Invia</button>
+    </form>
     <div class="ai-voice-row">
-      <button class="ai-mic" id="aiMic" type="button" aria-label="Spiega a voce la tua esigenza">🎙️ <span>Spiega a voce la tua esigenza</span></button>
+      <button class="ai-mic" id="aiMic" type="button" aria-label="Spiega a voce la tua esigenza">🎙️ <span>Parla con l'assistente</span></button>
       <span class="ai-voice-status" id="aiVoiceStatus" role="status" aria-live="polite"></span>
     </div>`;
 
-  content.querySelectorAll('[data-ai]').forEach(button => {
-    button.addEventListener('click', () => aiChoose(button.dataset.ai));
-  });
   content.querySelector('#aiMic')?.addEventListener('click', startAssistantRecognition);
+  content.querySelector('#aiChatForm')?.addEventListener('submit', event => {
+    event.preventDefault();
+    const input = document.getElementById('aiChatInput');
+    const message = String(input?.value || '').trim();
+    if (message) aiSendMessage(message);
+  });
   speakAI(greeting);
 }
 
@@ -396,12 +508,10 @@ function startAssistantRecognition() {
   assistantRecognition.onresult = event => {
     const transcript = String(event.results?.[0]?.[0]?.transcript || '').trim();
     if (!transcript) return;
-    sessionStorage.setItem('cm_voice_request', transcript);
-    if (status) status.textContent = 'Richiesta acquisita. Apro la valutazione generica…';
-    speakAI(`Ho acquisito la tua richiesta: ${transcript}. Apro la valutazione generica.`);
-    window.setTimeout(() => {
-      window.location.href = 'richiedi-preventivo.html?esigenza=generica';
-    }, isVoiceEnabled() ? 700 : 0);
+    if (status) status.textContent = 'Richiesta acquisita. La invio all’assistente…';
+    const input = document.getElementById('aiChatInput');
+    if (input) input.value = transcript;
+    aiSendMessage(transcript);
   };
   assistantRecognition.onerror = event => {
     if (status) status.textContent = event.error === 'not-allowed' ? "Consenti l'uso del microfono per parlare con l'assistente." : "Non ho potuto acquisire l'audio. Riprova.";
@@ -423,31 +533,90 @@ function stopAssistantRecognition() {
   document.getElementById('aiMic')?.classList.remove('listening');
 }
 
-function aiChoose(type) {
+async function aiSendMessage(message) {
   const content = document.getElementById('aiContent');
-  if (!content) return;
+  const log = document.getElementById('aiChatLog');
+  if (!content || !log) return;
+  const input = document.getElementById('aiChatInput');
+  const send = content.querySelector('.ai-chat-form button');
+  if (input) input.value = '';
+  if (send) send.disabled = true;
 
-  const map = {
-    appalto: ['Per un appalto posso indirizzarti alle garanzie collegate alla gara e agli obblighi contrattuali.', 'appalti-pubblici.html'],
-    trasporto: ["Per l'autotrasporto possiamo distinguere tra capacità finanziaria e altre esigenze di garanzia.", 'capacita-finanziaria.html'],
-    locazione: ['Per la locazione partiamo dalle condizioni richieste dal contratto o dal locatore.', 'locazioni.html'],
-    dogana: ['Per una pratica doganale partiamo dal tipo di obbligo e dalla documentazione ricevuta.', 'dogane.html'],
-    ambiente: ["Per l'ambiente partiamo dall'obbligo specifico e dal soggetto che richiede la garanzia.", 'ambiente.html'],
-    altro: ['Va bene. Raccontami il caso concreto e allega la documentazione che hai: apriamo direttamente la valutazione generica.', 'richiedi-preventivo.html?esigenza=generica']
-  };
+  const userBubble = document.createElement('div');
+  userBubble.className = 'bubble user';
+  userBubble.textContent = message;
+  log.appendChild(userBubble);
+  log.scrollTop = log.scrollHeight;
+  const historyBeforeTurn = getAIConversationHistory();
 
-  const [message, destination] = map[type] || map.altro;
-  const directGeneric = destination === 'richiedi-preventivo.html?esigenza=generica';
-  content.innerHTML = `
-    <div class="bubble ai"><b>Perfetto.</b><br>${message}</div>
-    <div class="ai-choices">
-      <a class="ai-choice" href="${destination}">Vai al percorso <span>›</span></a>
-      <a class="ai-choice" href="richiedi-preventivo.html?esigenza=generica">Racconta direttamente la tua esigenza <span>›</span></a>
-      <button class="ai-choice" type="button" id="aiRestart">← Cambia esigenza</button>
-    </div>`;
-  document.getElementById('aiRestart')?.addEventListener('click', startAI);
-  speakAI(directGeneric ? 'Apro il percorso di valutazione generica.' : message);
+  try {
+    const response = await fetch('/api/assistant', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        message: sanitizeAIText(message),
+        history: historyBeforeTurn.map(item => ({
+          role: item.role,
+          content: sanitizeAIText(item.content)
+        })),
+        pageContext: getAIPageContext(),
+        formContext: getAIPrivacySafeFormContext()
+      })
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data?.error || 'Servizio temporaneamente non disponibile.');
+
+    const reply = String(data.reply || '').trim();
+    if (data.form) applyAIFormData(data.form);
+    saveAIConversationTurn('user', message);
+
+    const aiBubble = document.createElement('div');
+    aiBubble.className = 'bubble ai';
+    aiBubble.textContent = reply || 'Ho aggiornato le informazioni disponibili.';
+    log.appendChild(aiBubble);
+    saveAIConversationTurn('assistant', reply);
+
+    if (data.route) {
+      const safeRoute = String(data.route).startsWith('/') ? String(data.route) : '/';
+      const actions = document.createElement('div');
+      actions.className = 'ai-route-actions';
+      const link = document.createElement('a');
+      link.className = 'ai-choice';
+      link.href = safeRoute;
+      link.textContent = safeRoute.includes('capacita-finanziaria') ? 'Apri Capacità finanziaria →' : 'Apri il modulo corretto →';
+      actions.appendChild(link);
+      log.appendChild(actions);
+
+      const formData = getAIFormContext();
+      sessionStorage.setItem('cm_ai_route', safeRoute);
+      sessionStorage.setItem('cm_ai_form_context', JSON.stringify(formData));
+    }
+
+    log.scrollTop = log.scrollHeight;
+    speakAI(reply);
+  } catch (error) {
+    console.error('Assistente CM: richiesta AI non riuscita', error);
+    const aiBubble = document.createElement('div');
+    aiBubble.className = 'bubble ai';
+    aiBubble.textContent = 'In questo momento non riesco a collegarmi al servizio AI. Riprova tra poco.';
+    log.appendChild(aiBubble);
+    speakAI('In questo momento non riesco a collegarmi al servizio AI. Riprova tra poco.');
+  } finally {
+    if (send) send.disabled = false;
+  }
 }
+
+function aiChoose(type) {
+  const prompts = {
+    appalto: 'Devo partecipare a un appalto pubblico.',
+    trasporto: 'Ho bisogno di capacità finanziaria per l’autotrasporto.',
+    locazione: 'Ho bisogno di una garanzia per una locazione.',
+    dogana: 'Ho una richiesta di garanzia doganale.',
+    ambiente: 'Ho una richiesta di garanzia in ambito ambientale.'
+  };
+  aiSendMessage(prompts[type] || 'Non so quale garanzia mi serve.');
+}
+
 
 window.openAI = openAI;
 window.closeAI = closeAI;

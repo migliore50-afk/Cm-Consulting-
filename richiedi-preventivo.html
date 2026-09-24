@@ -225,16 +225,16 @@ const explanations={
 };
 
 const docs={
-  appalti:['Documento/lettera di richiesta della garanzia','Documentazione di gara o contratto, se disponibile'],
+  appalti:['Documento/lettera di richiesta della garanzia','Documentazione di gara o contratto, se disponibile','Visura camerale aggiornata dell\'impresa'],
   locazioni:["Contratto di locazione tra le parti (anche in bozza)","Documentazione reddituale del conduttore (buste paga, CUD/730, oppure bilanci e visura camerale se il conduttore è un'azienda)"],
-  dogane:['Richiesta o documentazione doganale'],
-  ambiente:["Richiesta dell'ente o documentazione dell'obbligo"],
-  contributi:["Provvedimento, bando o richiesta dell'ente"],
-  urbanistica:["Convenzione, atto o richiesta dell'ente"],
-  fiscali:["Richiesta o provvedimento dell'ente"],
-  altro:['Richiesta del beneficiario o documento che descrive la garanzia, se disponibile'],
+  dogane:['Richiesta o documentazione doganale','Visura camerale aggiornata dell\'impresa'],
+  ambiente:["Richiesta dell'ente o documentazione dell'obbligo","Visura camerale aggiornata dell\'impresa, se pertinente"],
+  contributi:["Provvedimento, bando o richiesta dell'ente","Visura camerale aggiornata dell\'impresa, se il richiedente è un'azienda"],
+  urbanistica:["Convenzione, atto o richiesta dell'ente","Visura camerale aggiornata dell\'impresa, se il richiedente è un'azienda"],
+  fiscali:["Richiesta o provvedimento dell'ente","Visura camerale aggiornata dell\'impresa, se il richiedente è un'azienda"],
+  altro:['Richiesta del beneficiario o documento che descrive la garanzia, se disponibile','Visura camerale aggiornata dell\'impresa, se pertinente'],
   'contratti-privati':['Contratto o capitolato tra le parti (anche in bozza)','Richiesta del beneficiario, con importo e durata, se disponibile','Documentazione che attesti la solidità del contraente (bilanci e visura camerale per un\u2019azienda, documento d\u2019identità e documentazione reddituale per un privato)'],
-  generica:['Richiesta ricevuta, bozza di contratto, bando o altro documento disponibile']
+  generica:['Richiesta ricevuta, bozza di contratto, bando o altro documento disponibile','Visura camerale aggiornata dell\'impresa, se pertinente']
 };
 
 const specificFields={
@@ -410,6 +410,37 @@ function submitRequest(){
   });
 }
 
+function restoreAIAssistantContext(){
+  let saved=null;
+  try { saved=JSON.parse(sessionStorage.getItem('cm_ai_form_context') || 'null'); } catch {}
+  if(!saved || typeof saved!=='object') return;
+
+  const route=sessionStorage.getItem('cm_ai_route') || '';
+  const routeType=(route.match(/[?&]tipo=([^&]+)/i)||[])[1] || '';
+  const normalized=decodeURIComponent(routeType);
+  if(normalized && labels[normalized] && !type){
+    type=normalized;
+    applyType();
+  }
+
+  const ids=['genericDescription','beneficiary','company','amount','duration','contactName','contactEmail','contactPhone','startDate','endDate','beneficiaryTax','beneficiaryAddress','beneficiaryPec','companyTax','refs','object','notes'];
+  ids.forEach(id=>{
+    const value=String(saved[id] ?? '').trim();
+    const el=document.getElementById(id);
+    if(el && value) el.value=value;
+  });
+
+  const lease=String(saved.leaseType || '');
+  if(lease){
+    const radio=document.querySelector(`input[name="leaseType"][value="${CSS.escape(lease)}"]`);
+    if(radio) radio.checked=true;
+  }
+
+  refreshAll();
+  sessionStorage.removeItem('cm_ai_form_context');
+  sessionStorage.removeItem('cm_ai_route');
+}
+
 (function init(){
   const qs=new URLSearchParams(location.search);
   if(qs.get('tipo')==='trasporti'){
@@ -428,6 +459,7 @@ function submitRequest(){
     type=qs.get('tipo');
     applyType();
   }
+  restoreAIAssistantContext();
 })();
 
 (function(){
@@ -441,7 +473,7 @@ function submitRequest(){
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.classList.contains('is-open')) close();});
 })();
 </script>
-<div class="ai-panel" id="aiPanel"><div class="ai-head"><b>ASSISTENTE CM</b><button class="close" onclick="closeAI()">×</button></div><div class="ai-content" id="aiContent"><div class="bubble ai"><b>Ciao, sono l'Assistente CM.</b><br/>Ti accompagno passo passo e ti aiuto a non dimenticare nulla.</div><button class="choice" onclick="startAI()">Inizia →</button></div><div class="ai-note">Assistente digitale di orientamento.</div></div>
+<div class="ai-panel" id="aiPanel"><div class="ai-head"><b>ASSISTENTE CM</b><button class="close" onclick="closeAI()">×</button></div><div class="ai-content" id="aiContent"></div><div class="ai-note">Assistente digitale di orientamento.</div></div>
 <script src="assets/app.js"></script>
 <footer class="cm-footer">
 <div class="cm-footer-main">

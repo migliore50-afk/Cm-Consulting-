@@ -1,3 +1,6 @@
+import { generateMupDocx } from './mup-docx.js';
+import { generateMupPdf } from './mup-pdf.js';
+import { issueSignedToken, presignUrl, get } from '@vercel/blob';
 /**
  * CM Consulting — API di amministrazione protetta
  * Autenticazione con password + MFA TOTP obbligatorio
@@ -520,14 +523,22 @@ async function dbRequest(path, { method = 'GET', body } = {}) {
   if (!url || !serviceKey) {
     throw new Error('Database non configurabile.');
   }
+  const headers = {
+    apikey: serviceKey,
+    'Content-Type': 'application/json',
+    Prefer: 'return=representation'
+  };
+
+  // Supabase new opaque secret keys (sb_secret_...) are API keys, not JWTs.
+  // Do not send them as a Bearer JWT: let the Supabase API gateway derive
+  // the authenticated service-role context from the apikey header.
+  if (!serviceKey.startsWith('sb_secret_')) {
+    headers.Authorization = `Bearer ${serviceKey}`;
+  }
+
   const response = await fetch(`${url}/rest/v1/${path}`, {
     method,
-    headers: {
-      apikey: serviceKey,
-      Authorization: `Bearer ${serviceKey}`,
-      'Content-Type': 'application/json',
-      Prefer: 'return=representation'
-    },
+    headers,
     body: body === undefined ? undefined : JSON.stringify(body)
   });
   let data = null;
@@ -567,6 +578,42 @@ function cleanPractice(body) {
   };
 }
 
+// 22 settembre 2026 — archivio degli intermediari collaboratori (Sezione A/B)
+// usato dal generatore MUP, così i loro dati non restano scritti a mano nel
+// codice. partial=true per il PATCH (solo i campi effettivamente inviati
+// vengono validati/aggiornati).
+function cleanIntermediary(body, { partial = false } = {}) {
+  const out = {};
+
+  if (!partial || 'name' in body) {
+    const name = str(body.name);
+    if (!name || name.length > 180) throw new Error('Denominazione non valida.');
+    out.name = name;
+  }
+  if (!partial || 'rui' in body) {
+    const rui = str(body.rui);
+    if (!rui || rui.length > 40) throw new Error('Numero RUI non valido.');
+    out.rui = rui;
+  }
+  if (!partial || 'section' in body) {
+    const section = str(body.section).toUpperCase();
+    if (section !== 'A' && section !== 'B') throw new Error('Sezione non valida: deve essere A o B.');
+    out.section = section;
+  }
+  if (!partial || 'address' in body) {
+    const address = str(body.address);
+    if (!address || address.length > 300) throw new Error('Sede legale non valida.');
+    out.address = address;
+  }
+  if ('phone' in body) out.phone = str(body.phone) || null;
+  if ('email' in body) out.email = str(body.email) || null;
+  if ('pec' in body) out.pec = str(body.pec) || null;
+  if ('website' in body) out.website = str(body.website) || null;
+  if ('active' in body) out.active = Boolean(body.active);
+
+  return out;
+}
+
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
 
@@ -579,7 +626,7 @@ export default async function handler(req, res) {
   if (
     action === 'login' &&
     req.method === 'POST' &&
-    process.env.ADMIN_LOGIN_DISABLED !== 'false'
+    process.env.ADMIN_LOGIN_DISABLED !== 'false' && process.env.VERCEL_ENV !== 'preview'
   ) {
     return json(res, 503, {
       ok: false,
@@ -597,6 +644,8 @@ export default async function handler(req, res) {
       error: { code: 'BAD_ORIGIN', message: 'Origine non consentita.' }
     });
   }
+
+  let loginStage = 'request';
 
   try {
     if (action === 'public-config' && req.method === 'GET') {
@@ -622,6 +671,7 @@ export default async function handler(req, res) {
       }
 
       const ip = getIp(req);
+      loginStage = 'rate-limit-check';
       const limiter = await rateLimitLogin(ip, email);
 
       if (limiter.blocked) {
@@ -631,6 +681,7 @@ export default async function handler(req, res) {
         });
       }
 
+      loginStage = 'supabase-password';
       const auth = await supabaseFetch('/auth/v1/token?grant_type=password', {
         method: 'POST',
         body: { email, password }
@@ -662,8 +713,10 @@ export default async function handler(req, res) {
        * NON viene ancora creata alcuna sessione admin.
        * La sessione è ancora AAL1.
        */
+      loginStage = 'clear-login-limit';
       await clearLoginFailures(ip, email);
 
+      loginStage = 'mfa-factors';
       const factors = await getTotpFactors(auth.data.access_token);
 
       if (!factors.ok) {
@@ -1018,6 +1071,345 @@ export default async function handler(req, res) {
 
     /*
      * ============================================================
+     * DEBUG KEY CHECK — TEMPORANEO, SOLO PREVIEW, SOLO ADMIN AUTENTICATO
+     * Diagnostica il caricamento di SUPABASE_SERVICE_ROLE_KEY senza mai
+     * esporne il valore: presenza, prefisso, lunghezza, impronta SHA-256,
+     * più un'unica chiamata di prova in SOLA LETTURA (nessun INSERT) verso
+     * /rest/v1/admin_practices, di cui riportiamo solo lo status HTTP e
+     * l'eventuale messaggio d'errore di Supabase (mai la chiave).
+     * DA RIMUOVERE una volta risolto il 401 su "Nuova pratica" — vedi
+     * STATO-PROGETTO.md.
+     * ============================================================
+     */
+    if (action === 'debug-key-check' && req.method === 'GET') {
+      if (process.env.VERCEL_ENV !== 'preview') {
+        return json(res, 404, {
+          ok: false,
+          error: { code: 'NOT_FOUND', message: 'Non trovato.' }
+        });
+      }
+
+      const auth = await requireAdmin(req, res);
+      if (!auth) {
+        return json(res, 401, {
+          ok: false,
+          error: { code: 'UNAUTHORIZED', message: 'Autenticazione richiesta.' }
+        });
+      }
+
+      const url = str(process.env.SUPABASE_URL).replace(/\/$/, '');
+      const serviceKey = str(process.env.SUPABASE_SERVICE_ROLE_KEY);
+
+      let urlHost = '';
+      try { urlHost = new URL(url).host; } catch {}
+
+      const fingerprint = serviceKey
+        ? crypto.createHash('sha256').update(serviceKey).digest('hex')
+        : '';
+
+      let liveTest = { attempted: false };
+
+      if (url && serviceKey) {
+        const headers = { apikey: serviceKey };
+        if (!serviceKey.startsWith('sb_secret_')) {
+          headers.Authorization = `Bearer ${serviceKey}`;
+        }
+        try {
+          const testResponse = await fetch(
+            `${url}/rest/v1/admin_practices?select=id&limit=1`,
+            { method: 'GET', headers }
+          );
+          let testData = null;
+          try { testData = await testResponse.json(); } catch {}
+          liveTest = {
+            attempted: true,
+            status: testResponse.status,
+            code: testData?.code || null,
+            message: testData?.message || null
+          };
+        } catch (err) {
+          liveTest = {
+            attempted: true,
+            status: null,
+            code: 'FETCH_ERROR',
+            message: String(err?.message || err)
+          };
+        }
+      }
+
+      return json(res, 200, {
+        ok: true,
+        supabaseUrlPresent: Boolean(url),
+        supabaseUrlHost: urlHost,
+        serviceKeyPresent: Boolean(serviceKey),
+        serviceKeyPrefix: serviceKey ? serviceKey.slice(0, 10) : '',
+        serviceKeyLength: serviceKey.length,
+        serviceKeyFingerprintSha256: fingerprint,
+        vercelEnv: str(process.env.VERCEL_ENV),
+        liveTest
+      });
+    }
+
+    /*
+     * ============================================================
+     * FACSIMILE — UPLOAD PRIVATO + ESTRAZIONE + CONFERMA
+     * ============================================================
+     */
+    if (action === 'facsimile-upload-url' && req.method === 'POST') {
+      const auth = await requireAdmin(req, res);
+      if (!auth) return json(res, 401, { ok:false, error:{code:'UNAUTHORIZED', message:'Autenticazione richiesta.'} });
+
+      const practiceId = str(req.body?.practiceId);
+      const filename = str(req.body?.filename).normalize('NFKC');
+      const contentType = str(req.body?.contentType).toLowerCase();
+      const size = Number(req.body?.size);
+      const allowed = new Set([
+        'application/pdf',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      ]);
+
+      if (!/^[0-9a-f-]{36}$/i.test(practiceId) || !filename || filename.length > 180 ||
+          /[\\/\\:*?"<>|\u0000-\u001f\u007f]/.test(filename) ||
+          !allowed.has(contentType) || !Number.isSafeInteger(size) || size <= 0 || size > 10 * 1024 * 1024) {
+        return json(res, 400, {ok:false,error:{code:'INVALID_FILE',message:'File non valido. Sono ammessi PDF e Word (.docx), massimo 10 MB.'}});
+      }
+
+      const practice = await dbRequest(`admin_practices?id=eq.${encodeURIComponent(practiceId)}&select=id&limit=1`);
+      if (!practice.response.ok || !practice.data?.[0]) {
+        return json(res, 404, {ok:false,error:{code:'PRACTICE_NOT_FOUND',message:'Pratica non trovata.'}});
+      }
+
+      const pathname = `practices/${practiceId}/facsimili/${crypto.randomUUID()}-${filename}`;
+      const validUntil = Date.now() + 15 * 60 * 1000;
+      const signedToken = await issueSignedToken({
+        pathname,
+        operations:['put'],
+        validUntil,
+        allowedContentTypes:[contentType],
+        maximumSizeInBytes:10 * 1024 * 1024,
+        oidcToken:process.env.VERCEL_OIDC_TOKEN,
+        storeId:process.env.BLOB_STORE_ID
+      });
+      const { presignedUrl } = await presignUrl(signedToken, {
+        operation:'put',
+        pathname,
+        access:'private',
+        validUntil,
+        allowedContentTypes:[contentType],
+        maximumSizeInBytes:10 * 1024 * 1024,
+        allowOverwrite:false
+      });
+
+      const doc = await dbRequest('admin_practice_documents', {
+        method:'POST',
+        body:{
+          practice_id:practiceId,
+          kind:'facsimile',
+          filename,
+          pathname,
+          content_type:contentType,
+          size_bytes:size,
+          status:'uploaded',
+          uploaded_by:auth.user.id
+        }
+      });
+      if (!doc.response.ok || !doc.data?.[0]) {
+        return json(res, 503, {ok:false,error:{code:'DOCUMENT_RECORD_FAILED',message:'Impossibile registrare il documento.'}});
+      }
+
+      return json(res, 200, {ok:true, document:doc.data[0], uploadUrl:presignedUrl, expiresAt:validUntil});
+    }
+
+    if (action === 'facsimile-extract' && req.method === 'POST') {
+      const auth = await requireAdmin(req, res);
+      if (!auth) return json(res, 401, {ok:false,error:{code:'UNAUTHORIZED',message:'Autenticazione richiesta.'}});
+      const documentId = str(req.body?.documentId);
+      if (!/^[0-9a-f-]{36}$/i.test(documentId)) return json(res,400,{ok:false,error:{code:'INVALID_DOCUMENT_ID',message:'Documento non valido.'}});
+
+      const row = await dbRequest(`admin_practice_documents?id=eq.${encodeURIComponent(documentId)}&select=*`);
+      if (!row.response.ok || !row.data?.[0]) return json(res,404,{ok:false,error:{code:'DOCUMENT_NOT_FOUND',message:'Documento non trovato.'}});
+      const doc = row.data[0];
+      if (!doc.pathname) return json(res,400,{ok:false,error:{code:'DOCUMENT_PATH_MISSING',message:'Percorso documento mancante.'}});
+
+      const blob = await get(doc.pathname, {access:'private', useCache:false});
+      if (!blob) return json(res,404,{ok:false,error:{code:'BLOB_NOT_FOUND',message:'File non trovato nello storage.'}});
+      const chunks = [];
+      for await (const chunk of blob.stream) chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+      const buffer = Buffer.concat(chunks);
+
+      const { extractFacsimile } = await import('./facsimile-extract.js');
+      const extracted = await extractFacsimile(buffer, doc.content_type);
+      const patch = {
+        status:'extracted',
+        extracted_text:extracted.text,
+        extracted_data:extracted.data,
+        extracted_at:new Date().toISOString()
+      };
+      const saved = await dbRequest(`admin_practice_documents?id=eq.${encodeURIComponent(documentId)}`, {method:'PATCH', body:patch});
+      if (!saved.response.ok) return json(res,503,{ok:false,error:{code:'EXTRACTION_SAVE_FAILED',message:'Dati estratti non salvati.'}});
+
+      return json(res,200,{ok:true,document:saved.data?.[0]||null,extractedData:extracted.data});
+    }
+
+    if (action === 'facsimile-confirm' && req.method === 'POST') {
+      const auth = await requireAdmin(req, res);
+      if (!auth) return json(res,401,{ok:false,error:{code:'UNAUTHORIZED',message:'Autenticazione richiesta.'}});
+      const documentId = str(req.body?.documentId);
+      const confirmedData = req.body?.confirmedData;
+      if (!/^[0-9a-f-]{36}$/i.test(documentId) || !confirmedData || typeof confirmedData !== 'object' || Array.isArray(confirmedData)) {
+        return json(res,400,{ok:false,error:{code:'INVALID_CONFIRMATION',message:'Dati di conferma non validi.'}});
+      }
+      const row = await dbRequest(`admin_practice_documents?id=eq.${encodeURIComponent(documentId)}&select=*`);
+      if (!row.response.ok || !row.data?.[0]) return json(res,404,{ok:false,error:{code:'DOCUMENT_NOT_FOUND',message:'Documento non trovato.'}});
+      const doc = row.data[0];
+      const confirmedAt = new Date().toISOString();
+      const saved = await dbRequest(`admin_practice_documents?id=eq.${encodeURIComponent(documentId)}`, {
+        method:'PATCH',
+        body:{status:'confirmed',confirmed_data:confirmedData,confirmed_at:confirmedAt}
+      });
+      if (!saved.response.ok) return json(res,503,{ok:false,error:{code:'CONFIRMATION_SAVE_FAILED',message:'Conferma non salvata.'}});
+
+      // La data di scadenza del facsimile, una volta verificata e confermata,
+      // diventa la scadenza operativa della pratica. Non viene mai aggiornata
+      // automaticamente sulla sola estrazione: serve prima la conferma dell'utente.
+      const confirmedExpiry = str(confirmedData.end_date);
+      const confirmedExpiryValid = /^\\d{4}-\\d{2}-\\d{2}$/.test(confirmedExpiry);
+      const practicePatch = {
+        official_data: confirmedData,
+        official_data_source_document_id: documentId,
+        official_data_confirmed_at: confirmedAt,
+        ...(confirmedExpiryValid ? { expiry: confirmedExpiry } : {})
+      };
+      const practiceSaved = await dbRequest(`admin_practices?id=eq.${encodeURIComponent(doc.practice_id)}`, {
+        method:'PATCH',
+        body:practicePatch
+      });
+      if (!practiceSaved.response.ok) {
+        return json(res,503,{ok:false,error:{code:'PRACTICE_CONFIRMATION_SAVE_FAILED',message:'Dati confermati salvati nel documento ma non nella pratica.'}});
+      }
+
+      return json(res,200,{ok:true,document:saved.data?.[0]||null,practice:practiceSaved.data?.[0]||null});
+    }
+
+    if (action === 'facsimile-file' && req.method === 'GET') {
+      const auth = await requireAdmin(req, res);
+      if (!auth) return json(res,401,{ok:false,error:{code:'UNAUTHORIZED',message:'Autenticazione richiesta.'}});
+      const documentId = str(req.query?.id);
+      if (!/^[0-9a-f-]{36}$/i.test(documentId)) return json(res,400,{ok:false,error:{code:'INVALID_DOCUMENT_ID',message:'Documento non valido.'}});
+      const row = await dbRequest(`admin_practice_documents?id=eq.${encodeURIComponent(documentId)}&select=filename,pathname,content_type,size_bytes,status`);
+      if (!row.response.ok || !row.data?.[0]) return json(res,404,{ok:false,error:{code:'DOCUMENT_NOT_FOUND',message:'Documento non trovato.'}});
+      const doc = row.data[0];
+      const validUntil = Date.now() + 5 * 60 * 1000;
+      const signedToken = await issueSignedToken({
+        pathname:doc.pathname,
+        operations:['get'],
+        validUntil,
+        oidcToken:process.env.VERCEL_OIDC_TOKEN,
+        storeId:process.env.BLOB_STORE_ID
+      });
+      const { presignedUrl } = await presignUrl(signedToken,{operation:'get',pathname:doc.pathname,access:'private',validUntil});
+      return json(res,200,{ok:true,downloadUrl:presignedUrl,filename:doc.filename,contentType:doc.content_type,status:doc.status});
+    }
+
+    if (action === 'facsimiles' && req.method === 'GET') {
+      const auth = await requireAdmin(req, res);
+      if (!auth) return json(res,401,{ok:false,error:{code:'UNAUTHORIZED',message:'Autenticazione richiesta.'}});
+      const practiceId = str(req.query?.practiceId);
+      if (!/^[0-9a-f-]{36}$/i.test(practiceId)) return json(res,400,{ok:false,error:{code:'INVALID_PRACTICE_ID',message:'Pratica non valida.'}});
+      const rows = await dbRequest(`admin_practice_documents?practice_id=eq.${encodeURIComponent(practiceId)}&kind=eq.facsimile&select=id,filename,content_type,size_bytes,status,uploaded_at,extracted_at,confirmed_at&order=uploaded_at.desc`);
+      if (!rows.response.ok) return json(res,503,{ok:false,error:{code:'DATABASE_ERROR',message:'Impossibile leggere i facsimili.'}});
+      return json(res,200,{ok:true,documents:rows.data||[]});
+    }
+
+    /*
+     * ============================================================
+     * MUP FILES — GENERAZIONE DOCX + PDF
+     * ============================================================
+     */
+    if (action === 'mup-files' && req.method === 'POST') {
+      const auth = await requireAdmin(req, res);
+      if (!auth) {
+        return json(res, 401, { ok: false, error: { code: 'UNAUTHORIZED', message: 'Autenticazione richiesta.' } });
+      }
+
+      const id = str(req.query?.id);
+      if (!/^[0-9a-f-]{36}$/i.test(id)) {
+        return json(res, 400, { ok: false, error: { code: 'INVALID_PRACTICE_ID', message: 'ID pratica non valido.' } });
+      }
+
+      const data = req.body || {};
+      const documentId = str(data.documentId) || ('MUP-' + new Date().toISOString().replace(/[-:TZ.]/g, '').slice(0, 14));
+      const generatedAt = new Date().toISOString();
+      const payload = { ...data, documentId, generatedAt };
+
+      const [docx, pdf] = await Promise.all([
+        generateMupDocx(payload),
+        generateMupPdf(payload)
+      ]);
+
+      const docxBase64 = docx.toString('base64');
+      const pdfBase64 = pdf.toString('base64');
+      const html = str(data.html).slice(0, 500000);
+
+      const r = await dbRequest(`admin_practices?id=eq.${encodeURIComponent(id)}`, {
+        method: 'PATCH',
+        body: {
+          ...(html ? { mup_html: html } : {}),
+          mup_generated_at: generatedAt,
+          mup_docx_base64: docxBase64,
+          mup_docx_generated_at: generatedAt,
+          mup_pdf_base64: pdfBase64,
+          mup_pdf_generated_at: generatedAt
+        }
+      });
+
+      if (!r.response.ok) {
+        return json(res, 400, { ok: false, error: { code: 'DATABASE_ERROR', message: 'Salvataggio dei file MUP fallito.' } });
+      }
+
+      return json(res, 200, {
+        ok: true,
+        documentId,
+        generatedAt,
+        docxBase64,
+        pdfBase64
+      });
+    }
+
+    /*
+     * ============================================================
+     * MUP FILE — DOWNLOAD DI UN DOCUMENTO GIÀ SALVATO
+     * ============================================================
+     */
+    if (action === 'mup-file' && req.method === 'GET') {
+      const auth = await requireAdmin(req, res);
+      if (!auth) {
+        return json(res, 401, { ok: false, error: { code: 'UNAUTHORIZED', message: 'Autenticazione richiesta.' } });
+      }
+
+      const id = str(req.query?.id);
+      const type = str(req.query?.type);
+      if (!/^[0-9a-f-]{36}$/i.test(id) || !['word', 'pdf'].includes(type)) {
+        return json(res, 400, { ok: false, error: { code: 'INVALID_REQUEST', message: 'Richiesta file non valida.' } });
+      }
+
+      const column = type === 'word' ? 'mup_docx_base64,mup_generated_at' : 'mup_pdf_base64,mup_generated_at';
+      const r = await dbRequest(`admin_practices?id=eq.${encodeURIComponent(id)}&select=${column}`);
+      if (!r.response.ok || !r.data?.[0]) {
+        return json(res, 404, { ok: false, error: { code: 'MUP_NOT_FOUND', message: 'Documento MUP non trovato.' } });
+      }
+
+      const item = r.data[0];
+      const base64 = type === 'word' ? item.mup_docx_base64 : item.mup_pdf_base64;
+      if (!base64) {
+        return json(res, 404, { ok: false, error: { code: 'MUP_NOT_FOUND', message: 'Documento MUP non ancora generato.' } });
+      }
+
+      return json(res, 200, { ok: true, type, base64, generatedAt: item.mup_generated_at || null });
+    }
+
+    /*
+     * ============================================================
      * REQUESTS — GET
      * ============================================================
      */
@@ -1098,6 +1490,15 @@ export default async function handler(req, res) {
       });
 
       if (!r.response.ok) {
+        if (process.env.VERCEL_ENV === 'preview') {
+          return json(res, 503, {
+            ok: false,
+            error: {
+              code: 'PREVIEW_DATABASE_ERROR',
+              message: `Salvataggio fallito [HTTP ${r.response.status}]${r.data?.code ? ` [${r.data.code}]` : ''}.${r.data?.message ? ` ${String(r.data.message).slice(0, 240)}` : ''}`
+            }
+          });
+        }
         return json(res, 400, {
           ok: false,
           error: { code: 'DATABASE_ERROR', message: 'Salvataggio fallito.' }
@@ -1131,6 +1532,16 @@ export default async function handler(req, res) {
 
       if ('notes' in (req.body || {})) {
         patch.notes = str(req.body.notes).slice(0, 10000);
+      }
+
+      // 21 settembre 2026 — su richiesta di Carmelo: il MUP generato resta
+      // salvato dentro la pratica, non solo aperto in una scheda temporanea.
+      // Limite di lunghezza generoso (il documento generato è tipicamente
+      // qualche migliaio di caratteri) solo per sicurezza, non blocca l'uso
+      // normale.
+      if ('mupHtml' in (req.body || {})) {
+        patch.mup_html = str(req.body.mupHtml).slice(0, 500000);
+        patch.mup_generated_at = new Date().toISOString();
       }
 
       const r = await dbRequest(`admin_practices?id=eq.${encodeURIComponent(id)}`, {
@@ -1179,6 +1590,101 @@ export default async function handler(req, res) {
       return json(res, 200, { ok: true });
     }
 
+    /*
+     * ============================================================
+     * INTERMEDIARIES — GET (elenco completo, attivi e non)
+     * Usata sia dalla sezione "Intermediari collaboratori" delle
+     * Impostazioni, sia dal generatore MUP (che mostra solo i record
+     * con active=true nel menu a tendina).
+     * ============================================================
+     */
+    if (action === 'intermediaries' && req.method === 'GET') {
+      const auth = await requireAdmin(req, res);
+
+      if (!auth) {
+        return json(res, 401, {
+          ok: false,
+          error: { code: 'UNAUTHORIZED', message: 'Autenticazione richiesta.' }
+        });
+      }
+
+      const r = await dbRequest('admin_intermediaries?select=*&order=name.asc');
+
+      if (!r.response.ok) {
+        return json(res, 503, {
+          ok: false,
+          error: { code: 'DATABASE_ERROR', message: 'Errore archivio intermediari.' }
+        });
+      }
+
+      return json(res, 200, { ok: true, intermediaries: r.data || [] });
+    }
+
+    /*
+     * ============================================================
+     * INTERMEDIARIES — POST (nuovo intermediario)
+     * ============================================================
+     */
+    if (action === 'intermediaries' && req.method === 'POST') {
+      const auth = await requireAdmin(req, res);
+
+      if (!auth) {
+        return json(res, 401, {
+          ok: false,
+          error: { code: 'UNAUTHORIZED', message: 'Autenticazione richiesta.' }
+        });
+      }
+
+      const intermediary = cleanIntermediary(req.body || {});
+
+      const r = await dbRequest('admin_intermediaries', {
+        method: 'POST',
+        body: { ...intermediary, created_by: auth.user.id }
+      });
+
+      if (!r.response.ok) {
+        return json(res, 400, {
+          ok: false,
+          error: { code: 'DATABASE_ERROR', message: 'Salvataggio intermediario fallito.' }
+        });
+      }
+
+      return json(res, 200, { ok: true, intermediary: r.data?.[0] || null });
+    }
+
+    /*
+     * ============================================================
+     * INTERMEDIARY — PATCH (modifica dati o attiva/disattiva)
+     * ============================================================
+     */
+    if (action === 'intermediary' && req.method === 'PATCH') {
+      const auth = await requireAdmin(req, res);
+
+      if (!auth) {
+        return json(res, 401, {
+          ok: false,
+          error: { code: 'UNAUTHORIZED', message: 'Autenticazione richiesta.' }
+        });
+      }
+
+      const id = str(req.query?.id);
+      const patch = cleanIntermediary(req.body || {}, { partial: true });
+
+      const r = await dbRequest(`admin_intermediaries?id=eq.${encodeURIComponent(id)}`, {
+        method: 'PATCH',
+        body: patch
+      });
+
+      if (!r.response.ok) {
+        return json(res, 400, {
+          ok: false,
+          error: { code: 'DATABASE_ERROR', message: 'Aggiornamento intermediario fallito.' }
+        });
+      }
+
+      return json(res, 200, { ok: true, intermediary: r.data?.[0] || null });
+    }
+
     return json(res, 404, {
       ok: false,
       error: { code: 'NOT_FOUND', message: 'Non trovato.' }
@@ -1187,7 +1693,15 @@ export default async function handler(req, res) {
     /*
      * Non esporre mai al client il corpo grezzo
      * degli errori Supabase, Redis o runtime.
+     * In Preview restituiamo soltanto lo stadio tecnico,
+     * senza messaggi, URL, token o stack trace.
      */
+    if (process.env.VERCEL_ENV === 'preview' && typeof loginStage === 'string') {
+      return json(res, 503, {
+        ok: false,
+        error: { code: 'PREVIEW_LOGIN_STAGE', message: `Errore temporaneo [${loginStage}].` }
+      });
+    }
     return json(res, 503, {
       ok: false,
       error: { code: 'SERVER_ERROR', message: 'Errore temporaneo.' }
