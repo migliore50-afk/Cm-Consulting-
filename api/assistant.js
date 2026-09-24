@@ -6,8 +6,6 @@ export default async function handler(req, res) {
 
   try {
     const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
-    const message = privacySafe(String(body.message || '').trim()).slice(0, 1200);
-    if (!message) return res.status(400).json({ error: 'Richiesta vuota' });
 
     const privacySafe = value => String(value || '')
       .replace(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, '[email omessa]')
@@ -16,6 +14,9 @@ export default async function handler(req, res) {
       .replace(/\b[A-Z]{6}\d{2}[A-Z]\d{2}[A-Z]\d{3}[A-Z]\b/gi, '[codice fiscale omesso]')
       .replace(/\b(?:\+?39[\s.-]?)?(?:3\d{2}[\s.-]?\d{3}[\s.-]?\d{4}|0\d{1,3}[\s.-]?\d{5,8})\b/g, '[telefono omesso]')
       .replace(/\b(?:mi chiamo|sono)\s+[A-ZÀ-ÖØ-Ý][A-Za-zÀ-ÖØ-öø-ÿ'’-]*(?:\s+[A-ZÀ-ÖØ-Ý][A-Za-zÀ-ÖØ-öø-ÿ'’-]*){0,3}/gi, '[nome omesso]');
+
+    const message = privacySafe(String(body.message || '').trim()).slice(0, 1200);
+    if (!message) return res.status(400).json({ error: 'Richiesta vuota' });
 
     const history = Array.isArray(body.history)
       ? body.history
