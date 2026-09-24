@@ -1,7 +1,7 @@
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Metodo non consentito' });
 
-  const apiKey = process.env.OPENAI_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) return res.status(503).json({ error: 'Assistente AI non configurato' });
 
   try {
@@ -78,32 +78,45 @@ ${JSON.stringify(pageContext)}
 DATI ATTUALI DEL FORM:
 ${JSON.stringify(formContext)}`;
 
-    const input = [
-      { role: 'system', content: system },
-      ...history,
-      { role: 'user', content: message }
+    // Gemini riceve l'istruzione di sistema separatamente e mantiene lo stesso
+    // schema conversazionale gia' usato dal frontend.
+    const contents = [
+      ...history.map(item => ({
+        role: item.role === 'assistant' ? 'model' : 'user',
+        parts: [{ text: item.content }]
+      })),
+      { role: 'user', parts: [{ text: message }] }
     ];
 
-    const upstream = await fetch('https://api.openai.com/v1/responses', {
+    const upstream = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
+        'x-goog-api-key': apiKey
       },
       body: JSON.stringify({
-        model: process.env.OPENAI_ASSISTANT_MODEL || 'gpt-5.6-luna',
-        input,
-        max_output_tokens: 700
+        systemInstruction: {
+          parts: [{ text: system }]
+        },
+        contents,
+        generationConfig: {
+          maxOutputTokens: 700
+        }
       })
     });
 
     const data = await upstream.json().catch(() => ({}));
     if (!upstream.ok) {
-      console.error('OpenAI assistant error', upstream.status, data?.error?.message || data);
+      console.error('Gemini assistant error', upstream.status, data?.error?.message || data);
       return res.status(502).json({ error: 'Servizio AI temporaneamente non disponibile' });
     }
 
-    const rawReply = String(data.output_text || '').trim();
+    const rawReply = String(
+      data?.candidates?.[0]?.content?.parts
+        ?.filter(part => typeof part?.text === 'string')
+        ?.map(part => part.text)
+        ?.join('') || ''
+    ).trim();
     if (!rawReply) return res.status(502).json({ error: 'Risposta AI vuota' });
 
     const routeMatch = rawReply.match(/\[\[ROUTE:(\/[^\]]+)\]\]/i);
