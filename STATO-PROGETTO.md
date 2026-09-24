@@ -474,3 +474,9 @@ Carmelo ha chiarito un punto importante: **non ha mai usato un Modulo Unico Prec
 ## Nota su accesso in scrittura — chiarimento per chi riprende
 
 Carmelo ha chiesto se Claude o ChatGPT potessero eseguire da soli le modifiche su GitHub (es. lo spostamento file del punto 8), invece di fargli fare i passaggi manuali. Confermato: **Claude in questa chat ha solo accesso in lettura a GitHub** (vedi §5-bis, causa già diagnosticata). Non è possibile verificare da qui se un'istanza di ChatGPT in un'altra conversazione abbia invece accesso in scrittura — dipende dagli strumenti che Carmelo ha eventualmente collegato al suo account ChatGPT, informazione che va chiesta direttamente a ChatGPT stesso in quella conversazione.
+
+
+## Menu principale — aggiornamento 24 settembre 2026
+La voce **"NON SAI QUALE GARANZIA?"** è stata rimossa dal menu principale come deciso in precedenza. Il percorso generico resta disponibile tramite `/altre-esigenze`, il preventivo e l'Assistente CM.
+
+Il menu **SERVIZI** è stato ampliato per riflettere il nuovo catalogo SEO: contributi/AGEA, ambiente, edilizia e immobiliare, capacità finanziaria, attività regolamentate, stranieri/visti e altre esigenze. Sono state inoltre rifinite spaziatura, gerarchia visiva e dropdown desktop.
