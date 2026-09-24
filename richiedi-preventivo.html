@@ -295,12 +295,8 @@ function applyType(){
   document.getElementById('beneficiaryAddressLabel').textContent=fl.beneficiaryAddress;
   document.getElementById('companyTaxLabel').textContent=fl.companyTax;
 
-  const isLocazioni = type==='locazioni';
-  const isGeneric = type==='altro' || type==='generica';
-  document.getElementById('leaseTypeField').classList.toggle('hidden',!isLocazioni);
-  document.getElementById('companyField').classList.toggle('hidden',!isLocazioni);
-  document.getElementById('companyTaxField').classList.toggle('hidden',!isLocazioni);
-  document.getElementById('genericDescriptionField').classList.toggle('hidden',!isGeneric);
+  const typeSelect=document.getElementById('requestTypeSelect');
+  if(typeSelect) typeSelect.value=labels[type] ? type : 'generica';
 
   go(2);
   refreshAll();
