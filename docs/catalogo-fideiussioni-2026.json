@@ -1,0 +1,400 @@
+{
+  "version": "2026-09-24",
+  "sourceOfTruth": "docs/SEO-MARKET-CATALOG-2026.md",
+  "privacy": {
+    "piiToGemini": false,
+    "note": "Identifying data remains local in the browser/form flow; the assistant receives only privacy-safe contextual fields."
+  },
+  "categories": [
+    {
+      "id": "appalti-pubblici",
+      "label": "Appalti e contratti pubblici",
+      "hubPath": "/appalti-pubblici",
+      "status": "existing",
+      "items": [
+        {
+          "id": "cauzione-provvisoria",
+          "label": "Cauzione provvisoria",
+          "path": null
+        },
+        {
+          "id": "cauzione-definitiva",
+          "label": "Cauzione definitiva",
+          "path": null
+        },
+        {
+          "id": "anticipazione-contrattuale",
+          "label": "Garanzia per anticipazione",
+          "path": null
+        },
+        {
+          "id": "rata-saldo",
+          "label": "Garanzia per rata di saldo",
+          "path": null
+        },
+        {
+          "id": "buona-esecuzione",
+          "label": "Garanzia per buona esecuzione",
+          "path": null
+        },
+        {
+          "id": "manutenzione",
+          "label": "Garanzie per manutenzione",
+          "path": null
+        },
+        {
+          "id": "svincolo-ritenute",
+          "label": "Svincolo ritenute",
+          "path": null
+        },
+        {
+          "id": "car-postuma",
+          "label": "CAR / decennale postuma",
+          "path": null
+        }
+      ]
+    },
+    {
+      "id": "contributi-pubblici",
+      "label": "Contributi e agevolazioni pubbliche",
+      "hubPath": "/contributi-pubblici",
+      "status": "new-hub",
+      "items": [
+        {
+          "id": "agea",
+          "label": "Fideiussione AGEA",
+          "path": "/fideiussione-agea",
+          "status": "new",
+          "evidence": "strong"
+        },
+        {
+          "id": "agea-ocm-vino",
+          "label": "AGEA / OCM Vino",
+          "path": null,
+          "status": "planned"
+        },
+        {
+          "id": "anticipazioni-contributi",
+          "label": "Anticipazioni su contributi pubblici",
+          "path": null,
+          "status": "planned"
+        },
+        {
+          "id": "contributi-regionali",
+          "label": "Contributi regionali",
+          "path": null,
+          "status": "planned"
+        },
+        {
+          "id": "contributi-nazionali",
+          "label": "Contributi nazionali",
+          "path": null,
+          "status": "planned"
+        },
+        {
+          "id": "contributi-ue",
+          "label": "Contributi UE",
+          "path": null,
+          "status": "planned"
+        }
+      ]
+    },
+    {
+      "id": "dogane",
+      "label": "Dogane e commercio estero",
+      "hubPath": "/dogane",
+      "status": "existing",
+      "items": [
+        {
+          "id": "diritti-doganali",
+          "label": "Diritti doganali",
+          "path": null
+        },
+        {
+          "id": "depositi-fiscali",
+          "label": "Depositi fiscali",
+          "path": null
+        },
+        {
+          "id": "procedure-doganali",
+          "label": "Garanzie per procedure doganali",
+          "path": null
+        },
+        {
+          "id": "aeo",
+          "label": "AEO e altre esigenze doganali",
+          "path": null,
+          "status": "verify"
+        }
+      ]
+    },
+    {
+      "id": "ambiente",
+      "label": "Ambiente",
+      "hubPath": "/ambiente",
+      "status": "existing",
+      "items": [
+        {
+          "id": "albo-gestori",
+          "label": "Albo Gestori Ambientali",
+          "path": null
+        },
+        {
+          "id": "rifiuti-transfrontalieri",
+          "label": "Trasporto transfrontaliero di rifiuti",
+          "path": null
+        },
+        {
+          "id": "aua",
+          "label": "AUA",
+          "path": null,
+          "status": "verify"
+        },
+        {
+          "id": "discariche",
+          "label": "Discariche e post-gestione",
+          "path": null,
+          "status": "verify"
+        },
+        {
+          "id": "cave",
+          "label": "Cave e recupero ambientale",
+          "path": null
+        },
+        {
+          "id": "rifiuti",
+          "label": "Raccolta e smaltimento rifiuti",
+          "path": null
+        }
+      ]
+    },
+    {
+      "id": "edilizia-immobiliare",
+      "label": "Edilizia e immobiliare",
+      "hubPath": "/edilizia-immobiliare",
+      "status": "new-hub",
+      "items": [
+        {
+          "id": "urbanizzazione",
+          "label": "Oneri di urbanizzazione",
+          "path": null
+        },
+        {
+          "id": "costi-costruzione",
+          "label": "Costi di costruzione",
+          "path": null
+        },
+        {
+          "id": "acconti-costruttore",
+          "label": "Acconti versati al costruttore",
+          "path": null,
+          "status": "verify"
+        },
+        {
+          "id": "permute-immobiliari",
+          "label": "Permute immobiliari",
+          "path": null,
+          "status": "verify"
+        },
+        {
+          "id": "car-edilizia",
+          "label": "CAR",
+          "path": null
+        },
+        {
+          "id": "decennale-postuma",
+          "label": "Decennale postuma",
+          "path": null
+        },
+        {
+          "id": "cave-edilizia",
+          "label": "Garanzie per cave",
+          "path": null
+        }
+      ]
+    },
+    {
+      "id": "locazioni",
+      "label": "Locazioni",
+      "hubPath": "/locazioni",
+      "status": "existing",
+      "items": [
+        {
+          "id": "affitto-residenziale",
+          "label": "Fideiussione per affitto residenziale",
+          "path": "/locazioni"
+        },
+        {
+          "id": "affitto-commerciale",
+          "label": "Fideiussione per affitto commerciale",
+          "path": "/affitti-commerciali"
+        },
+        {
+          "id": "ramo-azienda",
+          "label": "Garanzia per ramo d'azienda",
+          "path": "/affitti-rami-azienda"
+        }
+      ]
+    },
+    {
+      "id": "contratti-privati",
+      "label": "Contratti privati",
+      "hubPath": "/fideiussioni-contratti-privati",
+      "status": "existing",
+      "items": [
+        {
+          "id": "acconti-privati",
+          "label": "Garanzie per acconti",
+          "path": null
+        },
+        {
+          "id": "appalti-privati",
+          "label": "Appalti tra privati",
+          "path": null
+        },
+        {
+          "id": "transazioni",
+          "label": "Transazioni",
+          "path": null
+        },
+        {
+          "id": "prestazioni-continuative",
+          "label": "Prestazioni continuative",
+          "path": null
+        },
+        {
+          "id": "anticipazioni-private",
+          "label": "Anticipazioni",
+          "path": null
+        },
+        {
+          "id": "rata-saldo-privati",
+          "label": "Rata a saldo",
+          "path": null
+        },
+        {
+          "id": "buona-esecuzione-privati",
+          "label": "Buona esecuzione",
+          "path": null
+        }
+      ]
+    },
+    {
+      "id": "capacita-finanziaria",
+      "label": "Capacità finanziaria e attività regolamentate",
+      "hubPath": "/capacita-finanziaria",
+      "status": "existing",
+      "items": [
+        {
+          "id": "autotrasporto",
+          "label": "Capacità finanziaria autotrasporto",
+          "path": "/capacita-finanziaria"
+        },
+        {
+          "id": "autoscuole",
+          "label": "Capacità finanziaria autoscuole",
+          "path": "/capacita-finanziaria-autoscuole",
+          "status": "new",
+          "evidence": "regulatory"
+        },
+        {
+          "id": "scuole-nautiche",
+          "label": "Capacità finanziaria scuole nautiche",
+          "path": "/capacita-finanziaria-scuole-nautiche",
+          "status": "new",
+          "evidence": "regulatory"
+        },
+        {
+          "id": "centri-revisione",
+          "label": "Capacità finanziaria centri revisione",
+          "path": "/capacita-finanziaria-centri-revisione",
+          "status": "new",
+          "evidence": "regulatory"
+        }
+      ]
+    },
+    {
+      "id": "agenzie-professioni",
+      "label": "Agenzie e attività regolamentate",
+      "hubPath": "/agenzie-e-attivita-regolamentate",
+      "status": "new-hub",
+      "items": [
+        {
+          "id": "agenzie-viaggio",
+          "label": "Garanzie per agenzie di viaggio / tour operator",
+          "path": "/garanzie-agenzie-di-viaggio",
+          "status": "new",
+          "evidence": "market"
+        },
+        {
+          "id": "istituti-vigilanza",
+          "label": "Fideiussione per istituti di vigilanza",
+          "path": "/fideiussione-istituti-vigilanza",
+          "status": "new",
+          "evidence": "regulatory"
+        },
+        {
+          "id": "investigazioni",
+          "label": "Fideiussione per investigazioni private",
+          "path": "/fideiussione-investigazioni",
+          "status": "new",
+          "evidence": "regulatory"
+        }
+      ]
+    },
+    {
+      "id": "stranieri",
+      "label": "Stranieri e ingresso in Italia",
+      "hubPath": "/stranieri",
+      "status": "new-hub",
+      "items": [
+        {
+          "id": "visto-turistico",
+          "label": "Fideiussione per visto turistico",
+          "path": "/fideiussione-visto-turistico",
+          "status": "new",
+          "evidence": "market"
+        },
+        {
+          "id": "visto-studio",
+          "label": "Fideiussione per visto di studio",
+          "path": "/fideiussione-visto-studio",
+          "status": "new",
+          "evidence": "market"
+        },
+        {
+          "id": "visto-lavoro",
+          "label": "Fideiussione per visto di lavoro",
+          "path": "/fideiussione-visto-lavoro",
+          "status": "verify"
+        },
+        {
+          "id": "visto-cure-mediche",
+          "label": "Fideiussione per cure mediche",
+          "path": null,
+          "status": "verify"
+        },
+        {
+          "id": "ricongiungimento-familiare",
+          "label": "Fideiussione per ricongiungimento familiare",
+          "path": "/fideiussione-ricongiungimento-familiare",
+          "status": "new",
+          "evidence": "market"
+        }
+      ]
+    },
+    {
+      "id": "altre-esigenze",
+      "label": "Altre esigenze",
+      "hubPath": "/altre-esigenze",
+      "status": "existing",
+      "items": [
+        {
+          "id": "altra-garanzia",
+          "label": "Garanzia non presente nel catalogo",
+          "path": "/altre-esigenze"
+        }
+      ]
+    }
+  ]
+}
