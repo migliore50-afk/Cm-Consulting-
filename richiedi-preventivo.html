@@ -60,6 +60,12 @@
 .privacy-check a{color:var(--ink);font-weight:800;text-decoration:underline}
 .action-box .btn{width:100%;text-align:center;margin-bottom:8px}
 .action-box small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.cm-universal-intro{max-width:760px;margin:0 auto;text-align:center;padding:34px 12px}
+.cm-universal-intro .intro{max-width:680px;margin:0 auto 22px}
+.cm-universal-intro .btn{margin:auto}
+.cm-optional-type span,.essential-field label span{font-weight:500;color:var(--muted)}
+.essential-field select{width:100%;padding:14px;border:1px solid var(--line);border-radius:10px;font-size:15px;background:#fff;color:var(--ink)}
+@media(max-width:700px){.cm-universal-intro{padding:22px 4px}.cm-universal-intro h2{font-size:28px}}
 .success{display:none;text-align:center;padding:45px}.success.show{display:block}
 .cm-missing-docs{margin:18px auto 0;max-width:720px;padding:13px 15px;border-left:4px solid #d6aa45;border-radius:9px;background:#fff8e8;color:#5b4a20;font-size:12px;line-height:1.5;text-align:left}
 </style>
@@ -74,88 +80,93 @@
 <section class="section"><div class="wrap request-shell"><div class="progressbar"><span class="on" id="bar1"></span><span id="bar2"></span></div>
 
 <div class="request-card">
-<div class="step active" id="step1">
-<div class="eyebrow">01 · Tipologia</div><h2>Di cosa hai bisogno?</h2>
-<p class="intro">Scegli l'area più vicina alla tua esigenza. Se non sai quale sia, scegli "Non trovo la mia esigenza" e descrivila liberamente.</p>
-<div class="choice-grid">
-<button class="big-choice" onclick="setType('appalti')">🏗️ <b>Appalti pubblici</b><span>Gare, garanzie contrattuali e altre richieste.</span></button>
-<button class="big-choice" onclick="setType('locazioni')">🏠 <b>Locazioni</b><span>Garanzie richieste per contratti o preliminari.</span></button>
-<button class="big-choice" onclick="setType('dogane')">🛃 <b>Dogane</b><span>Obblighi e adempimenti doganali.</span></button>
-<button class="big-choice" onclick="setType('ambiente')">🌱 <b>Ambiente</b><span>Garanzie per specifiche attività e obblighi.</span></button>
-<button class="big-choice" onclick="setType('contributi')">💶 <b>Contributi e agevolazioni</b><span>Garanzie richieste da enti o programmi.</span></button>
-<button class="big-choice" onclick="setType('urbanistica')">🏢 <b>Urbanistica ed edilizia</b><span>Convenzioni, oneri e altre garanzie richieste.</span></button>
-<button class="big-choice" onclick="setType('fiscali')">🧾 <b>Garanzie fiscali</b><span>Richieste fiscali da valutare caso per caso.</span></button>
-<button class="big-choice" onclick="setType('altro')">❓ <b>Non trovo la mia esigenza</b><span>Raccontala liberamente qui sotto.</span></button>
-<button class="big-choice" onclick="setType('contratti-privati')">🤝 <b>Contratti privati</b><span>Acconti, transazioni, prestazioni continuative tra privati o aziende.</span></button>
-</div></div>
+<div class="step active cm-universal-intro" id="step1">
+  <div class="eyebrow">Richiesta semplice</div>
+  <h2>Raccontaci cosa ti serve.</h2>
+  <p class="intro">Non devi conoscere il nome della fideiussione. Scrivi con parole semplici cosa ti è stato richiesto, indica i dati che conosci e allega i documenti che hai a disposizione.</p>
+  <button class="btn gold btn-icon" type="button" onclick="setType('generica')">CONTINUA CON LA RICHIESTA →</button>
+</div>
 
 <div class="step" id="step2">
-<button class="back-link" onclick="go(1)" type="button">← Cambia tipologia</button>
+<button class="back-link" onclick="go(1)" type="button">← Torna alla richiesta iniziale</button>
 <div class="type-hero" id="typeHero"><img alt="" id="typeHeroImg" src=""/></div>
-<h2 id="typeTitle">—</h2>
+<h2 id="typeTitle">Richiesta di valutazione</h2>
 <div class="type-explain" id="typeExplain"></div>
 
 <div class="simplify-grid">
   <div>
-    <div class="essential-field hidden" id="genericDescriptionField">
-      <label>Descrivi la tua esigenza <strong>*</strong></label>
-      <textarea id="genericDescription" rows="5" placeholder="Spiega cosa ti viene richiesto, da chi, e per quale operazione." oninput="refreshAll()"></textarea>
+    <div class="essential-field">
+      <label>Raccontaci cosa ti serve <strong>*</strong></label>
+      <textarea id="genericDescription" rows="6" placeholder="Esempio: mi hanno chiesto una fideiussione per un contratto di locazione commerciale, ma non so quale garanzia devo presentare." oninput="refreshAll()"></textarea>
+      <small>Non serve conoscere il nome della fideiussione. Scrivi ciò che sai, anche in modo semplice.</small>
     </div>
 
-    <div class="essential-field hidden" id="leaseTypeField">
-      <label>Tipo di locazione <strong>*</strong></label>
-      <div class="lease-choice">
-        <div style="position:relative"><input id="leaseAbitativo" name="leaseType" type="radio" value="abitativo" onchange="refreshAll()"><label for="leaseAbitativo">Uso abitativo</label></div>
-        <div style="position:relative"><input id="leaseCommerciale" name="leaseType" type="radio" value="commerciale" onchange="refreshAll()"><label for="leaseCommerciale">Uso commerciale</label></div>
-        <div style="position:relative"><input id="leaseRamiAzienda" name="leaseType" type="radio" value="rami-azienda" onchange="refreshAll()"><label for="leaseRamiAzienda">Ramo d'azienda</label></div>
-      </div>
-    </div>
-
-    <div class="essential-field" id="beneficiaryField">
-      <label id="beneficiaryLabel">Chi ti richiede la garanzia (beneficiario) <strong>*</strong></label>
-      <input id="beneficiary" placeholder="Denominazione / nome completo" oninput="refreshAll()"/>
-    </div>
-
-    <div class="essential-field hidden" id="companyField">
-      <label id="companyLabel">Conduttore — chi prende in affitto l'immobile <strong>*</strong></label>
-      <input id="company" placeholder="Nome e cognome, o ragione sociale se azienda" oninput="refreshAll()"/>
+    <div class="essential-field cm-optional-type">
+      <label>Se conosci già la tipologia, puoi indicarla <span>(facoltativo)</span></label>
+      <select id="requestTypeSelect" onchange="changeUniversalType(this.value)">
+        <option value="generica">Non lo so / preferisco descriverlo</option>
+        <option value="appalti">Appalti pubblici</option>
+        <option value="locazioni">Locazioni</option>
+        <option value="dogane">Dogane</option>
+        <option value="ambiente">Ambiente</option>
+        <option value="contributi">Contributi e agevolazioni</option>
+        <option value="urbanistica">Urbanistica ed edilizia</option>
+        <option value="fiscali">Garanzie fiscali</option>
+        <option value="contratti-privati">Contratti privati</option>
+        <option value="altro">Altra esigenza / non so quale garanzia</option>
+      </select>
     </div>
 
     <div class="essential-field">
-      <label>Importo da garantire</label>
-      <input id="amount" inputmode="decimal" placeholder="es. 3.000 €" oninput="refreshAll()"/>
-      <small>Anche una stima è sufficiente per iniziare.</small>
+      <label>Importo della garanzia <span>(se lo conosci)</span></label>
+      <input id="amount" inputmode="decimal" placeholder="es. 30.000 €" oninput="refreshAll()"/>
     </div>
+
     <div class="essential-field">
-      <label>Durata della garanzia</label>
-      <input id="duration" placeholder="es. 12 mesi / fino al ..." oninput="refreshAll()"/>
+      <label>Durata o scadenza <span>(se la conosci)</span></label>
+      <input id="duration" placeholder="es. 12 mesi / fino al 31 dicembre" oninput="refreshAll()"/>
     </div>
+
+    <div class="essential-field">
+      <label>A chi devi presentare la garanzia? <span>(se lo sai)</span></label>
+      <input id="beneficiary" placeholder="Comune, proprietario, banca, ente, azienda..." oninput="refreshAll()"/>
+    </div>
+
     <div class="essential-field">
       <label>Il tuo nome e cognome <strong>*</strong></label>
-      <input id="contactName" oninput="refreshAll()"/>
-      <small>Il referente per i prossimi contatti — può coincidere con il beneficiario o il conduttore.</small>
+      <input id="contactName" autocomplete="name" oninput="refreshAll()"/>
     </div>
+
     <div class="essential-field">
       <label>Email <strong>*</strong></label>
-      <input id="contactEmail" type="email" oninput="refreshAll()"/>
+      <input id="contactEmail" autocomplete="email" type="email" oninput="refreshAll()"/>
+      <small>Ti useremo per ricontattarti e completare la richiesta se servono altri dati.</small>
     </div>
+
     <div class="essential-field">
-      <label>Telefono</label>
-      <input id="contactPhone" oninput="refreshAll()"/>
+      <label>Telefono <span>(facoltativo)</span></label>
+      <input id="contactPhone" autocomplete="tel" oninput="refreshAll()"/>
     </div>
 
     <details class="advanced-details">
       <summary>Hai già altri dati? Aggiungili (facoltativo)</summary>
       <div class="advanced-body">
+        <div class="field"><label>Tipo di locazione, se pertinente</label>
+          <select id="leaseType" onchange="refreshAll()">
+            <option value="">Non indicato</option>
+            <option value="abitativo">Uso abitativo</option>
+            <option value="commerciale">Uso commerciale</option>
+            <option value="rami-azienda">Ramo d'azienda</option>
+          </select>
+        </div>
         <div class="field"><label>Data decorrenza</label><input id="startDate" type="date" oninput="refreshAll()"></div>
-        <div class="field"><label>Data scadenza, se già prevista</label><input id="endDate" type="date" oninput="refreshAll()"></div>
-        <div class="field full"><label id="beneficiaryTaxLabel">P.IVA / Codice fiscale beneficiario</label><input id="beneficiaryTax" oninput="refreshAll()"></div>
-        <div class="field full"><label id="beneficiaryAddressLabel">Indirizzo beneficiario</label><input id="beneficiaryAddress" oninput="refreshAll()"></div>
-        <div class="field"><label>PEC beneficiario, se disponibile</label><input id="beneficiaryPec" type="email" oninput="refreshAll()"></div>
-        <div class="field hidden" id="companyTaxField"><label id="companyTaxLabel">P.IVA / Codice fiscale conduttore</label><input id="companyTax" oninput="refreshAll()"></div>
+        <div class="field"><label>Data scadenza, se prevista</label><input id="endDate" type="date" oninput="refreshAll()"></div>
+        <div class="field"><label>P.IVA / Codice fiscale del beneficiario, se disponibile</label><input id="beneficiaryTax" oninput="refreshAll()"></div>
+        <div class="field"><label>Indirizzo del beneficiario, se disponibile</label><input id="beneficiaryAddress" oninput="refreshAll()"></div>
+        <div class="field"><label>PEC del beneficiario, se disponibile</label><input id="beneficiaryPec" type="email" oninput="refreshAll()"></div>
         <div class="field full" id="specificFieldWrap"></div>
-        <div class="field full"><label>Oggetto della garanzia</label><textarea id="object" rows="3" oninput="refreshAll()"></textarea></div>
-        <div class="field full"><label>Il beneficiario ti ha fornito un testo, schema, richiesta o delibera?</label><select id="hasBeneficiaryDoc" oninput="refreshAll()"><option value="no">No</option><option value="yes">Sì</option><option value="unknown">Non lo so / lo invierò insieme agli altri documenti</option></select></div>
+        <div class="field full"><label>Oggetto o riferimento della richiesta</label><textarea id="object" rows="3" oninput="refreshAll()"></textarea></div>
+        <div class="field full"><label>Hai ricevuto un testo, schema, bando, contratto o richiesta?</label><select id="hasBeneficiaryDoc" oninput="refreshAll()"><option value="no">No</option><option value="yes">Sì</option><option value="unknown">Non lo so / lo invierò insieme agli altri documenti</option></select></div>
         <div class="field full"><label>Note aggiuntive</label><textarea id="notes" rows="3" oninput="refreshAll()"></textarea></div>
       </div>
     </details>
@@ -168,13 +179,13 @@
     </div>
 
     <div class="action-box">
-      <h4>Documenti necessari e invio</h4>
+      <h4>Documenti utili e invio</h4>
       <ul class="action-doc-list" id="docList"></ul>
       <label class="privacy-check"><input id="privacyAccepted" type="checkbox"/> <span>Ho letto l'<a href="#privacy-modal" id="privacyInfoLink">informativa privacy</a> e accetto il trattamento dei dati.</span></label>
       <div class="notice hidden" id="submitError" role="alert"></div>
-      <button class="btn gold" onclick="submitRequest()" type="button">INVIA RICHIESTA E ALLEGA I DOCUMENTI →</button>
-      <small>Cliccando, la richiesta viene registrata e si apre subito la tua email già pronta per allegare i documenti.</small>
-      <a class="btn outline btn-icon" href="#" id="docMailtoBtn" style="margin-top:10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6l9 6 9-6"/><rect x="3" y="5" width="18" height="14" rx="2"/></svg> Non si è aperta? Apri qui l'email</a>
+      <button class="btn gold" onclick="submitRequest()" type="button">INVIA RICHIESTA →</button>
+      <small>Invia prima i dati che conosci. Dopo l'invio si apre la tua email già pronta: allega i documenti che hai a disposizione. Se manca qualcosa, CM Consulting ti contatterà per completare la richiesta.</small>
+      <a class="btn outline btn-icon" href="#" id="docMailtoBtn" style="margin-top:10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6l9 6 9-6"/><rect x="3" y="5" width="18" height="14" rx="2"/></svg> Vuoi aggiungere documenti? Apri qui l'email</a>
     </div>
   </div>
 </div>
@@ -258,7 +269,13 @@ const fieldLabels={
 
 function setType(t){
   type=t;
-  genericMode=false;
+  genericMode=t==='altro'||t==='generica';
+  applyType();
+}
+
+function changeUniversalType(t){
+  type=t||'generica';
+  genericMode=type==='altro'||type==='generica';
   applyType();
 }
 
@@ -301,13 +318,12 @@ function val(id){return document.getElementById(id)?.value||''}
 
 function currentRows(){
   const fl=fieldLabels[type]||fieldLabels.default;
-  const leaseType=document.querySelector('input[name="leaseType"]:checked')?.value;
+  const leaseType=val('leaseType');
   return [
     ['Tipologia',labels[type]||'Valutazione generica'],
     ['Descrizione esigenza',val('genericDescription')],
     ['Tipo di locazione',type==='locazioni'?(leaseType==='abitativo'?'Uso abitativo':leaseType==='commerciale'?'Uso commerciale':leaseType==='rami-azienda'?"Ramo d'azienda":''):''],
     [fl.beneficiary,val('beneficiary')],
-    [type==='locazioni'?'Conduttore':'Contraente',val('company')],
     ['Importo',val('amount')],
     ['Durata',val('duration')],
     ['Referente',val('contactName')],
@@ -318,7 +334,6 @@ function currentRows(){
     [fl.beneficiaryTax,val('beneficiaryTax')],
     [fl.beneficiaryAddress,val('beneficiaryAddress')],
     ['PEC beneficiario',val('beneficiaryPec')],
-    [fl.companyTax,val('companyTax')],
     ['Riferimenti',val('refs')],
     ['Oggetto',val('object')],
     ['Note',val('notes')]
@@ -355,8 +370,8 @@ function submitRequest(){
     errorBox.classList.remove('hidden');
     return;
   }
-  if((type==='altro'||type==='generica') && !val('genericDescription').trim() && !val('beneficiary')){
-    errorBox.textContent='Descrivi la tua esigenza prima di proseguire.';
+  if(!val('genericDescription').trim()){
+    errorBox.textContent='Descrivi brevemente cosa ti serve prima di proseguire.';
     errorBox.classList.remove('hidden');
     return;
   }
@@ -423,7 +438,7 @@ function restoreAIAssistantContext(){
     applyType();
   }
 
-  const ids=['genericDescription','beneficiary','company','amount','duration','contactName','contactEmail','contactPhone','startDate','endDate','beneficiaryTax','beneficiaryAddress','beneficiaryPec','companyTax','refs','object','notes'];
+  const ids=['genericDescription','beneficiary','amount','duration','contactName','contactEmail','contactPhone','startDate','endDate','beneficiaryTax','beneficiaryAddress','beneficiaryPec','refs','object','notes'];
   ids.forEach(id=>{
     const value=String(saved[id] ?? '').trim();
     const el=document.getElementById(id);
@@ -431,10 +446,8 @@ function restoreAIAssistantContext(){
   });
 
   const lease=String(saved.leaseType || '');
-  if(lease){
-    const radio=document.querySelector(`input[name="leaseType"][value="${CSS.escape(lease)}"]`);
-    if(radio) radio.checked=true;
-  }
+  const leaseSelect=document.getElementById('leaseType');
+  if(leaseSelect) leaseSelect.value=lease;
 
   refreshAll();
   sessionStorage.removeItem('cm_ai_form_context');
@@ -457,6 +470,10 @@ function restoreAIAssistantContext(){
     applyType();
   }else if(qs.get('tipo') && labels[qs.get('tipo')]){
     type=qs.get('tipo');
+    applyType();
+  }else{
+    type='generica';
+    genericMode=true;
     applyType();
   }
   restoreAIAssistantContext();
