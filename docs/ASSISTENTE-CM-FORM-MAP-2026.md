@@ -1,0 +1,193 @@
+# Mappatura Assistente CM ↔ Moduli richiesta — 24/09/2026
+
+## Obiettivo
+L'Assistente CM deve fare domande aderenti ai campi reali del modulo della tipologia individuata. Non deve inventare domande o richiedere dati che il modulo non utilizza. Le informazioni raccolte devono poter essere trasferite nei campi del modulo senza duplicazioni.
+
+## Regola documentale importante
+La **visura camerale** va indicata come documentazione utile/da allegare quando pertinente all'impresa, ma non va descritta come documento con "validità legale di 6 mesi": la visura non ha un termine di validità stabilito dalla legge. Il **certificato camerale**, invece, ha validità legale di sei mesi dalla data di rilascio. Fonte verificata: Registro Imprese e Camere di Commercio. Se CM Consulting vuole imporre internamente una soglia di aggiornamento (es. documento emesso entro 6 mesi), questa deve essere formulata come requisito operativo dell'istruttoria, non come validità legale della visura.
+
+## 1. Capacità finanziaria
+Pagina: `/capacita-finanziaria`
+
+Campi del modulo:
+- Ragione sociale *
+- Partita IVA / Codice fiscale *
+- Comune sede impresa *
+- Provincia *
+- Numero dei mezzi *
+- Nome e cognome referente *
+- Email *
+- Bilancio: sì/no
+- Per ciascun mezzo: tipologia
+- Per ciascun mezzo: targa, se disponibile
+- Note aggiuntive
+
+Documenti attualmente indicati:
+- Visura camerale aggiornata dell'impresa
+- Bilancio aggiornato, se l'impresa lo redige
+- Modello IDOFIN vigente e pertinente, compilato e firmato
+- Carta d'identità e tessera sanitaria dell'amministratore
+- Altra documentazione utile alla valutazione, se disponibile
+
+## 2. Appalti pubblici
+Pagina informativa: `/appalti-pubblici`
+Modulo operativo: `/richiedi-preventivo?tipo=appalti`
+
+Campi base condivisi:
+- Beneficiario
+- Importo da garantire
+- Durata della garanzia
+- Nome e cognome referente *
+- Email *
+- Telefono
+- Data decorrenza
+- Data scadenza, se prevista
+- P.IVA/C.F. beneficiario
+- Indirizzo beneficiario
+- PEC beneficiario, se disponibile
+- P.IVA/C.F. contraente
+- Oggetto della garanzia
+- Presenza di testo/schema/richiesta/delibera del beneficiario
+- Note
+
+Campo specifico:
+- Riferimenti gara, se presenti: CIG/CUP/numero gara/contratto
+
+Documenti:
+- Bando di gara, lettera di invito o contratto
+- Visura camerale aggiornata dell'impresa
+- Ultimi bilanci depositati per garanzie di importo rilevante
+- Provvedimento di aggiudicazione per garanzia definitiva
+
+## 3. Locazioni
+Pagina informativa: `/locazioni`
+Modulo operativo: `/richiedi-preventivo?tipo=locazioni`
+
+Campo specifico:
+- Tipo di locazione: uso abitativo / uso commerciale / ramo d'azienda
+
+Campi condivisi:
+- Locatore/beneficiario
+- Conduttore
+- Importo
+- Durata
+- Referente
+- Email
+- Telefono
+- Date
+- P.IVA/C.F. locatore
+- Indirizzo locatore
+- PEC locatore
+- P.IVA/C.F. conduttore
+- Oggetto
+- Eventuale documento fornito dal beneficiario
+- Note
+
+Documenti:
+- Contratto di locazione, anche in bozza
+- Documentazione reddituale del conduttore
+- Visura camerale aggiornata se una delle parti è un'impresa
+- Documento d'identità delle parti
+
+Sottotipi informativi presenti:
+- Affitti fra privati
+- Affitti commerciali
+- Rami d'azienda
+
+## 4. Dogane
+Pagina informativa: `/dogane`
+Modulo operativo: `/richiedi-preventivo?tipo=dogane`
+
+Campi: schema condiviso; la conversazione deve raccogliere solo i dati necessari alla specifica richiesta doganale.
+
+Documenti:
+- Richiesta/documentazione doganale
+- Visura camerale aggiornata dell'impresa
+- Ultimi bilanci depositati
+- Documento d'identità del legale rappresentante
+
+## 5. Ambiente / Beneficiari pubblici
+Pagina informativa: `/ambiente`
+Modulo operativo: `/richiedi-preventivo?tipo=ambiente`
+
+Campi: schema condiviso; la domanda deve partire dall'obbligo, ente e documento ricevuto.
+
+Documenti:
+- Provvedimento, concessione o richiesta dell'ente
+- Visura camerale aggiornata e documentazione societaria dell'impresa
+- Documento d'identità del legale rappresentante
+
+## 6. Contributi e agevolazioni
+Modulo operativo: `/richiedi-preventivo?tipo=contributi`
+
+Campo specifico:
+- Ente / misura / riferimento
+
+Campi: schema condiviso + riferimento ente/misura.
+
+Documenti:
+- Provvedimento, bando o richiesta dell'ente
+- Visura camerale aggiornata dell'impresa, se il richiedente è un'azienda
+
+## 7. Urbanistica ed edilizia
+Modulo operativo: `/richiedi-preventivo?tipo=urbanistica`
+
+Campo specifico:
+- Comune / riferimento pratica
+
+Campi: schema condiviso + comune/riferimento pratica.
+
+Documenti:
+- Convenzione, atto o richiesta dell'ente
+- Visura camerale aggiornata dell'impresa, se il richiedente è un'azienda
+
+## 8. Garanzie fiscali
+Modulo operativo: `/richiedi-preventivo?tipo=fiscali`
+
+Campo specifico:
+- Ente / riferimento fiscale
+
+Campi: schema condiviso + riferimento fiscale.
+
+Documenti:
+- Richiesta o provvedimento dell'ente
+- Visura camerale aggiornata dell'impresa, se il richiedente è un'azienda
+
+## 9. Contratti privati
+Pagina informativa: `/fideiussioni-contratti-privati`
+Modulo operativo: `/richiedi-preventivo?tipo=contratti-privati`
+
+Campi: schema condiviso.
+
+Documenti:
+- Contratto/capitolato, anche in bozza
+- Richiesta del beneficiario con importo e durata, se disponibile
+- Per azienda: bilanci e visura camerale
+- Per privato: documento d'identità e documentazione reddituale
+
+## 10. Esigenza generica / altra fideiussione
+Percorsi:
+- `/richiedi-preventivo?esigenza=generica`
+- `/richiedi-preventivo?tipo=altro`
+
+Campo iniziale:
+- Descrizione libera dell'esigenza
+
+Documenti:
+- Richiesta ricevuta / bozza contratto / bando / altro documento disponibile
+- Visura camerale aggiornata se pertinente all'impresa
+
+## Regola futura del motore
+1. Individuare la tipologia.
+2. Caricare lo schema della tipologia.
+3. Confrontare i dati già forniti con i campi dello schema.
+4. Chiedere soltanto il prossimo dato mancante necessario.
+5. Non ripetere una domanda già soddisfatta.
+6. Non chiedere dati estranei al modulo.
+7. Prima del trasferimento, mostrare un riepilogo e chiedere conferma.
+8. Trasferire i dati nel modulo corretto.
+9. Mostrare i documenti pertinenti alla tipologia.
+10. Lasciare al cliente la verifica finale, le precisazioni e l'allegazione dei documenti.
+
+## Nota privacy
+I dati identificativi raccolti per compilare il modulo devono essere gestiti dal sito/modulo e non devono essere trasferiti a Gemini Free se non necessario. Gemini deve ricevere il minimo contesto non identificativo indispensabile per comprendere la conversazione.
