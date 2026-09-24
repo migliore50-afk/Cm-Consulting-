@@ -357,9 +357,37 @@ function getAIConversationHistory() {
   } catch { return []; }
 }
 
+function sanitizeAIText(text) {
+  return String(text || '')
+    .replace(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, '[email omessa]')
+    .replace(/\b(?:IBAN\s*)?[A-Z]{2}\d{2}[A-Z0-9]{11,30}\b/gi, '[iban omesso]')
+    .replace(/\b\d{11}\b/g, '[numero omesso]')
+    .replace(/\b[A-Z]{6}\d{2}[A-Z]\d{2}[A-Z]\d{3}[A-Z]\b/gi, '[codice fiscale omesso]')
+    .replace(/\b(?:\+?39[\s.-]?)?(?:3\d{2}[\s.-]?\d{3}[\s.-]?\d{4}|0\d{1,3}[\s.-]?\d{5,8})\b/g, '[telefono omesso]')
+    .replace(/\b(?:mi chiamo|sono)\s+[A-ZÀ-ÖØ-Ý][A-Za-zÀ-ÖØ-öø-ÿ'’-]*(?:\s+[A-ZÀ-ÖØ-Ý][A-Za-zÀ-ÖØ-öø-ÿ'’-]*){0,3}/gi, '[nome omesso]')
+    .slice(0, 1200);
+}
+
+function getAIPrivacySafeHistory() {
+  return getAIConversationHistory().map(item => ({
+    role: item.role,
+    content: sanitizeAIText(item.content).slice(0, 1600)
+  })).slice(-12);
+}
+
+function getAIPrivacySafeFormContext() {
+  const full = getAIFormContext();
+  const safe = {};
+  ['amount','duration','vehicleCount','bilancio','leaseType','startDate','endDate'].forEach(key => {
+    if (full[key]) safe[key] = full[key];
+  });
+  return safe;
+}
+
 function saveAIConversationTurn(role, content) {
   const history = getAIConversationHistory();
-  history.push({role, content: String(content || '').slice(0, 2000)});
+  const safeContent = role === 'user' ? sanitizeAIText(content) : String(content || '').slice(0, 2000);
+  history.push({role, content: safeContent});
   sessionStorage.setItem('cm_ai_history', JSON.stringify(history.slice(-12)));
 }
 
@@ -526,10 +554,13 @@ async function aiSendMessage(message) {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
-        message,
-        history: historyBeforeTurn,
+        message: sanitizeAIText(message),
+        history: historyBeforeTurn.map(item => ({
+          role: item.role,
+          content: sanitizeAIText(item.content)
+        })),
         pageContext: getAIPageContext(),
-        formContext: getAIFormContext()
+        formContext: getAIPrivacySafeFormContext()
       })
     });
     const data = await response.json().catch(() => ({}));
