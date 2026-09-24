@@ -598,9 +598,10 @@ async function aiSendMessage(message) {
     console.error('Assistente CM: richiesta AI non riuscita', error);
     const aiBubble = document.createElement('div');
     aiBubble.className = 'bubble ai';
-    aiBubble.textContent = 'In questo momento non riesco a collegarmi al servizio AI. Riprova tra poco.';
+    const message = String(error?.message || 'Servizio AI temporaneamente non disponibile.');
+    aiBubble.textContent = message;
     log.appendChild(aiBubble);
-    speakAI('In questo momento non riesco a collegarmi al servizio AI. Riprova tra poco.');
+    speakAI(message);
   } finally {
     if (send) send.disabled = false;
   }
