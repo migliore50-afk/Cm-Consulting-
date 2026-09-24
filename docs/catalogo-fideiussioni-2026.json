@@ -58,7 +58,7 @@
       "id": "contributi-pubblici",
       "label": "Contributi e agevolazioni pubbliche",
       "hubPath": "/contributi-pubblici",
-      "status": "new-hub",
+      "status": "existing",
       "items": [
         {
           "id": "agea",
@@ -172,7 +172,7 @@
       "id": "edilizia-immobiliare",
       "label": "Edilizia e immobiliare",
       "hubPath": "/edilizia-immobiliare",
-      "status": "new-hub",
+      "status": "existing",
       "items": [
         {
           "id": "urbanizzazione",
@@ -317,7 +317,7 @@
       "id": "agenzie-professioni",
       "label": "Agenzie e attività regolamentate",
       "hubPath": "/agenzie-e-attivita-regolamentate",
-      "status": "new-hub",
+      "status": "existing",
       "items": [
         {
           "id": "agenzie-viaggio",
@@ -346,7 +346,7 @@
       "id": "stranieri",
       "label": "Stranieri e ingresso in Italia",
       "hubPath": "/stranieri",
-      "status": "new-hub",
+      "status": "existing",
       "items": [
         {
           "id": "visto-turistico",
