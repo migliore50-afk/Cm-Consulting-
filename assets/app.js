@@ -821,15 +821,11 @@ document.addEventListener('DOMContentLoaded', () => {
       faqLink.textContent='FAQ';
       contattiLink.parentElement.insertBefore(faqLink,contattiLink);
     }
-    const hasGenericCta=[...links].some(a=>a.textContent.trim().toUpperCase()==='NON SAI QUALE GARANZIA?');
+    // La voce "NON SAI QUALE GARANZIA?" non fa più parte del menu principale.
+    // Il percorso generico resta disponibile tramite /altre-esigenze e Assistente CM.
     const navEl=document.querySelector('.links');
-    if(!hasGenericCta && navEl){
-      const genericLink=document.createElement('a');
-      genericLink.href='/richiedi-preventivo?esigenza=generica';
-      genericLink.className='nav-generic-cta';
-      genericLink.textContent='NON SAI QUALE GARANZIA?';
-      navEl.appendChild(genericLink);
-    }
+    [...links].filter(a=>a.textContent.trim().toUpperCase()==='NON SAI QUALE GARANZIA?')
+      .forEach(a=>a.remove());
     // 20 settembre 2026 — link "Accedi Area Privata" su richiesta di Carmelo,
     // ultima voce del menu, verso /admin (login con password + TOTP, area
     // gia' esistente e funzionante — vedi api/admin.js e cartella admin/).
@@ -875,13 +871,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const items=[
       ['Tutte le garanzie →','/fideiussioni'],
       ['Appalti pubblici','/appalti-pubblici'],
-      ['Contratti privati','/fideiussioni-contratti-privati'],
-      ['Affitti fra privati','/locazioni'],
-      ['Affitti commerciali','/affitti-commerciali'],
-      ["Rami d'azienda",'/affitti-rami-azienda'],
+      ['Contributi pubblici / AGEA','/contributi-pubblici'],
       ['Dogane','/dogane'],
-      ['Beneficiari pubblici','/ambiente'],
-      ['Capacità finanziaria','/capacita-finanziaria']
+      ['Ambiente','/ambiente'],
+      ['Edilizia e immobiliare','/edilizia-immobiliare'],
+      ['Locazioni e rami d’azienda','/locazioni'],
+      ['Contratti privati','/fideiussioni-contratti-privati'],
+      ['Capacità finanziaria','/capacita-finanziaria'],
+      ['Agenzie e attività regolamentate','/agenzie-e-attivita-regolamentate'],
+      ['Stranieri e visti','/stranieri'],
+      ['Altre esigenze','/altre-esigenze']
     ];
     items.forEach(([label,href])=>{const a=document.createElement('a');a.href=href;a.textContent=label;a.setAttribute('role','menuitem');menu.appendChild(a);});
     wrap.append(trigger,menu);
