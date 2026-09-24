@@ -831,7 +831,7 @@ function initMobileBottomNav() {
   nav.innerHTML = `
     <a href="/" class="cm-mn-item"><span class="cm-mn-icon" aria-hidden="true">${icons.home}</span><span>Home</span></a>
     <a href="/fideiussioni" class="cm-mn-item"><span class="cm-mn-icon" aria-hidden="true">${icons.servizi}</span><span>Servizi</span></a>
-    <a href="/richiedi-preventivo" class="cm-mn-item cm-mn-cta"><span class="cm-mn-icon" aria-hidden="true">${icons.preventivo}</span><span>Preventivo</span></a>
+    <a href="/richiedi-preventivo#step1" class="cm-mn-item cm-mn-cta"><span class="cm-mn-icon" aria-hidden="true">${icons.preventivo}</span><span>Preventivo</span></a>
     <a href="/contatti" class="cm-mn-item"><span class="cm-mn-icon" aria-hidden="true">${icons.contatti}</span><span>Contatti</span></a>
     <button type="button" class="cm-mn-item" id="cmMobileNavAiuto"><span class="cm-mn-icon" aria-hidden="true">${icons.aiuto}</span><span>Aiuto</span></button>
   `;
