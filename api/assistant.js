@@ -134,8 +134,19 @@ ${JSON.stringify(formContext)}`;
 
     const data = await upstream.json().catch(() => ({}));
     if (!upstream.ok) {
-      console.error('Gemini assistant error', upstream.status, data?.error?.message || data);
-      return res.status(502).json({ error: 'Servizio AI temporaneamente non disponibile' });
+      const upstreamMessage = String(data?.error?.message || '');
+      const upstreamStatus = String(data?.error?.status || '');
+      console.error('Gemini assistant error', upstream.status, upstreamStatus, upstreamMessage || data);
+
+      let publicError = 'Servizio AI temporaneamente non disponibile';
+      if (upstream.status === 400 || upstream.status === 401 || upstream.status === 403) {
+        publicError = 'Configurazione della chiave Gemini non valida o non autorizzata';
+      } else if (upstream.status === 429) {
+        publicError = 'Limite temporaneo del servizio Gemini raggiunto. Riprova tra poco';
+      } else if (upstream.status >= 500) {
+        publicError = 'Servizio Gemini temporaneamente non disponibile';
+      }
+      return res.status(502).json({ error: publicError });
     }
 
     const rawReply = String(
