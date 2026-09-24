@@ -6,6 +6,38 @@ L'Assistente CM deve fare domande aderenti ai campi reali del modulo della tipol
 ## Regola documentale importante
 La **visura camerale** va indicata come documentazione utile/da allegare quando pertinente all'impresa, ma non va descritta come documento con "validità legale di 6 mesi": la visura non ha un termine di validità stabilito dalla legge. Il **certificato camerale**, invece, ha validità legale di sei mesi dalla data di rilascio. Fonte verificata: Registro Imprese e Camere di Commercio. Se CM Consulting vuole imporre internamente una soglia di aggiornamento (es. documento emesso entro 6 mesi), questa deve essere formulata come requisito operativo dell'istruttoria, non come validità legale della visura.
 
+## 0. Modulo unico di richiesta — nuovo flusso operativo
+Pagina: `/richiedi-preventivo`
+
+Il cliente non è obbligato a conoscere la tipologia della fideiussione e non deve completare un questionario specialistico prima dell'invio.
+
+Campi essenziali:
+- Descrizione libera dell'esigenza *
+- Nome e cognome referente *
+- Email *
+- Telefono (facoltativo)
+- Importo della garanzia, se conosciuto
+- Durata o scadenza, se conosciuta
+- Beneficiario, se conosciuto
+
+Campo facoltativo:
+- Tipologia, se il cliente la conosce già; altrimenti "Non lo so / preferisco descriverlo"
+
+Dettagli facoltativi:
+- Tipo di locazione, quando pertinente
+- Date
+- Dati identificativi del beneficiario, se disponibili
+- Riferimenti pratica/gara/ente
+- Oggetto e note
+- Eventuale documento ricevuto
+
+Principio operativo:
+1. Le pagine informative restano specifiche per ogni tipologia e spiegano caratteristiche e documentazione utile.
+2. Il modulo operativo resta unico e snello.
+3. Il cliente invia le informazioni che conosce e i documenti che possiede.
+4. La documentazione mancante viene richiesta successivamente da CM Consulting durante la valutazione.
+5. L'Assistente CM orienta, precompila solo dati realmente forniti e non obbliga il cliente a completare dati specialistici non necessari per avviare la richiesta.
+
 ## 1. Capacità finanziaria
 Pagina: `/capacita-finanziaria`
 
