@@ -448,49 +448,6 @@ function scrollAssistantToLatest(behavior = 'auto') {
   });
 }
 
-function startAssistantRecognition() {
-  const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const status = document.getElementById('aiVoiceStatus');
-  const mic = document.getElementById('aiMic');
-  if (!Recognition) {
-    if (status) status.textContent = 'Il riconoscimento vocale non è disponibile in questo browser.';
-    return;
-  }
-  stopAssistantRecognition();
-  assistantRecognition = new Recognition();
-  assistantRecognition.lang = 'it-IT';
-  assistantRecognition.interimResults = false;
-  assistantRecognition.maxAlternatives = 1;
-  if (status) status.textContent = 'Ascolto in corso…';
-  if (mic) mic.classList.add('listening');
-  assistantRecognition.onresult = event => {
-    const transcript = String(event.results?.[0]?.[0]?.transcript || '').trim();
-    if (!transcript) return;
-    if (status) status.textContent = 'Richiesta acquisita. La invio all’assistente…';
-    const input = document.getElementById('aiChatInput');
-    if (input) input.value = transcript;
-    aiSendMessage(transcript);
-  };
-  assistantRecognition.onerror = event => {
-    if (status) status.textContent = event.error === 'not-allowed' ? "Consenti l'uso del microfono per parlare con l'assistente." : "Non ho potuto acquisire l'audio. Riprova.";
-  };
-  assistantRecognition.onend = () => {
-    if (mic) mic.classList.remove('listening');
-    assistantRecognition = null;
-  };
-  try { assistantRecognition.start(); } catch (error) {
-    if (status) status.textContent = 'Microfono non disponibile. Riprova.';
-    if (mic) mic.classList.remove('listening');
-  }
-}
-
-function stopAssistantRecognition() {
-  if (!assistantRecognition) return;
-  try { assistantRecognition.abort(); } catch {}
-  assistantRecognition = null;
-  document.getElementById('aiMic')?.classList.remove('listening');
-}
-
 async function aiSendMessage(message) {
   const content = document.getElementById('aiContent');
   const log = document.getElementById('aiChatLog');
