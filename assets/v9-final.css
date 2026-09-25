@@ -437,8 +437,6 @@ body.privacy-modal-open{overflow:hidden}
   .ai-panel.cm-ai-form-mode{
     width:min(360px,calc(100vw - 24px));
     max-height:min(520px,calc(100vh - 40px));
-    right:auto;
-    left:max(12px,calc((100vw - 1280px) / 2));
   }
   .ai-panel.cm-ai-form-mode .ai-portrait{aspect-ratio:16/6}
   .ai-panel.cm-ai-form-mode .ai-content{font-size:13px}
