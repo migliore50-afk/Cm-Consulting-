@@ -292,11 +292,23 @@ export default async function handler(req, res) {
 
     const customerName = singleLine(body.customerName || body.name || body.contactName, MAX_NAME_LENGTH);
     const phone = singleLine(body.phone || body.contactPhone, MAX_PHONE_LENGTH);
+    if (!phone) {
+      return json(res, 400, {
+        ok: false,
+        error: { code: "PHONE_REQUIRED", message: "Il numero di telefono è obbligatorio." }
+      });
+    }
     const company = singleLine(body.company, MAX_COMPANY_LENGTH);
     const requestType = resolveRequestType(body.requestType);
     const requestTypeName = REQUEST_TYPE_NAMES[requestType];
     const email = str(body.email || body.emailAddress || body.customerEmail);
-    if (email && !validEmail(email)) {
+    if (!email) {
+      return json(res, 400, {
+        ok: false,
+        error: { code: "EMAIL_REQUIRED", message: "L'indirizzo email è obbligatorio." }
+      });
+    }
+    if (!validEmail(email)) {
       return json(res, 400, {
         ok: false,
         error: { code: "INVALID_EMAIL", message: "L'indirizzo email non è valido." }

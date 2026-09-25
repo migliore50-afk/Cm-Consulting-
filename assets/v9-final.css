@@ -406,7 +406,7 @@ body.privacy-modal-open{overflow:hidden}
 }
 .ai-head{flex:0 0 auto}
 .ai-portrait{flex:0 0 auto;position:relative}
-.ai-content{flex:1 1 auto;overflow-y:auto;max-height:none}
+.ai-content{flex:1 1 auto;overflow:hidden;max-height:none;min-height:0;display:flex;flex-direction:column}
 .ai-note{flex:0 0 auto}
 
 /* 17 settembre 2026 — Assistente CM: riscontro visivo sul ritratto durante la sintesi vocale.
@@ -437,6 +437,8 @@ body.privacy-modal-open{overflow:hidden}
   .ai-panel.cm-ai-form-mode{
     width:min(360px,calc(100vw - 24px));
     max-height:min(520px,calc(100vh - 40px));
+    right:auto;
+    left:max(12px,calc((100vw - 1280px) / 2));
   }
   .ai-panel.cm-ai-form-mode .ai-portrait{aspect-ratio:16/6}
   .ai-panel.cm-ai-form-mode .ai-content{font-size:13px}
@@ -694,9 +696,9 @@ body.privacy-modal-open{overflow:hidden}
 }
 
 /* Assistente CM — conversazione AI */
-.ai-chat-log{display:flex;flex-direction:column;gap:10px;margin:4px 0 10px}
+.ai-chat-log{display:flex;flex-direction:column;gap:10px;margin:4px 0 10px;flex:1 1 auto;min-height:0;overflow-y:auto;padding-right:2px}
 .ai-chat-log .bubble{margin:0}
-.ai-chat-form{display:flex;gap:8px;align-items:center;margin:4px 0 12px}
+.ai-chat-form{display:flex;gap:8px;align-items:center;margin:4px 0 0;flex:0 0 auto;padding-top:8px;border-top:1px solid var(--line)}
 .ai-chat-form input{
   flex:1;min-width:0;height:44px;padding:0 13px;
   border:1px solid #cbd7df;border-radius:10px;background:#fff;

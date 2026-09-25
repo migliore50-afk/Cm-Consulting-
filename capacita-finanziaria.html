@@ -87,6 +87,7 @@
     </div>
     <div class="essential-field"><label>Nome e cognome referente <strong>*</strong></label><input id="contact" oninput="refreshAll()"/></div>
     <div class="essential-field"><label>Email <strong>*</strong></label><input id="email" type="email" oninput="refreshAll()"/></div>
+    <div class="essential-field"><label>Telefono <strong>*</strong></label><input id="phone" autocomplete="tel" oninput="refreshAll()"/></div>
 
     <details class="advanced-details">
       <summary>Hai già altri dati? Aggiungili (facoltativo)</summary>
@@ -228,8 +229,9 @@ function submitCapacity(){
 
   const name=val('contact');
   const email=val('email');
+  const phone=val('phone');
 
-  if(!val('company')||!val('vat')||!val('city')||!val('province')||!name||!email){
+  if(!val('company')||!val('vat')||!val('city')||!val('province')||!name||!email||!phone){
     errorBox.textContent='Compila i campi essenziali obbligatori prima di inviare.';
     errorBox.classList.remove('hidden');
     return;
@@ -258,6 +260,7 @@ function submitCapacity(){
       text,
       email,
       customerName:name,
+      phone,
       company:val('company'),
       requestType:'capacita',
       privacyAccepted:true

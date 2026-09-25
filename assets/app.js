@@ -437,10 +437,10 @@ function startAI() {
 }
 
 function scrollAssistantToLatest(behavior = 'auto') {
-  const content = document.getElementById('aiContent');
-  if (!content) return;
+  const log = document.getElementById('aiChatLog');
+  if (!log) return;
   const scroll = () => {
-    content.scrollTo({top: content.scrollHeight, behavior});
+    log.scrollTo({top: log.scrollHeight, behavior});
   };
   requestAnimationFrame(() => {
     scroll();

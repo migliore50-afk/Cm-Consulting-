@@ -144,7 +144,7 @@
     </div>
 
     <div class="essential-field">
-      <label>Telefono <span>(facoltativo)</span></label>
+      <label>Telefono <strong>*</strong></label>
       <input id="contactPhone" autocomplete="tel" oninput="refreshAll()"/>
     </div>
 
@@ -162,8 +162,9 @@
         <div class="field"><label>Data decorrenza</label><input id="startDate" type="date" oninput="refreshAll()"></div>
         <div class="field"><label>Data scadenza, se prevista</label><input id="endDate" type="date" oninput="refreshAll()"></div>
         <div class="field"><label>P.IVA / Codice fiscale del beneficiario, se disponibile</label><input id="beneficiaryTax" oninput="refreshAll()"></div>
-        <div class="field"><label>Indirizzo del beneficiario, se disponibile</label><input id="beneficiaryAddress" oninput="refreshAll()"></div>
-        <div class="field"><label>PEC del beneficiario, se disponibile</label><input id="beneficiaryPec" type="email" oninput="refreshAll()"></div>
+        <div class="field"><label>Indirizzo dell'immobile, se disponibile</label><input id="beneficiaryAddress" oninput="refreshAll()"></div>
+        <div class="field"><label>Telefono del beneficiario, se disponibile</label><input id="beneficiaryPhone" autocomplete="tel" oninput="refreshAll()"></div>
+        <div class="field"><label>Email del beneficiario, se disponibile</label><input id="beneficiaryEmail" type="email" autocomplete="email" oninput="refreshAll()"></div>
         <div class="field full" id="specificFieldWrap"></div>
         <div class="field full"><label>Oggetto o riferimento della richiesta</label><textarea id="object" rows="3" oninput="refreshAll()"></textarea></div>
         <div class="field full"><label>Hai ricevuto un testo, schema, bando, contratto o richiesta?</label><select id="hasBeneficiaryDoc" oninput="refreshAll()"><option value="no">No</option><option value="yes">Sì</option><option value="unknown">Non lo so / lo invierò insieme agli altri documenti</option></select></div>
@@ -181,7 +182,7 @@
     <div class="action-box">
       <h4>Documenti utili e invio</h4>
       <ul class="action-doc-list" id="docList"></ul>
-      <label class="privacy-check"><input id="privacyAccepted" type="checkbox"/> <span>Ho letto l'<a href="#privacy-modal" id="privacyInfoLink">informativa privacy</a> e accetto il trattamento dei dati.</span></label>
+      <label class="privacy-check"><input id="privacyAccepted" type="checkbox"/> <span>Ho letto l'<a href="/privacy" rel="noopener" target="_blank">informativa privacy</a> e accetto il trattamento dei dati.</span></label>
       <div class="notice hidden" id="submitError" role="alert"></div>
       <button class="btn gold" onclick="submitRequest()" type="button">INVIA RICHIESTA →</button>
       <small>Invia i dati che conosci. Non è necessario avere subito tutta la documentazione: CM Consulting verificherà la richiesta e ti contatterà se serviranno integrazioni.</small>
@@ -327,7 +328,8 @@ function currentRows(){
     ['Scadenza',val('endDate')],
     [fl.beneficiaryTax,val('beneficiaryTax')],
     [fl.beneficiaryAddress,val('beneficiaryAddress')],
-    ['PEC beneficiario',val('beneficiaryPec')],
+    ['Telefono beneficiario',val('beneficiaryPhone')],
+    ['Email beneficiario',val('beneficiaryEmail')],
     ['Riferimenti',val('refs')],
     ['Oggetto',val('object')],
     ['Note',val('notes')]
@@ -364,9 +366,10 @@ function submitRequest(){
 
   const name=val('contactName');
   const email=val('contactEmail');
+  const phone=val('contactPhone');
 
-  if(!name || !email){
-    errorBox.textContent='Inserisci nome e email del referente.';
+  if(!name || !email || !phone){
+    errorBox.textContent='Inserisci nome, email e telefono del referente.';
     errorBox.classList.remove('hidden');
     return;
   }
@@ -460,7 +463,7 @@ function restoreAIAssistantContext(){
     return;
   }
 
-  const ids=['genericDescription','beneficiary','amount','duration','contactName','contactEmail','contactPhone','startDate','endDate','beneficiaryTax','beneficiaryAddress','beneficiaryPec','refs','object','notes'];
+  const ids=['genericDescription','beneficiary','amount','duration','contactName','contactEmail','contactPhone','startDate','endDate','beneficiaryTax','beneficiaryAddress','beneficiaryPhone','beneficiaryEmail','refs','object','notes'];
   ids.forEach(id=>{
     const value=String(saved[id] ?? '').trim();
     const el=document.getElementById(id);
