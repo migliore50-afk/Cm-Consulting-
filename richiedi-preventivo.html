@@ -337,9 +337,24 @@ function currentRows(){
 function refreshAll(){
   const rows=currentRows();
   const box=document.getElementById('summaryContent');
-  box.innerHTML = rows.length
-    ? rows.map(r=>`<div class="summary-row"><span>${r[0]}</span><b>${r[1]}</b></div>`).join('')
-    : '<span class="summary-empty">Inizia a compilare i campi qui a fianco.</span>';
+  box.replaceChildren();
+  if (!rows.length) {
+    const empty=document.createElement('span');
+    empty.className='summary-empty';
+    empty.textContent='Inizia a compilare i campi qui a fianco.';
+    box.appendChild(empty);
+    return;
+  }
+  rows.forEach(([label,value])=>{
+    const row=document.createElement('div');
+    row.className='summary-row';
+    const labelEl=document.createElement('span');
+    labelEl.textContent=label;
+    const valueEl=document.createElement('b');
+    valueEl.textContent=value;
+    row.append(labelEl,valueEl);
+    box.appendChild(row);
+  });
 }
 
 function submitRequest(){
@@ -390,7 +405,6 @@ function submitRequest(){
   })
   .then(r=>r.json().catch(()=>({})).then(result=>{
     if(!r.ok || !result.ok) throw new Error(result?.error?.message||'La richiesta non è stata inviata.');
-    localStorage.setItem('cm_last_request',JSON.stringify({type,typeName,rows,createdAt:new Date().toISOString()}));
     document.querySelectorAll('.step').forEach(x=>x.classList.remove('active'));
     document.getElementById('success').classList.add('show');
     document.querySelector('.progressbar').style.display='none';
