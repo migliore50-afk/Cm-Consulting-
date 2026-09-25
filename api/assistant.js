@@ -241,7 +241,7 @@ ${JSON.stringify(formContext)}`;
             ...history.filter(item => item.role === 'user').map(item => item.content),
             message
           ].join(' ');
-          const explicitGuaranteeAmount = /(?:importo|somma|valore|ammontare|cifra)\\s+(?:della|di|richiest[oa]\\s+(?:per|della))?\\s*(?:garanzia|fideiussione)|(?:garanzia|fideiussione)\\s+(?:di|da|per)\\s*(?:€|euro|eur)?\\s*\\d|(?:devo|dobbiamo)\\s+garantire\\s+(?:€|euro|eur)?\\s*\\d/i.test(conversationText);
+          const explicitGuaranteeAmount = /(?:importo|somma|valore|ammontare|cifra)\s+(?:della|di|richiest[oa]\s+(?:per|della))?\s*(?:garanzia|fideiussione)|(?:garanzia|fideiussione)\s+(?:di|da|per)\s*(?:€|euro|eur)?\s*\d|(?:devo|dobbiamo)\s+garantire\s+(?:€|euro|eur)?\s*\d/i.test(conversationText);
           if (!explicitGuaranteeAmount) delete form.amount;
         }
       } catch (error) {
