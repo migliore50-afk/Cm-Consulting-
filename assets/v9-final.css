@@ -548,53 +548,48 @@ body.privacy-modal-open{overflow:hidden}
    bastava e i due pulsanti restavano in parte coperti dalla barra. */
 .cm-mobile-nav{display:none}
 @media(max-width:760px){
-  body{padding-bottom:70px}
+  body{padding-bottom:76px}
   .cm-mobile-nav{
     display:grid;
     grid-template-columns:repeat(5,1fr);
     position:fixed;
     left:0;right:0;bottom:0;
     z-index:9000;
+    height:68px;
+    box-sizing:content-box;
     background:#fff;
     border-top:1px solid rgba(9,43,67,.10);
     box-shadow:0 -8px 24px rgba(9,43,67,.10);
-    padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));
+    padding:3px 4px env(safe-area-inset-bottom,0px);
   }
   .cm-mn-item{
     display:flex;
     flex-direction:column;
     align-items:center;
     justify-content:flex-end;
-    gap:4px;
-    min-height:52px;
+    gap:3px;
+    min-height:48px;
     border:0;
     background:none;
     color:#4a5f70;
     font-size:10px;
     font-weight:800;
     text-decoration:none;
-    padding:4px 2px 2px;
+    padding:2px;
     font-family:inherit;
   }
-  .cm-mn-icon{display:flex;align-items:center;justify-content:center;width:22px;height:22px}
+  .cm-mn-icon{display:flex;align-items:center;justify-content:center;width:21px;height:21px}
   .cm-mn-icon svg{width:100%;height:100%}
-  .cm-mn-cta{color:#092b43;position:relative;top:-14px}
+  .cm-mn-cta{color:#092b43;position:relative;top:-8px}
   .cm-mn-cta .cm-mn-icon{
-    width:46px;height:46px;
+    width:42px;height:42px;
     border-radius:50%;
     background:var(--gold,#d6aa45);
     color:#092b43;
-    box-shadow:0 10px 22px rgba(214,170,69,.45);
+    box-shadow:0 8px 18px rgba(214,170,69,.35);
   }
-  .cm-mn-cta .cm-mn-icon svg{width:21px;height:21px}
+  .cm-mn-cta .cm-mn-icon svg{width:20px;height:20px}
 
-  /* 21 settembre 2026 — su richiesta di Carmelo: il pallone "Assistente CM"
-     fluttuante copriva il contenuto della pagina (segnalato più volte). Su
-     mobile è ora sostituito dalla voce "Aiuto" nella barra qui sopra — il
-     pallone va quindi nascosto del tutto qui, non solo sollevato. "Torna su"
-     rimane solo su desktop — su mobile la barra copre già la navigazione
-     principale, e Safari iOS offre comunque la scorciatoia nativa (tocco sulla
-     barra di stato) per tornare in cima alla pagina. */
   #cm-ai-fab,.cm-ai-fab{display:none!important}
   #cm-back-top{display:none!important}
 }
