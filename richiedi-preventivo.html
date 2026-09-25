@@ -145,7 +145,7 @@
 
     <div class="essential-field">
       <label>Telefono <strong>*</strong></label>
-      <input id="contactPhone" autocomplete="tel" oninput="refreshAll()"/>
+      <input id="contactPhone" autocomplete="tel" inputmode="tel" oninput="refreshAll()"/>
     </div>
 
     <details class="advanced-details">
@@ -162,9 +162,9 @@
         <div class="field"><label>Data decorrenza</label><input id="startDate" type="date" oninput="refreshAll()"></div>
         <div class="field"><label>Data scadenza, se prevista</label><input id="endDate" type="date" oninput="refreshAll()"></div>
         <div class="field"><label>P.IVA / Codice fiscale del beneficiario, se disponibile</label><input id="beneficiaryTax" oninput="refreshAll()"></div>
-        <div class="field"><label>Indirizzo dell'immobile, se disponibile</label><input id="beneficiaryAddress" oninput="refreshAll()"></div>
-        <div class="field"><label>Telefono del beneficiario, se disponibile</label><input id="beneficiaryPhone" autocomplete="tel" oninput="refreshAll()"></div>
-        <div class="field"><label>Email del beneficiario, se disponibile</label><input id="beneficiaryEmail" type="email" autocomplete="email" oninput="refreshAll()"></div>
+        <div class="field"><label for="beneficiaryAddress" id="beneficiaryAddressLabel">Indirizzo del beneficiario, se disponibile</label><input id="beneficiaryAddress" oninput="refreshAll()"></div>
+        <div class="field"><label>Telefono del beneficiario, se disponibile</label><input id="beneficiaryPhone" autocomplete="off" inputmode="tel" oninput="refreshAll()"></div>
+        <div class="field"><label>Email del beneficiario, se disponibile</label><input id="beneficiaryEmail" type="email" autocomplete="off" oninput="refreshAll()"></div>
         <div class="field full" id="specificFieldWrap"></div>
         <div class="field full"><label>Oggetto o riferimento della richiesta</label><textarea id="object" rows="3" oninput="refreshAll()"></textarea></div>
         <div class="field full"><label>Hai ricevuto un testo, schema, bando, contratto o richiesta?</label><select id="hasBeneficiaryDoc" oninput="refreshAll()"><option value="no">No</option><option value="yes">Sì</option><option value="unknown">Non lo so / lo invierò insieme agli altri documenti</option></select></div>
@@ -191,7 +191,6 @@
   </div>
 </div>
 
-<div aria-hidden="true" aria-labelledby="privacyModalTitle" aria-modal="true" class="privacy-modal" id="privacyModal" role="dialog"><div class="privacy-modal-backdrop" data-privacy-close=""></div><div class="privacy-modal-card" role="document"><div class="privacy-modal-head"><h3 id="privacyModalTitle">Informativa privacy</h3><button class="privacy-modal-close" data-privacy-close="" type="button">CHIUDI</button></div><div class="privacy-modal-body"><p>Prima di inviare la richiesta, puoi consultare qui l'informativa privacy di CM Consulting relativa al trattamento dei dati necessari alla gestione della richiesta.</p><p><a href="/privacy" rel="noopener" target="_blank">Apri l'informativa completa</a></p></div></div></div>
 </div>
 
 <div class="success" id="success">
@@ -263,10 +262,20 @@ const labels={
   fiscali:'Garanzie fiscali', altro:'Altra fideiussione', generica:'Valutazione generica', 'contratti-privati':'Contratti privati'
 };
 
+// Etichette dipendenti dalla tipologia. addressField è l'etichetta mostrata
+// nel modulo, beneficiaryAddress quella usata nel riepilogo e nell'email:
+// devono sempre descrivere lo stesso dato.
 const fieldLabels={
-  locazioni:{beneficiary:"Locatore — il proprietario che richiede la garanzia",beneficiaryTax:"P.IVA / Codice fiscale locatore",beneficiaryAddress:"Indirizzo locatore",companyTax:"P.IVA / Codice fiscale conduttore"},
-  default:{beneficiary:"Chi ti richiede la garanzia (beneficiario)",beneficiaryTax:"P.IVA / Codice fiscale beneficiario",beneficiaryAddress:"Indirizzo beneficiario",companyTax:"P.IVA / Codice fiscale contraente"}
+  locazioni:{beneficiary:"Locatore — il proprietario che richiede la garanzia",beneficiaryTax:"P.IVA / Codice fiscale locatore",beneficiaryAddress:"Indirizzo dell'immobile",addressField:"Indirizzo dell'immobile, se disponibile",beneficiaryPhone:"Telefono locatore",beneficiaryEmail:"Email locatore",companyTax:"P.IVA / Codice fiscale conduttore"},
+  default:{beneficiary:"Chi ti richiede la garanzia (beneficiario)",beneficiaryTax:"P.IVA / Codice fiscale beneficiario",beneficiaryAddress:"Indirizzo beneficiario",addressField:"Indirizzo del beneficiario, se disponibile",beneficiaryPhone:"Telefono beneficiario",beneficiaryEmail:"Email beneficiario",companyTax:"P.IVA / Codice fiscale contraente"}
 };
+
+// Stesso controllo del server: cifre, spazi, + - . / ( ), da 6 a 15 cifre.
+function validPhone(value){
+  if(!/^[+\d\s().\/-]+$/.test(value)) return false;
+  const digits=value.replace(/\D/g,'').length;
+  return digits>=6 && digits<=15;
+}
 
 function setType(t){
   type=t;
@@ -285,6 +294,10 @@ function applyType(){
   document.getElementById('typeExplain').innerHTML=explanations[type]||explanations.altro;
   document.getElementById('docList').innerHTML=(docs[type]||docs.altro).map(d=>`<li>${d}</li>`).join('');
   document.getElementById('specificFieldWrap').innerHTML=specificFields[type]||'';
+
+  const fl=fieldLabels[type]||fieldLabels.default;
+  const addressLabel=document.getElementById('beneficiaryAddressLabel');
+  if(addressLabel) addressLabel.textContent=fl.addressField;
 
   const img=document.getElementById('typeHeroImg');
   img.src=typeImages[type]||typeImages.altro;
@@ -328,8 +341,8 @@ function currentRows(){
     ['Scadenza',val('endDate')],
     [fl.beneficiaryTax,val('beneficiaryTax')],
     [fl.beneficiaryAddress,val('beneficiaryAddress')],
-    ['Telefono beneficiario',val('beneficiaryPhone')],
-    ['Email beneficiario',val('beneficiaryEmail')],
+    [fl.beneficiaryPhone,val('beneficiaryPhone')],
+    [fl.beneficiaryEmail,val('beneficiaryEmail')],
     ['Riferimenti',val('refs')],
     ['Oggetto',val('object')],
     ['Note',val('notes')]
@@ -364,12 +377,17 @@ function submitRequest(){
   errorBox.classList.add('hidden');
   errorBox.textContent='';
 
-  const name=val('contactName');
-  const email=val('contactEmail');
-  const phone=val('contactPhone');
+  const name=val('contactName').trim();
+  const email=val('contactEmail').trim();
+  const phone=val('contactPhone').trim();
 
   if(!name || !email || !phone){
     errorBox.textContent='Inserisci nome, email e telefono del referente.';
+    errorBox.classList.remove('hidden');
+    return;
+  }
+  if(!validPhone(phone)){
+    errorBox.textContent='Controlla il numero di telefono: inserisci solo cifre, eventualmente con prefisso (es. +39 328 1234567).';
     errorBox.classList.remove('hidden');
     return;
   }
@@ -402,7 +420,7 @@ function submitRequest(){
       text,
       email,
       customerName:name,
-      phone:val('contactPhone'),
+      phone,
       requestType:type,
       privacyAccepted:true
     })
@@ -515,16 +533,6 @@ function restoreAIAssistantContext(){
   restoreAIAssistantContext();
 })();
 
-(function(){
-  const link=document.getElementById('privacyInfoLink');
-  const modal=document.getElementById('privacyModal');
-  if(!link||!modal) return;
-  const close=()=>{ modal.classList.remove('is-open'); modal.setAttribute('aria-hidden','true'); document.body.classList.remove('privacy-modal-open'); };
-  const open=()=>{ modal.classList.add('is-open'); modal.setAttribute('aria-hidden','false'); document.body.classList.add('privacy-modal-open'); const btn=modal.querySelector('.privacy-modal-close'); if(btn) btn.focus(); };
-  link.addEventListener('click',e=>{e.preventDefault();open();});
-  modal.querySelectorAll('[data-privacy-close]').forEach(el=>el.addEventListener('click',close));
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.classList.contains('is-open')) close();});
-})();
 </script>
 <div class="ai-panel" id="aiPanel"><div class="ai-head"><b>ASSISTENTE CM</b><button class="close" onclick="closeAI()">×</button></div><div class="ai-content" id="aiContent"></div><div class="ai-note">Assistente digitale di orientamento.</div></div>
 <script src="assets/app.js"></script>

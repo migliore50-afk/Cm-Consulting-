@@ -84,6 +84,15 @@ function validEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
+// Telefono: ammessi solo cifre, spazi, "+", "-", ".", "/" e parentesi,
+// con un numero di cifre compatibile con un numero reale (da 6 a 15,
+// limite dello standard internazionale E.164).
+function validPhone(value) {
+  if (!/^[+\d\s().\/-]+$/.test(value)) return false;
+  const digits = value.replace(/\D/g, "").length;
+  return digits >= 6 && digits <= 15;
+}
+
 // Il nome compare nel saluto della mail di conferma inviata a un indirizzo
 // non verificato: viene usato solo se ha l'aspetto di un nome/ragione sociale.
 // In ogni altro caso il saluto diventa "Gentile cliente".
@@ -296,6 +305,12 @@ export default async function handler(req, res) {
       return json(res, 400, {
         ok: false,
         error: { code: "PHONE_REQUIRED", message: "Il numero di telefono è obbligatorio." }
+      });
+    }
+    if (!validPhone(phone)) {
+      return json(res, 400, {
+        ok: false,
+        error: { code: "INVALID_PHONE", message: "Il numero di telefono non è valido." }
       });
     }
     const company = singleLine(body.company, MAX_COMPANY_LENGTH);

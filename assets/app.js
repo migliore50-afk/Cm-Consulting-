@@ -331,15 +331,27 @@ function saveAIConversationTurn(role, content) {
   sessionStorage.setItem('cm_ai_history', JSON.stringify(history.slice(-12)));
 }
 
+// Legge i campi compilati nella pagina corrente. Il risultato completo resta
+// SOLO nel browser (sessionStorage) per il trasferimento al modulo: verso
+// Gemini passa unicamente getAIPrivacySafeFormContext(), che filtra i campi
+// non identificativi.
+// Elenco allineato ai moduli attuali:
+// - richiedi-preventivo: contactName, contactEmail, contactPhone, beneficiary*,
+//   beneficiaryPhone, beneficiaryEmail (la PEC del beneficiario non esiste più);
+// - capacita-finanziaria: company, vat, city, province, contact, email, phone.
 function getAIFormContext() {
-  const ids = ['genericDescription','beneficiary','company','vat','city','province','amount','duration','contactName','contactPhone','contact','contactEmail','email','startDate','endDate','beneficiaryTax','beneficiaryAddress','beneficiaryPec','companyTax','refs','object','notes'];
+  const ids = ['genericDescription','beneficiary','company','vat','city','province','amount','duration','contactName','contactPhone','contact','contactEmail','email','phone','startDate','endDate','beneficiaryTax','beneficiaryAddress','beneficiaryPhone','beneficiaryEmail','companyTax','refs','object','notes'];
   const out = {};
   ids.forEach(id => {
     const el = document.getElementById(id);
     if (el && String(el.value || '').trim()) out[id] = String(el.value).trim();
   });
-  const lease = document.querySelector('input[name="leaseType"]:checked');
-  if (lease) out.leaseType = lease.value;
+  // Tipo di locazione: nel modulo universale è una <select id="leaseType">,
+  // in eventuali moduli storici un gruppo di radio name="leaseType".
+  const leaseSelect = document.getElementById('leaseType');
+  const leaseRadio = document.querySelector('input[name="leaseType"]:checked');
+  if (leaseSelect && leaseSelect.tagName === 'SELECT' && leaseSelect.value) out.leaseType = leaseSelect.value;
+  else if (leaseRadio) out.leaseType = leaseRadio.value;
   const vehicleCount = document.getElementById('vehicleCount');
   if (vehicleCount) out.vehicleCount = String(vehicleCount.textContent || '').trim();
   const bilancio = document.querySelector('input[name="bilancio"]:checked');
