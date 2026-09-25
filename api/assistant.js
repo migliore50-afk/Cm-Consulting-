@@ -1,5 +1,14 @@
+import { consumeRateLimit } from './_security.js';
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Metodo non consentito' });
+
+  const rate = await consumeRateLimit(req, 'assistant', 20, 900);
+  if (!rate.allowed) {
+    return res.status(rate.reason === 'redis_unavailable' ? 503 : 429).json({
+      error: rate.reason === 'redis_unavailable' ? 'Servizio temporaneamente non disponibile' : 'Limite temporaneo raggiunto. Riprova tra qualche minuto',
+      code: rate.reason === 'redis_unavailable' ? 'RATE_LIMIT_UNAVAILABLE' : 'RATE_LIMITED'
+    });
+  }
 
   const apiKeys = [process.env.GEMINI_API_KEY, process.env.GEMINI_API_KEY_BACKUP]
     .map(value => String(value || '').trim())
@@ -34,7 +43,12 @@ export default async function handler(req, res) {
           .slice(-12)
       : [];
 
-    const pageContext = body.pageContext && typeof body.pageContext === 'object' ? body.pageContext : {};
+    const incomingPageContext = body.pageContext && typeof body.pageContext === 'object' ? body.pageContext : {};
+    const pageContext = {
+      path: String(incomingPageContext.path || '').trim().slice(0, 240),
+      title: String(incomingPageContext.title || '').trim().slice(0, 160),
+      onRequestForm: incomingPageContext.onRequestForm === true
+    };
     const incomingFormContext = body.formContext && typeof body.formContext === 'object' ? body.formContext : {};
     const formContext = {};
     ['amount','duration','vehicleCount','bilancio','leaseType','startDate','endDate'].forEach(key => {
