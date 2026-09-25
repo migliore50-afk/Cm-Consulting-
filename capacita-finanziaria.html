@@ -190,9 +190,6 @@ function refreshAll(){
     ? rows.map(r=>`<div class="summary-row"><span>${r[0]}</span><b>${r[1]}</b></div>`).join('')
     : '<span class="summary-empty">Inizia a compilare i campi qui a fianco.</span>';
 
-  const mailSubject='Documenti per richiesta capacità finanziaria';
-  const mailBody=`Buongiorno,\n\nin allegato invio la documentazione relativa alla mia richiesta di capacità finanziaria.\n\nRiepilogo richiesta:\n${rows.map(r=>`${r[0]}: ${r[1]}`).join('\n')}\n\nCordiali saluti`;
-  document.getElementById('sendEmailBtn').href=`mailto:info@cm-consulting.info?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}`;
 }
 
 function submitCapacity(){
