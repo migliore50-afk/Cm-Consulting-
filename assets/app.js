@@ -252,9 +252,27 @@ function assistantImageMarkup(className = '') {
     width="768" height="432" loading="lazy" decoding="async" alt="Assistente CM">`;
 }
 
+// 25 settembre 2026 — Fase B: alcune pagine (in particolare le pagine di
+// dettaglio dei singoli servizi, es. locazioni.html, dogane.html,
+// appalti-pubblici.html, fideiussione-agea.html) non includono ancora nel
+// proprio markup statico il contenitore <div id="aiPanel">. Su quelle
+// pagine il pulsante Assistente (creato comunque da initAssistantFab() e
+// initMobileBottomNav(), presenti su ogni pagina) rispondeva al tocco senza
+// alcun effetto visibile, perché openAI()/startAI() si aspettano che
+// #aiPanel e #aiContent esistano già nel DOM.
+// Qui il contenitore viene creato via JS SOLO quando manca, con la stessa
+// classe/id del markup statico già usato nelle pagine che lo includono
+// (vedi index.html, fideiussioni.html, capacita-finanziaria.html): le
+// pagine che hanno già #aiPanel non vengono toccate da questo ramo, quindi
+// il comportamento lì resta identico a prima.
 function initAssistantUI() {
-  const aiPanel = document.getElementById('aiPanel');
-  if (!aiPanel) return;
+  let aiPanel = document.getElementById('aiPanel');
+  if (!aiPanel) {
+    aiPanel = document.createElement('div');
+    aiPanel.className = 'ai-panel';
+    aiPanel.id = 'aiPanel';
+    document.body.appendChild(aiPanel);
+  }
 
   aiPanel.innerHTML = `
     <div class="ai-head">
