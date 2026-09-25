@@ -260,10 +260,9 @@ function initAssistantUI() {
     <div class="ai-head">
       <div class="ai-title">
         <span class="ai-brand-mark" aria-hidden="true"><img src="assets/images/logo-cm-symbol.png" alt=""></span>
-        <div><b>Assistente CM</b><span>Il tuo consulente virtuale</span></div>
+        <div><b>Assistente CM</b><span>Assistente AI</span></div>
       </div>
       <div class="ai-head-actions">
-        <button class="ai-voice-toggle" type="button" aria-pressed="false" aria-label="Attiva lettura vocale" title="Attiva lettura vocale">🔊 <span>Voce</span></button>
         <button class="ai-close" type="button" aria-label="Chiudi Assistente CM">×</button>
       </div>
     </div>
@@ -272,68 +271,12 @@ function initAssistantUI() {
     <div class="ai-note">Assistente digitale di orientamento. Non sostituisce la valutazione professionale né la documentazione richiesta.</div>`;
 
   aiPanel.querySelector('.ai-close')?.addEventListener('click', closeAI);
-  const voiceButton = aiPanel.querySelector('.ai-voice-toggle');
-  const enabled = localStorage.getItem('cm_ai_voice') !== '0';
-  setVoiceState(enabled, voiceButton);
-  voiceButton?.addEventListener('click', () => setVoiceState(!isVoiceEnabled(), voiceButton));
-
-  // Su alcuni browser l'elenco delle voci e' vuoto finche' non viene richiesto
-  // almeno una volta: lo "scaldiamo" subito, cosi' la prima frase pronunciata
-  // ha gia' a disposizione l'elenco per scegliere una voce italiana.
-  if ('speechSynthesis' in window) {
-    window.speechSynthesis.getVoices();
-    window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
-  }
 }
 
-function isVoiceEnabled() {
-  return localStorage.getItem('cm_ai_voice') !== '0';
+function speakAI() {
+  // Assistente CM volutamente testuale: nessuna sintesi vocale browser.
 }
-
-function setVoiceState(enabled, button) {
-  localStorage.setItem('cm_ai_voice', enabled ? '1' : '0');
-  if (button) {
-    button.setAttribute('aria-pressed', String(enabled));
-    button.setAttribute('aria-label', enabled ? 'Disattiva lettura vocale' : 'Attiva lettura vocale');
-    button.title = enabled ? 'Disattiva lettura vocale' : 'Attiva lettura vocale';
-    button.innerHTML = `${enabled ? '🔊' : '🔇'} <span>Voce</span>`;
-  }
-  if (!enabled && 'speechSynthesis' in window) window.speechSynthesis.cancel();
-}
-
-function pickItalianVoice() {
-  if (!('speechSynthesis' in window)) return null;
-  const voices = window.speechSynthesis.getVoices();
-  if (!voices.length) return null;
-  const italian = voices.filter(v => /^it([-_]|$)/i.test(v.lang));
-  if (!italian.length) return null;
-  const maleNamePattern = /\b(luca|diego|marco|paolo|alessandro|giorgio|matteo|male|maschile|uomo)\b/i;
-  return italian.find(v => maleNamePattern.test(v.name)) || italian[0];
-}
-
-function speakAI(text) {
-  const portrait = document.querySelector('.ai-portrait');
-  if (!isVoiceEnabled() || !('speechSynthesis' in window)) return;
-  const clean = String(text || '').replace(/\s+/g, ' ').trim();
-  if (!clean) return;
-  window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(clean);
-  utterance.lang = 'it-IT';
-  utterance.rate = 0.98;
-  utterance.pitch = 1;
-  // Preferisce una voce italiana maschile, se il dispositivo del visitatore ne ha una
-  // installata (varia da dispositivo a dispositivo, non e' garantito su tutti).
-  const preferredVoice = pickItalianVoice();
-  if (preferredVoice) utterance.voice = preferredVoice;
-  // Dà un riscontro visivo sul ritratto mentre l'assistente sta parlando
-  // (bordo dorato fisso + leggero "respiro" lento), cosi' non resta una foto immobile
-  // durante l'audio, senza pero' un lampeggio che sembri un difetto.
-  utterance.onstart = () => portrait?.classList.add('speaking');
-  utterance.onend = () => portrait?.classList.remove('speaking');
-  utterance.onerror = () => portrait?.classList.remove('speaking');
-  window.speechSynthesis.speak(utterance);
-}
-
+ 
 function openAI() {
   const panel = document.getElementById('aiPanel');
   panel?.classList.add('open');
@@ -831,7 +774,7 @@ function initMobileBottomNav() {
   nav.innerHTML = `
     <a href="/" class="cm-mn-item"><span class="cm-mn-icon" aria-hidden="true">${icons.home}</span><span>Home</span></a>
     <a href="/fideiussioni" class="cm-mn-item"><span class="cm-mn-icon" aria-hidden="true">${icons.servizi}</span><span>Servizi</span></a>
-    <a href="/richiedi-preventivo#step1" class="cm-mn-item cm-mn-cta"><span class="cm-mn-icon" aria-hidden="true">${icons.preventivo}</span><span>Preventivo</span></a>
+    <a href="/richiedi-preventivo?form=1" class="cm-mn-item cm-mn-cta"><span class="cm-mn-icon" aria-hidden="true">${icons.preventivo}</span><span>Preventivo</span></a>
     <a href="/contatti" class="cm-mn-item"><span class="cm-mn-icon" aria-hidden="true">${icons.contatti}</span><span>Contatti</span></a>
     <button type="button" class="cm-mn-item" id="cmMobileNavAiuto"><span class="cm-mn-icon" aria-hidden="true">${icons.aiuto}</span><span>Aiuto</span></button>
   `;
