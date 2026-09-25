@@ -235,14 +235,6 @@ function submitCapacity(){
     document.getElementById('mainForm').classList.add('hidden');
     document.getElementById('successBox').classList.add('show');
     window.scrollTo({top:150,behavior:'smooth'});
-    const mailSubject='Documenti per richiesta capacità finanziaria';
-    const mailBody=`Buongiorno,\n\nin allegato invio la documentazione relativa alla mia richiesta di capacità finanziaria.\n\nRiepilogo richiesta:\n${rows.map(r=>`${r[0]}: ${r[1]}`).join('\n')}\n\nCordiali saluti`;
-    const mailtoLink=`mailto:info@cm-consulting.info?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}`;
-    const successMail=document.getElementById('successMailto');
-    if(successMail) successMail.href=mailtoLink;
-    // Apre subito il client email del cliente, pronto per allegare i documenti,
-    // cosi' non deve tornare qui a cercare il pulsante.
-    window.location.href=mailtoLink;
   }))
   .catch(error=>{
     errorBox.textContent=error.message||'Non è stato possibile inviare la richiesta. Riprova.';
