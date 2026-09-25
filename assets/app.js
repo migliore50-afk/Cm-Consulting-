@@ -414,7 +414,7 @@ function startAI() {
         const role = item.role === 'user' ? 'user' : 'ai';
         const safe = String(item.content || '')
           .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-          .replace(/"/g,'&quot;').replace(/'/g,'&#039;').replace(/\\n/g,'<br>');
+          .replace(/"/g,'&quot;').replace(/'/g,'&#039;').replace(/\n/g,'<br>');
         return `<div class="bubble ${role}">${safe}</div>`;
       }).join('')
     : `<div class="bubble ai"><b>Ciao, sono l'Assistente CM.</b><br>${greeting}</div>`;
