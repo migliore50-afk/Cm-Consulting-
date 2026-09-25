@@ -131,7 +131,7 @@
         },
         {
           "key": "Permissions-Policy",
-          "value": "camera=(), microphone=(self), geolocation=(), payment=()"
+          "value": "camera=(), microphone=(), geolocation=(), payment=()"
         },
         {
           "key": "Content-Security-Policy",
@@ -160,7 +160,7 @@
         },
         {
           "key": "Permissions-Policy",
-          "value": "camera=(), microphone=(self), geolocation=(), payment=()"
+          "value": "camera=(), microphone=(), geolocation=(), payment=()"
         },
         {
           "key": "Content-Security-Policy",
@@ -193,7 +193,7 @@
         },
         {
           "key": "Permissions-Policy",
-          "value": "camera=(), microphone=(self), geolocation=(), payment=()"
+          "value": "camera=(), microphone=(), geolocation=(), payment=()"
         },
         {
           "key": "Content-Security-Policy",
@@ -226,7 +226,7 @@
         },
         {
           "key": "Permissions-Policy",
-          "value": "camera=(), microphone=(self), geolocation=(), payment=()"
+          "value": "camera=(), microphone=(), geolocation=(), payment=()"
         },
         {
           "key": "Cache-Control",
@@ -259,7 +259,7 @@
         },
         {
           "key": "Permissions-Policy",
-          "value": "camera=(), microphone=(self), geolocation=(), payment=()"
+          "value": "camera=(), microphone=(), geolocation=(), payment=()"
         },
         {
           "key": "Content-Security-Policy",

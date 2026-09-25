@@ -1,4 +1,7 @@
 import { consumeRateLimit } from './_security.js';
+
+const LEASE_ROUTE = '/richiedi-preventivo?tipo=locazioni';
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Metodo non consentito' });
 
@@ -43,12 +46,18 @@ export default async function handler(req, res) {
           .slice(-12)
       : [];
 
+    // Contesto pagina: solo tre campi, con lunghezza massima. Il path viene
+    // ridotto ai caratteri di un URL relativo, così non può trasportare testo
+    // libero nell'istruzione di sistema.
     const incomingPageContext = body.pageContext && typeof body.pageContext === 'object' ? body.pageContext : {};
     const pageContext = {
-      path: String(incomingPageContext.path || '').trim().slice(0, 240),
-      title: String(incomingPageContext.title || '').trim().slice(0, 160),
+      path: String(incomingPageContext.path || '').trim().replace(/[^A-Za-z0-9\-_/?=&.#%]/g, '').slice(0, 240),
+      title: String(incomingPageContext.title || '').replace(/[\u0000-\u001f\u007f]+/g, ' ').trim().slice(0, 160),
       onRequestForm: incomingPageContext.onRequestForm === true
     };
+    const onLeaseForm = pageContext.path.startsWith('/richiedi-preventivo') &&
+      /[?&]tipo=locazioni(?:[&#]|$)/.test(pageContext.path);
+
     const incomingFormContext = body.formContext && typeof body.formContext === 'object' ? body.formContext : {};
     const formContext = {};
     ['amount','duration','vehicleCount','bilancio','leaseType','startDate','endDate'].forEach(key => {
@@ -198,7 +207,7 @@ ${JSON.stringify(formContext)}`;
     const routeMatch = rawReply.match(/\[\[ROUTE:(\/[^\]]+)\]\]/i);
     const allowedRoutes = new Set([
       '/richiedi-preventivo?tipo=appalti',
-      '/richiedi-preventivo?tipo=locazioni',
+      LEASE_ROUTE,
       '/richiedi-preventivo?tipo=dogane',
       '/richiedi-preventivo?tipo=ambiente',
       '/richiedi-preventivo?tipo=contributi',
@@ -236,7 +245,11 @@ ${JSON.stringify(formContext)}`;
         // mensile non equivale all'importo della fideiussione. Il campo
         // "amount" viene quindi accettato solo quando il cliente ha esplicitamente
         // indicato l'importo/somma/valore della garanzia o della fideiussione.
-        if (safeRoute === '/richiedi-preventivo?tipo=locazioni') {
+        // Il controllo vale sia quando il modello indirizza alle locazioni,
+        // sia quando il cliente è già nel modulo locazioni (in quel caso il
+        // modello, per istruzione, non emette ROUTE).
+        const leaseDestination = safeRoute === LEASE_ROUTE || (!safeRoute && onLeaseForm);
+        if (leaseDestination) {
           const conversationText = [
             ...history.filter(item => item.role === 'user').map(item => item.content),
             message
@@ -246,6 +259,7 @@ ${JSON.stringify(formContext)}`;
         }
       } catch (error) {
         console.warn('Assistant FORM marker non valido');
+        form = null;
       }
     }
 

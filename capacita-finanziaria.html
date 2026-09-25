@@ -248,6 +248,8 @@ function submitCapacity(){
   button.disabled=true;
   button.textContent='INVIO IN CORSO...';
 
+  // requestType 'capacita': il server ricava il nome "Capacità finanziaria"
+  // dalla propria mappa chiusa, usato nella conferma e nell'area admin.
   fetch('/api/submit-request',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
@@ -257,6 +259,7 @@ function submitCapacity(){
       email,
       customerName:name,
       company:val('company'),
+      requestType:'capacita',
       privacyAccepted:true
     })
   })

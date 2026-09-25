@@ -15,10 +15,22 @@ import { consumeRateLimit, scanBlobAttachment } from './_security.js';
  *   TURNSTILE_SECRET_KEY
  *   RECAPTCHA_SECRET_KEY
  *   RECAPTCHA_MIN_SCORE (default 0.5)
+ *
+ * Anti-spam:
+ *   In produzione (VERCEL_ENV === "production") almeno uno tra
+ *   TURNSTILE_SECRET_KEY e RECAPTCHA_SECRET_KEY è OBBLIGATORIO:
+ *   senza, l'endpoint rifiuta le richieste (fail-closed).
+ *   In Preview/sviluppo il captcha viene verificato solo se configurato.
+ *   La scelta del provider dipende SOLO dalle variabili d'ambiente,
+ *   mai da parametri inviati dal browser.
  */
 
 const MAX_SUBJECT_LENGTH = 180;
 const MAX_TEXT_LENGTH = 20000;
+const MAX_NAME_LENGTH = 120;
+const MAX_GREETING_NAME_LENGTH = 80;
+const MAX_PHONE_LENGTH = 40;
+const MAX_COMPANY_LENGTH = 200;
 const MAX_ATTACHMENTS = 5;
 const MAX_ATTACHMENT_SIZE = 5 * 1024 * 1024;
 const MAX_TOTAL_ATTACHMENT_SIZE = 10 * 1024 * 1024;
@@ -34,6 +46,23 @@ const ALLOWED_ATTACHMENT_TYPES = new Set([
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 ]);
 
+// Tipologie ammesse: il nome mostrato nelle email e salvato nel database
+// viene calcolato lato server e non viene mai preso dal browser.
+const REQUEST_TYPE_NAMES = {
+  appalti: "Appalti pubblici",
+  locazioni: "Locazioni",
+  dogane: "Dogane",
+  ambiente: "Ambiente",
+  contributi: "Contributi e agevolazioni",
+  urbanistica: "Urbanistica ed edilizia",
+  fiscali: "Garanzie fiscali",
+  "contratti-privati": "Contratti privati",
+  altro: "Altra fideiussione",
+  generica: "Valutazione generica",
+  capacita: "Capacità finanziaria"
+};
+const DEFAULT_REQUEST_TYPE = "generica";
+
 function json(res, status, payload) {
   return res.status(status).json(payload);
 }
@@ -42,8 +71,34 @@ function str(value) {
   return typeof value === "string" ? value.trim() : "";
 }
 
+// Testo su una sola riga, senza caratteri di controllo, con lunghezza massima.
+function singleLine(value, maxLength) {
+  return str(value)
+    .replace(/[\u0000-\u001f\u007f]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, maxLength);
+}
+
 function validEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+// Il nome compare nel saluto della mail di conferma inviata a un indirizzo
+// non verificato: viene usato solo se ha l'aspetto di un nome/ragione sociale.
+// In ogni altro caso il saluto diventa "Gentile cliente".
+function greetingName(value) {
+  const name = singleLine(value, MAX_NAME_LENGTH);
+  if (!name || name.length > MAX_GREETING_NAME_LENGTH) return "cliente";
+  if (/\d/.test(name)) return "cliente";
+  if (/https?:|www\.|:\/\/|@|[<>{}\[\]\\|]/i.test(name)) return "cliente";
+  if (/\.[a-z]{2,}(?:\/|$|\s)/i.test(name)) return "cliente";
+  return name;
+}
+
+function resolveRequestType(value) {
+  const key = str(value).toLowerCase();
+  return Object.prototype.hasOwnProperty.call(REQUEST_TYPE_NAMES, key) ? key : DEFAULT_REQUEST_TYPE;
 }
 
 function safeFilename(value) {
@@ -52,12 +107,6 @@ function safeFilename(value) {
     .replace(/\.\./g, "_")
     .trim()
     .slice(0, 180);
-}
-
-function base64Size(value) {
-  if (typeof value !== "string") return 0;
-  const s = value.replace(/^data:[^;]+;base64,/, "").replace(/\s/g, "");
-  return s ? Math.floor((s.length * 3) / 4) : 0;
 }
 
 async function sendWhatsAppWebhook(payload) {
@@ -86,8 +135,7 @@ async function sendWhatsAppWebhook(payload) {
 }
 
 async function verifyTurnstile(token, ip) {
-  if (!process.env.TURNSTILE_SECRET_KEY) return { configured: false, success: true };
-  if (!token) return { configured: true, success: false, error: "Verifica anti-spam mancante." };
+  if (!token) return { success: false, error: "Verifica anti-spam mancante." };
 
   const body = new URLSearchParams({
     secret: process.env.TURNSTILE_SECRET_KEY,
@@ -95,25 +143,25 @@ async function verifyTurnstile(token, ip) {
     ...(ip ? { remoteip: ip } : {})
   });
 
-  const response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body
-  });
-
-  if (!response.ok) return { configured: true, success: false, error: "Verifica anti-spam non disponibile." };
-  const result = await response.json();
-
-  return {
-    configured: true,
-    success: Boolean(result.success),
-    error: result.success ? null : "Verifica anti-spam non superata."
-  };
+  try {
+    const response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body
+    });
+    if (!response.ok) return { success: false, error: "Verifica anti-spam non disponibile." };
+    const result = await response.json().catch(() => ({}));
+    return {
+      success: result.success === true,
+      error: result.success === true ? null : "Verifica anti-spam non superata."
+    };
+  } catch {
+    return { success: false, error: "Verifica anti-spam non disponibile." };
+  }
 }
 
 async function verifyRecaptcha(token, ip) {
-  if (!process.env.RECAPTCHA_SECRET_KEY) return { configured: false, success: true };
-  if (!token) return { configured: true, success: false, error: "Verifica anti-spam mancante." };
+  if (!token) return { success: false, error: "Verifica anti-spam mancante." };
 
   const body = new URLSearchParams({
     secret: process.env.RECAPTCHA_SECRET_KEY,
@@ -121,24 +169,42 @@ async function verifyRecaptcha(token, ip) {
     ...(ip ? { remoteip: ip } : {})
   });
 
-  const response = await fetch("https://www.google.com/recaptcha/api/siteverify", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body
-  });
+  try {
+    const response = await fetch("https://www.google.com/recaptcha/api/siteverify", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body
+    });
+    if (!response.ok) return { success: false, error: "Verifica anti-spam non disponibile." };
+    const result = await response.json().catch(() => ({}));
 
-  if (!response.ok) return { configured: true, success: false, error: "Verifica anti-spam non disponibile." };
-  const result = await response.json();
+    const minScore = Number(process.env.RECAPTCHA_MIN_SCORE || "0.5");
+    const scoreOk = typeof result.score !== "number" || result.score >= minScore;
+    const ok = result.success === true && scoreOk;
 
-  const minScore = Number(process.env.RECAPTCHA_MIN_SCORE || "0.5");
-  const scoreOk = typeof result.score !== "number" || result.score >= minScore;
+    return {
+      success: ok,
+      score: result.score,
+      error: ok ? null : "Verifica anti-spam non superata."
+    };
+  } catch {
+    return { success: false, error: "Verifica anti-spam non disponibile." };
+  }
+}
 
-  return {
-    configured: true,
-    success: Boolean(result.success && scoreOk),
-    score: result.score,
-    error: result.success && scoreOk ? null : "Verifica anti-spam non superata."
-  };
+// Selezione del captcha basata esclusivamente sulla configurazione server.
+async function verifyCaptcha(token, ip) {
+  if (str(process.env.TURNSTILE_SECRET_KEY)) return verifyTurnstile(token, ip);
+  if (str(process.env.RECAPTCHA_SECRET_KEY)) return verifyRecaptcha(token, ip);
+
+  if (process.env.VERCEL_ENV === "production") {
+    // Fail-closed: in produzione il modulo non accetta invii senza anti-spam.
+    console.error("CM Consulting API: captcha not configured in production.");
+    return { success: false, notConfigured: true, error: "Servizio momentaneamente non disponibile." };
+  }
+
+  // Preview / sviluppo: captcha non configurato, invio consentito per i test.
+  return { success: true, notConfigured: true };
 }
 
 export default async function handler(req, res) {
@@ -224,9 +290,11 @@ export default async function handler(req, res) {
       });
     }
 
-    const customerName = str(body.customerName || body.name || body.contactName);
-    const phone = str(body.phone || body.contactPhone);
-    const requestTypeName = str(body.requestTypeName || body.typeName);
+    const customerName = singleLine(body.customerName || body.name || body.contactName, MAX_NAME_LENGTH);
+    const phone = singleLine(body.phone || body.contactPhone, MAX_PHONE_LENGTH);
+    const company = singleLine(body.company, MAX_COMPANY_LENGTH);
+    const requestType = resolveRequestType(body.requestType);
+    const requestTypeName = REQUEST_TYPE_NAMES[requestType];
     const email = str(body.email || body.emailAddress || body.customerEmail);
     if (email && !validEmail(email)) {
       return json(res, 400, {
@@ -240,20 +308,16 @@ export default async function handler(req, res) {
       ? forwarded.split(",")[0].trim()
       : String(req.headers["x-real-ip"] || "");
 
-    const provider = str(body.captchaProvider).toLowerCase();
     const token = str(body.captchaToken || body.turnstileToken || body.recaptchaToken);
-
-    let captcha = { configured: false, success: true };
-    if (provider === "turnstile" || process.env.TURNSTILE_SECRET_KEY) {
-      captcha = await verifyTurnstile(token, ip);
-    } else if (provider === "recaptcha" || process.env.RECAPTCHA_SECRET_KEY) {
-      captcha = await verifyRecaptcha(token, ip);
-    }
+    const captcha = await verifyCaptcha(token, ip);
 
     if (!captcha.success) {
-      return json(res, 403, {
+      return json(res, captcha.notConfigured ? 503 : 403, {
         ok: false,
-        error: { code: "ANTI_SPAM_FAILED", message: captcha.error || "Verifica anti-spam non superata." }
+        error: {
+          code: captcha.notConfigured ? "ANTI_SPAM_NOT_CONFIGURED" : "ANTI_SPAM_FAILED",
+          message: captcha.error || "Verifica anti-spam non superata."
+        }
       });
     }
 
@@ -365,7 +429,7 @@ export default async function handler(req, res) {
       });
     }
 
-        const requestSave = await fetch(
+    const requestSave = await fetch(
       `${str(process.env.SUPABASE_URL).replace(/\/$/, '')}/rest/v1/admin_requests`,
       {
         method: "POST",
@@ -377,10 +441,10 @@ export default async function handler(req, res) {
         },
         body: JSON.stringify({
           customer_name: customerName || null,
-          company: str(body.company) || null,
+          company: company || null,
           email: email || null,
           phone: phone || null,
-          request_type: requestTypeName || subject,
+          request_type: requestTypeName,
           subject,
           request_text: text,
           attachments_count: safeAttachments.length,
@@ -406,7 +470,7 @@ export default async function handler(req, res) {
       `Nome e cognome: ${customerName || '—'}`,
       `Email: ${email || '—'}`,
       `Telefono: ${phone || '—'}`,
-      `Tipologia: ${requestTypeName || '—'}`,
+      `Tipologia: ${requestTypeName}`,
       `Allegati ricevuti: ${safeAttachments.length}`,
       "",
       "RICHIESTA",
@@ -444,11 +508,14 @@ export default async function handler(req, res) {
 
     let confirmation = { sent: false, reason: "NO_CUSTOMER_EMAIL" };
     if (email) {
+      // La conferma va a un indirizzo non verificato: contiene SOLO testo
+      // fisso, la tipologia calcolata lato server e un saluto validato.
+      // Nessun contenuto libero inserito nel modulo viene ripetuto.
       const confirmationText = [
-        `Gentile ${customerName || 'cliente'},`,
+        `Gentile ${greetingName(customerName)},`,
         "",
         "la tua richiesta è stata presa in carico.",
-        `Tipologia: ${requestTypeName || 'Valutazione generica'}`,
+        `Tipologia: ${requestTypeName}`,
         "",
         "CM Consulting verificherà le informazioni ricevute e ti contatterà se saranno necessari ulteriori dati o documenti per completare l'istruttoria.",
         "",
@@ -479,7 +546,7 @@ export default async function handler(req, res) {
       event: "cm_request_submitted",
       destination: "+393286382612",
       customer: { name: customerName, email, phone },
-      request: { type: body.requestType || '', typeName: requestTypeName, subject, text },
+      request: { type: requestType, typeName: requestTypeName, subject, text },
       attachmentsCount: safeAttachments.length,
       submittedAt: new Date().toISOString()
     });

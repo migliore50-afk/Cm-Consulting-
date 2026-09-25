@@ -389,6 +389,8 @@ function submitRequest(){
   button.disabled=true;
   button.textContent='INVIO IN CORSO…';
 
+  // requestType è l'unico dato di tipologia usato dal server: il nome
+  // visualizzato viene ricalcolato lato server da una mappa chiusa.
   fetch('/api/submit-request',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
@@ -399,7 +401,6 @@ function submitRequest(){
       customerName:name,
       phone:val('contactPhone'),
       requestType:type,
-      requestTypeName:typeName,
       privacyAccepted:true
     })
   })
@@ -418,17 +419,45 @@ function submitRequest(){
   });
 }
 
-function restoreAIAssistantContext(){
-  let saved=null;
-  try { saved=JSON.parse(sessionStorage.getItem('cm_ai_form_context') || 'null'); } catch {}
-  if(!saved || typeof saved!=='object') return;
+function clearAIAssistantContext(){
+  try {
+    sessionStorage.removeItem('cm_ai_form_context');
+    sessionStorage.removeItem('cm_ai_route');
+  } catch {}
+}
 
-  const route=sessionStorage.getItem('cm_ai_route') || '';
-  const routeType=(route.match(/[?&]tipo=([^&]+)/i)||[])[1] || '';
-  const normalized=decodeURIComponent(routeType);
-  if(normalized && labels[normalized] && !type){
-    type=normalized;
-    applyType();
+// Il contesto raccolto dall'Assistente CM viene applicato SOLO se il percorso
+// indicato dall'assistente coincide con la pagina aperta (stesso tipo o
+// esigenza generica). In ogni altro caso viene scartato, così dati raccolti
+// per un percorso non finiscono in un modulo diverso.
+function restoreAIAssistantContext(){
+  let route='';
+  let saved=null;
+  try {
+    route=sessionStorage.getItem('cm_ai_route') || '';
+    saved=JSON.parse(sessionStorage.getItem('cm_ai_form_context') || 'null');
+  } catch {
+    clearAIAssistantContext();
+    return;
+  }
+  if(!route && !saved) return;
+  if(!route || !saved || typeof saved!=='object' || !route.startsWith('/richiedi-preventivo')){
+    clearAIAssistantContext();
+    return;
+  }
+
+  const routeParams=new URLSearchParams(route.split('?')[1] || '');
+  const pageParams=new URLSearchParams(location.search);
+  const routeTipo=routeParams.get('tipo') || '';
+  const routeEsigenza=routeParams.get('esigenza') || '';
+  const pageTipo=pageParams.get('tipo') || '';
+  const pageEsigenza=pageParams.get('esigenza') || '';
+
+  const sameType=routeTipo && routeTipo===pageTipo && labels[routeTipo];
+  const sameGeneric=routeEsigenza==='generica' && pageEsigenza==='generica';
+  if(!sameType && !sameGeneric){
+    clearAIAssistantContext();
+    return;
   }
 
   const ids=['genericDescription','beneficiary','amount','duration','contactName','contactEmail','contactPhone','startDate','endDate','beneficiaryTax','beneficiaryAddress','beneficiaryPec','refs','object','notes'];
@@ -440,14 +469,17 @@ function restoreAIAssistantContext(){
 
   const lease=String(saved.leaseType || '');
   const leaseSelect=document.getElementById('leaseType');
-  if(leaseSelect) leaseSelect.value=lease;
+  if(leaseSelect && lease && [...leaseSelect.options].some(o=>o.value===lease)) leaseSelect.value=lease;
 
   refreshAll();
-  sessionStorage.removeItem('cm_ai_form_context');
-  sessionStorage.removeItem('cm_ai_route');
+  clearAIAssistantContext();
 }
 
 (function init(){
+  // Pulizia una tantum: le versioni precedenti salvavano in localStorage
+  // i dati dell'ultima richiesta inviata. Vanno rimossi dai dispositivi.
+  try { localStorage.removeItem('cm_last_request'); } catch {}
+
   const qs=new URLSearchParams(location.search);
   if(qs.get('tipo')==='trasporti'){
     // "Trasporti" e' stato ritirato come step generico: il bisogno reale
