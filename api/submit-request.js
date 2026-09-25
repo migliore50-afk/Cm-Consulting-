@@ -447,14 +447,14 @@ export default async function handler(req, res) {
       const confirmationText = [
         `Gentile ${customerName || 'cliente'},`,
         "",
-        "abbiamo ricevuto correttamente la tua richiesta di valutazione.",
+        "la tua richiesta è stata presa in carico.",
         `Tipologia: ${requestTypeName || 'Valutazione generica'}`,
         `Allegati ricevuti: ${safeAttachments.length}`,
         "",
         "Riepilogo della richiesta:",
         text,
         "",
-        "CM Consulting valuterà la documentazione e ti contatterà per i prossimi passaggi.",
+        "CM Consulting verificherà le informazioni ricevute e ti contatterà se saranno necessari ulteriori dati o documenti per completare l'istruttoria.",
         "",
         "CM Consulting di Carmelo Migliore",
         "Intermediazione assicurativa"
@@ -488,9 +488,7 @@ export default async function handler(req, res) {
       submittedAt: new Date().toISOString()
     });
 
-    const message = safeAttachments.length
-      ? "Richiesta inviata correttamente."
-      : "Richiesta inviata. Per velocizzare l’istruttoria puoi inviarci i documenti via email o WhatsApp.";
+    const message = "Richiesta inviata correttamente.";
 
     return json(res, 200, {
       ok: true,
