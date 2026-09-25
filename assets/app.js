@@ -287,9 +287,6 @@ function openAI() {
 function closeAI() {
   document.getElementById('aiPanel')?.classList.remove('open');
   document.getElementById('cm-ai-fab')?.classList.remove('hidden');
-  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-  document.querySelector('.ai-portrait')?.classList.remove('speaking');
-  stopAssistantRecognition();
 }
 
 function getAIConversationHistory() {
@@ -428,12 +425,8 @@ function startAI() {
       <input id="aiChatInput" type="text" maxlength="1200" autocomplete="off" placeholder="${onRequestForm ? 'Es. Non so dove trovare l’importo...' : 'Scrivi qui la tua necessità...'}" aria-label="Scrivi la tua necessità">
       <button type="submit" aria-label="Invia richiesta">Invia</button>
     </form>
-    <div class="ai-voice-row">
-      <button class="ai-mic" id="aiMic" type="button" aria-label="Spiega a voce la tua esigenza">🎙️ <span>Parla con l'assistente</span></button>
-      <span class="ai-voice-status" id="aiVoiceStatus" role="status" aria-live="polite"></span>
-    </div>`;
+`;
 
-  content.querySelector('#aiMic')?.addEventListener('click', startAssistantRecognition);
   content.querySelector('#aiChatForm')?.addEventListener('submit', event => {
     event.preventDefault();
     const input = document.getElementById('aiChatInput');
@@ -441,14 +434,7 @@ function startAI() {
     if (message) aiSendMessage(message);
   });
   scrollAssistantToLatest('auto');
-  if (!history.length) speakAI(greeting);
-  else {
-    const lastAI = [...history].reverse().find(item => item.role === 'assistant');
-    if (lastAI) speakAI(lastAI.content);
-  }
 }
-
-let assistantRecognition = null;
 
 function scrollAssistantToLatest(behavior = 'auto') {
   const content = document.getElementById('aiContent');
@@ -539,7 +525,8 @@ async function aiSendMessage(message) {
     if (!response.ok) throw new Error(data?.error || 'Servizio temporaneamente non disponibile.');
 
     const reply = String(data.reply || '').trim();
-    if (data.form) applyAIFormData(data.form);
+    const incomingFormData = data.form && typeof data.form === 'object' ? data.form : {};
+    if (Object.keys(incomingFormData).length) applyAIFormData(incomingFormData);
     saveAIConversationTurn('user', message);
 
     const aiBubble = document.createElement('div');
@@ -554,21 +541,21 @@ async function aiSendMessage(message) {
       actions.className = 'ai-route-actions';
       const link = document.createElement('a');
       link.className = 'ai-choice';
-      const targetRoute = safeRoute.includes('#') ? safeRoute : safeRoute + '#step2';
+      const targetRoute = safeRoute.includes('capacita-finanziaria') || safeRoute.includes('#') ? safeRoute : safeRoute + '#step2';
       link.href = targetRoute;
       link.textContent = safeRoute.includes('capacita-finanziaria') ? 'Apri Capacità finanziaria →' : 'Apri il modulo corretto →';
       actions.appendChild(link);
       log.appendChild(actions);
 
-      const formData = getAIFormContext();
+      const currentFormData = getAIFormContext();
+      const mergedFormData = {...currentFormData, ...incomingFormData};
       sessionStorage.setItem('cm_ai_route', safeRoute);
-      sessionStorage.setItem('cm_ai_form_context', JSON.stringify(formData));
+      sessionStorage.setItem('cm_ai_form_context', JSON.stringify(mergedFormData));
       sessionStorage.setItem('cm_ai_open_after_route', '1');
       sessionStorage.setItem('cm_ai_scroll_to_form', '1');
     }
 
     scrollAssistantToLatest('auto');
-    speakAI(reply);
   } catch (error) {
     console.error('Assistente CM: richiesta AI non riuscita', error);
     const aiBubble = document.createElement('div');
@@ -577,7 +564,6 @@ async function aiSendMessage(message) {
     aiBubble.textContent = message;
     log.appendChild(aiBubble);
     scrollAssistantToLatest('auto');
-    speakAI(message);
   } finally {
     if (send) send.disabled = false;
   }
@@ -650,16 +636,30 @@ function initAIAfterRoute() {
   if (sessionStorage.getItem('cm_ai_open_after_route') !== '1') return;
   sessionStorage.removeItem('cm_ai_open_after_route');
 
+  const isCapacityPage = window.location.pathname.includes('capacita-finanziaria');
   const isRequestForm = Boolean(document.querySelector('#step2') && document.querySelector('#contactEmail'));
+
+  if (isCapacityPage) {
+    restoreAIPageContext();
+    const scrollToForm = () => {
+      const target = document.getElementById('mainForm');
+      if (target) target.scrollIntoView({behavior:'smooth', block:'start'});
+    };
+    if (sessionStorage.getItem('cm_ai_scroll_to_form') === '1') {
+      sessionStorage.removeItem('cm_ai_scroll_to_form');
+      window.setTimeout(scrollToForm, 120);
+    }
+    window.setTimeout(() => {
+      if (typeof window.openAI === 'function') window.openAI();
+    }, 220);
+    return;
+  }
+
   if (!isRequestForm) return;
 
-  // Il passaggio dall'assistente al modulo non deve lasciare il cliente in cima
-  // alla pagina: il punto di lavoro è direttamente il modulo.
   const scrollToForm = () => {
     const target = document.getElementById('step2');
-    if (target) {
-      target.scrollIntoView({behavior: 'smooth', block: 'start'});
-    }
+    if (target) target.scrollIntoView({behavior:'smooth', block:'start'});
   };
 
   if (sessionStorage.getItem('cm_ai_scroll_to_form') === '1') {
@@ -667,8 +667,6 @@ function initAIAfterRoute() {
     window.setTimeout(scrollToForm, 120);
   }
 
-  // Mantiene l'assistente disponibile sulla pagina di destinazione, così il
-  // cliente può continuare a chiedere aiuto mentre compila.
   window.setTimeout(() => {
     if (typeof window.openAI === 'function') window.openAI();
   }, 220);
