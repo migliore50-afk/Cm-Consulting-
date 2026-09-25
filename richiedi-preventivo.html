@@ -465,10 +465,18 @@ function restoreAIAssistantContext(){
   }else if(qs.get('tipo') && labels[qs.get('tipo')]){
     type=qs.get('tipo');
     applyType();
-  }else{
+  }else if(qs.get('form')==='1'){
+    // Il percorso "Preventivo" della barra mobile apre direttamente il modulo
+    // universale, mentre la pagina /richiedi-preventivo senza parametro resta
+    // una pagina di ingresso normale.
     type='generica';
     genericMode=true;
     applyType();
+  }else{
+    // Ingresso normale: mostra la pagina di richiesta senza forzare il modulo.
+    type='generica';
+    genericMode=true;
+    refreshAll();
   }
   restoreAIAssistantContext();
 })();
