@@ -264,20 +264,22 @@ export default async function handler(req, res) {
       });
     }
 
-    const subject = str(body.subject);
+    const rawSubject = str(body.subject);
     const text = str(body.text);
 
-    if (!subject) {
+    if (!rawSubject) {
       return json(res, 400, {
         ok: false,
         error: { code: "SUBJECT_REQUIRED", message: "L'oggetto della richiesta è obbligatorio." }
       });
     }
-    if (subject.length > MAX_SUBJECT_LENGTH) {
+    if (rawSubject.length > MAX_SUBJECT_LENGTH) {
       return json(res, 400, {
         ok: false,
         error: { code: "SUBJECT_TOO_LONG", message: "L'oggetto della richiesta è troppo lungo." }
-      });
+      }
+
+    const subject = singleLine(rawSubject, MAX_SUBJECT_LENGTH););
     }
     if (body.privacyAccepted !== true) {
       return json(res, 400, {
