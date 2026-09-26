@@ -7,7 +7,9 @@
 <meta content="CM Consulting" property="og:site_name"/>
 <meta content="it_IT" property="og:locale"/>
 <style>
-.cd-content{max-width:880px;margin:0 auto;padding:50px 0}
+/* REDESIGN (25/09/2026): stessa ricetta di appalti-pubblici.html.
+   Sezione "Altre tipologie di locazione" (.cd-related) preservata invariata. */
+.cd-content{max-width:820px;margin:0 auto;padding:50px 0}
 .cd-content h2{font-size:26px;color:var(--ink,#102a43);margin:40px 0 16px}
 .cd-content h2:first-child{margin-top:0}
 .cd-content p{color:var(--muted,#526778);line-height:1.7;font-size:16px}
@@ -19,6 +21,7 @@
 .cd-doc-box ul{margin:14px 0 0;padding:0;list-style:none;display:grid;gap:10px}
 .cd-doc-box li{padding:13px 15px;border:1px solid var(--line,#dce5ea);border-radius:10px;background:#fff;font-size:14.5px;color:var(--ink,#102a43)}
 .cd-notice{margin-top:16px;padding:13px 15px;background:#fff8e8;border-left:4px solid var(--gold,#d6aa45);border-radius:8px;font-size:13px;color:#5b4a20;line-height:1.5}
+.cd-reassure{margin-top:14px;padding:13px 15px;background:#eef7fa;border-left:4px solid var(--blue,#1d5c8a);border-radius:8px;font-size:13px;color:#17415e;line-height:1.55}
 .cd-steps{display:grid;gap:14px;margin-top:16px}
 .cd-step{display:flex;gap:14px;align-items:flex-start}
 .cd-step b{flex:none;width:30px;height:30px;border-radius:50%;background:var(--gold,#d6aa45);color:#102a43;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900}
@@ -26,24 +29,29 @@
 .cd-faq-item{padding:16px 18px;border:1px solid var(--line,#dce5ea);border-radius:12px;background:#fff}
 .cd-faq-item h3{margin:0 0 6px;font-size:15px;color:var(--ink,#102a43)}
 .cd-faq-item p{margin:0;font-size:14px;color:var(--muted,#526778);line-height:1.6}
+.cd-related{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px}
+.cd-related a{padding:10px 16px;border:1px solid var(--line,#dce5ea);border-radius:9px;color:var(--ink,#102a43);font-weight:800;font-size:14px;text-decoration:none}
+.cd-related a:hover{border-color:var(--gold,#d6aa45)}
 .cd-cta{margin-top:44px;padding:32px;border-radius:16px;background:#092b43;color:#fff;text-align:center}
 .cd-cta h2{color:#fff;margin-top:0}
 .cd-cta p{color:#c8d5df}
 .cd-cta .btn{margin-top:10px}
-.cd-hero-img{max-width:880px;margin:0 auto;border-radius:16px;overflow:hidden;aspect-ratio:21/8}
-.cd-hero-img img{display:block;width:100%;height:100%;object-fit:cover}
-.cd-related{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px}
-.cd-related a{padding:10px 16px;border:1px solid var(--line,#dce5ea);border-radius:9px;color:var(--ink,#102a43);font-weight:800;font-size:14px;text-decoration:none}
-.cd-related a:hover{border-color:var(--gold,#d6aa45)}
 @media(max-width:700px){.cd-content{padding:34px 0}}
-.cd-layout{max-width:1280px;margin:0 auto;padding:50px 0;display:grid;grid-template-columns:minmax(0,1.55fr) minmax(300px,.75fr);gap:38px;align-items:start}.cd-layout .cd-content{max-width:none;margin:0;padding:0}.cd-request-side{position:sticky;top:24px;border:1px solid rgba(221,178,63,.45);border-radius:16px;padding:20px;background:linear-gradient(135deg,#f7fbfc,#fff);box-shadow:0 14px 35px #0a294510}.cd-request-side h2{font-size:18px!important;margin:0 0 12px!important;color:var(--ink,#102a43)}.cd-request-side p{font-size:13px!important;line-height:1.55!important;margin:0 0 14px;color:var(--muted,#526778)}.cd-request-side ul{list-style:none;margin:0 0 18px;padding:0;display:grid;gap:8px}.cd-request-side li{padding:10px 11px;border:1px solid var(--line,#dce5ea);border-radius:9px;background:#fff;font-size:13px;color:var(--ink,#102a43)}.cd-request-side li:before{content:'✓';font-weight:900;color:#2f9e59;margin-right:7px}.cd-request-side .btn{width:100%;text-align:center}.cd-request-side small{display:block;margin-top:10px;font-size:11px;line-height:1.45;color:var(--muted,#526778)}@media(max-width:980px){.cd-layout{grid-template-columns:1fr;padding:38px 0}.cd-request-side{position:static}.cd-layout .cd-content{padding:0}}@media(max-width:700px){.cd-layout{padding:30px 0}.cd-request-side{padding:16px}.cd-request-side li{font-size:12.5px}}</style>
+</style>
 <link href="favicon.ico" rel="icon" sizes="any"/><link href="assets/images/logo-cm-symbol.png" rel="icon" sizes="512x512" type="image/png"/><link href="assets/apple-touch-icon.png" rel="apple-touch-icon"/></head><body>
 <header class="header"><div class="wrap nav"><a class="brand" href="/"><img alt="CM Consulting" decoding="async" height="559" src="assets/images/logo-cm-consulting.webp" width="1494"/></a><button aria-label="Menu" class="menu" id="menu">☰</button><nav class="links" id="links"><a href="/">HOME</a><a href="/fideiussioni">FIDEIUSSIONI</a><a href="/capacita-finanziaria">CAPACITÀ FINANZIARIA</a><a href="/#metodo">CHI SIAMO</a><a href="/#servizi">SERVIZI</a><a href="/contatti">CONTATTI</a></nav><a class="header-cta" href="/richiedi-preventivo">RICHIEDI PREVENTIVO</a></div></header>
 
-<section class="page-hero"><div class="wrap"><div class="crumb"><a href="/">Home</a> / <a href="/fideiussioni">Fideiussioni</a> / Affitti Commerciali</div><div class="eyebrow">Garanzie per locali commerciali, uffici e capannoni</div><h1>Affitti Commerciali</h1><p>Per negozi, uffici e capannoni industriali, ti aiutiamo a ottenere la garanzia sul regolare pagamento dell'affitto richiesta dal locatore.</p></div></section>
+<section class="page-hero cm-confirmed-hero"><div class="wrap"><div class="cm-confirmed-hero-grid">
+  <div class="cm-confirmed-hero-copy">
+    <div class="crumb"><a href="/">Home</a> / <a href="/fideiussioni">Fideiussioni</a> / Affitti Commerciali</div>
+    <div class="eyebrow">Garanzie per locali commerciali, uffici e capannoni</div>
+    <h1>Affitti Commerciali</h1>
+    <p>Per negozi, uffici e capannoni industriali, ti aiutiamo a ottenere la garanzia sul regolare pagamento dell'affitto richiesta dal locatore.</p>
+  </div>
+  <div class="cm-confirmed-hero-media"><img alt="Locazione commerciale" decoding="async" fetchpriority="high" src="assets/affitti-commerciali-retina-1920.webp"/></div>
+</div></div></section>
 
-<section class="section"><div class="wrap cd-layout"><main class="cd-content">
-<div class="cd-hero-img"><img alt="Locazione commerciale" src="assets/affitti-commerciali-retina-1920.webp"/></div>
+<section class="section"><div class="wrap"><main class="cd-content">
 
 <h2>Cosa può coprire questa garanzia</h2>
 <ul class="cd-cover-list">
@@ -61,12 +69,13 @@
 <li>Documento d'identità del legale rappresentante</li>
 </ul>
 <div class="cd-notice">Per canoni elevati o durate lunghe, i fondi immobiliari possono richiedere requisiti aggiuntivi — li verifichiamo leggendo il contratto specifico.</div>
+<div class="cd-reassure">Puoi inviare la richiesta con i dati che hai: verificheremo il caso e ti contatteremo se serviranno integrazioni.</div>
 </div>
 
 <h2>Come funziona la richiesta</h2>
 <div class="cd-steps">
 <div class="cd-step"><b>1</b><div><strong>Raccontaci il contratto</strong><br>Tipo di immobile, canone e durata della locazione.</div></div>
-<div class="cd-step"><b>2</b><div><strong>Ci invii contratto e bilanci</strong><br>Il contratto e la documentazione societaria del conduttore.</div></div>
+<div class="cd-step"><b>2</b><div><strong>Ci invii contratto e bilanci</strong><br>Direttamente dal modulo, con il riepilogo della richiesta già pronto.</div></div>
 <div class="cd-step"><b>3</b><div><strong>Verifichiamo e proponiamo</strong><br>Valutiamo eventuali requisiti richiesti dal locatore o dal fondo.</div></div>
 <div class="cd-step"><b>4</b><div><strong>Consegna al locatore</strong><br>Ricevi la polizza pronta da presentare.</div></div>
 </div>
@@ -85,10 +94,11 @@
 
 <div class="cd-cta">
 <h2>Richiedi il tuo preventivo</h2>
-<p>Compila il modulo: ti risponderemo con i prossimi passi.</p>
+<p>Compila il modulo, già impostato su Locazioni: ti risponderemo con i prossimi passi.</p>
 <a class="btn gold" href="/richiedi-preventivo?tipo=locazioni">RICHIEDI PREVENTIVO →</a>
 </div>
-</main><aside class="cd-request-side" aria-label="Documenti utili e richiesta"><h2>Documenti utili</h2><p>Non è necessario avere subito tutta la documentazione. Invia la richiesta con i dati che conosci: verificheremo il caso e ti contatteremo se serviranno integrazioni.</p><ul><li>Contratto di locazione commerciale, anche in bozza</li><li>Visura camerale del conduttore</li><li>Ultimi bilanci depositati del conduttore</li><li>Documento d'identità del legale rappresentante</li></ul><a class="btn gold" href="/richiedi-preventivo?tipo=locazioni">INVIA RICHIESTA →</a><small>La richiesta viene inviata direttamente a CM Consulting. Dopo la verifica ti indicheremo eventuali documenti mancanti.</small></aside></div></section>
+
+</main></div></section>
 
 <script src="assets/app.js"></script>
 <footer class="cm-footer">
