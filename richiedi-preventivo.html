@@ -81,21 +81,21 @@
 <meta content="website" property="og:type"/>
 <meta content="CM Consulting" property="og:site_name"/>
 <meta content="it_IT" property="og:locale"/>
-<link href="assets/v9-final.css" rel="stylesheet"/><link href="assets/form-pages.css" rel="stylesheet"/><link href="favicon.ico" rel="icon" sizes="any"/><link href="assets/images/logo-cm-symbol.png" rel="icon" sizes="512x512" type="image/png"/><link href="assets/apple-touch-icon.png" rel="apple-touch-icon"/></head><body class="cm-form-v2">
+<link href="assets/v9-final.css" rel="stylesheet"/><link href="favicon.ico" rel="icon" sizes="any"/><link href="assets/images/logo-cm-symbol.png" rel="icon" sizes="512x512" type="image/png"/><link href="assets/apple-touch-icon.png" rel="apple-touch-icon"/></head><body>
 <header class="header"><div class="wrap nav"><a class="brand" href="/"><img alt="CM Consulting" decoding="async" height="559" src="assets/images/logo-cm-consulting.webp" width="1494"/></a><button aria-label="Menu" class="menu" id="menu">☰</button><nav class="links" id="links"><a href="/">HOME</a><a href="/fideiussioni">FIDEIUSSIONI</a><a href="/capacita-finanziaria">CAPACITÀ FINANZIARIA</a><a href="/#metodo">CHI SIAMO</a><a href="/#servizi">SERVIZI</a><a href="/contatti">CONTATTI</a></nav><a class="header-cta" href="/richiedi-preventivo">RICHIEDI PREVENTIVO</a></div></header>
 <section class="page-hero"><div class="wrap"><div class="crumb"><a href="/">Home</a> / Richiesta</div><div class="eyebrow">Valutazione della richiesta</div><h1 id="heroTitle">Raccontaci cosa ti serve.</h1><p id="heroText">Non devi conoscere il nome della fideiussione. Descrivi la tua esigenza e compila solo i dati essenziali. Il resto può essere completato dopo.</p></div></section>
 
 <section class="section"><div class="wrap request-shell"><div class="progressbar"><span class="on" id="bar1"></span><span id="bar2"></span></div>
 
 <div class="request-card">
-<div class="step cm-universal-intro" id="step1">
+<div class="step active cm-universal-intro" id="step1">
   <div class="eyebrow">Richiesta semplice</div>
   <h2>Raccontaci cosa ti serve.</h2>
   <p class="intro">Non devi conoscere il nome della fideiussione. Scrivi con parole semplici cosa ti è stato richiesto e indica i dati che conosci. Se hai già documenti utili, puoi allegarli. Se servono altri documenti, te li chiederemo noi dopo aver letto la richiesta.</p>
   <button class="btn gold btn-icon" type="button" onclick="setType('generica')">CONTINUA CON LA RICHIESTA →</button>
 </div>
 
-<div class="step active" id="step2">
+<div class="step" id="step2">
 <button class="back-link" onclick="go(1)" type="button">← Torna alla richiesta iniziale</button>
 <div class="type-hero" id="typeHero"><img alt="" id="typeHeroImg" src=""/></div>
 <h2 id="typeTitle">Richiesta di valutazione</h2>
@@ -566,10 +566,10 @@ function restoreAIAssistantContext(){
     genericMode=true;
     applyType();
   }else{
-    // Ingresso normale: mostra la pagina di richiesta senza forzare il modulo.
+    // Ingresso normale: il modulo universale è già visibile.
     type='generica';
     genericMode=true;
-    refreshAll();
+    applyType();
   }
   restoreAIAssistantContext();
   initTurnstile();
