@@ -531,6 +531,7 @@ async function aiSendMessage(message) {
       const targetRoute = safeRoute.includes('capacita-finanziaria') || safeRoute.includes('#') ? safeRoute : safeRoute + '#step2';
       link.href = targetRoute;
       link.textContent = safeRoute.includes('capacita-finanziaria') ? 'Apri Capacità finanziaria →' : 'Apri il modulo corretto →';
+      link.addEventListener('click', () => closeAI());
       actions.appendChild(link);
       log.appendChild(actions);
 
@@ -538,8 +539,9 @@ async function aiSendMessage(message) {
       const mergedFormData = {...currentFormData, ...incomingFormData};
       sessionStorage.setItem('cm_ai_route', safeRoute);
       sessionStorage.setItem('cm_ai_form_context', JSON.stringify(mergedFormData));
-      sessionStorage.setItem('cm_ai_open_after_route', '1');
+      sessionStorage.removeItem('cm_ai_open_after_route');
       sessionStorage.setItem('cm_ai_scroll_to_form', '1');
+      closeAI();
     }
 
     scrollAssistantToLatest('auto');
@@ -620,32 +622,22 @@ function initClickableCards() {
 }
 
 function initAIAfterRoute() {
-  if (sessionStorage.getItem('cm_ai_open_after_route') !== '1') return;
-  sessionStorage.removeItem('cm_ai_open_after_route');
+  const hadPendingRoute = sessionStorage.getItem('cm_ai_open_after_route') === '1';
+  if (hadPendingRoute) sessionStorage.removeItem('cm_ai_open_after_route');
 
   const isCapacityPage = window.location.pathname.includes('capacita-finanziaria');
   const isRequestForm = Boolean(document.querySelector('#step2') && document.querySelector('#contactEmail'));
+  if (!hadPendingRoute || (!isCapacityPage && !isRequestForm)) return;
 
-  if (isCapacityPage) {
-    restoreAIPageContext();
-    const scrollToForm = () => {
-      const target = document.getElementById('mainForm');
-      if (target) target.scrollIntoView({behavior:'smooth', block:'start'});
-    };
-    if (sessionStorage.getItem('cm_ai_scroll_to_form') === '1') {
-      sessionStorage.removeItem('cm_ai_scroll_to_form');
-      window.setTimeout(scrollToForm, 120);
-    }
-    window.setTimeout(() => {
-      if (typeof window.openAI === 'function') window.openAI();
-    }, 220);
-    return;
-  }
-
-  if (!isRequestForm) return;
+  // Dopo il routing l'Assistente CM resta chiuso: il modulo deve rimanere
+  // completamente visibile. L'utente può riaprirlo dalla voce "Aiuto" nella
+  // barra mobile (o dal relativo trigger desktop).
+  if (isCapacityPage) restoreAIPageContext();
 
   const scrollToForm = () => {
-    const target = document.getElementById('step2');
+    const target = isCapacityPage
+      ? document.getElementById('mainForm')
+      : document.getElementById('step2');
     if (target) target.scrollIntoView({behavior:'smooth', block:'start'});
   };
 
@@ -654,9 +646,7 @@ function initAIAfterRoute() {
     window.setTimeout(scrollToForm, 120);
   }
 
-  window.setTimeout(() => {
-    if (typeof window.openAI === 'function') window.openAI();
-  }, 220);
+  closeAI();
 }
 
 function initBasicFormValidation() {
