@@ -454,7 +454,8 @@ export default async function handler(req, res) {
 
       safeAttachments.push({
         filename,
-        path: presignedUrl
+        path: presignedUrl,
+        pathname
       });
     }
 
@@ -478,6 +479,7 @@ export default async function handler(req, res) {
           request_text: text,
           attachments_count: safeAttachments.length,
           attachment_names: safeAttachments.map(item => item.filename),
+          attachment_paths: safeAttachments.map(item => item.pathname),
           status: "Nuova"
         })
       }
