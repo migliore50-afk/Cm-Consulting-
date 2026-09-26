@@ -99,7 +99,7 @@
 <button class="back-link" onclick="go(1)" type="button">← Torna alla richiesta iniziale</button>
 <div class="type-hero" id="typeHero"><img alt="" id="typeHeroImg" src=""/></div>
 <h2 id="typeTitle">Richiesta di valutazione</h2>
-<div class="type-explain" id="typeExplain"></div>
+<div class="type-explain" id="typeExplain"></div><div class="type-detail" id="typeDetail" aria-live="polite"></div>
 
 <div class="simplify-grid">
   <div>
@@ -232,6 +232,86 @@ const typeImages={
   generica:'assets/altre-esigenze-retina-1920.webp'
 };
 
+const typeDetails={
+  appalti:{
+    kicker:"Quando serve",
+    intro:"È la garanzia collegata a una gara o a un contratto di appalto. La forma della garanzia cambia in funzione della fase della procedura e delle richieste della stazione appaltante.",
+    sections:[
+      ["Può riguardare",["cauzione provvisoria o definitiva","buona esecuzione e fine lavori","anticipazione contrattuale","rata di saldo, manutenzione e altre garanzie previste dagli atti"]],
+      ["Cosa verifichiamo",["bando o lettera di invito","importo, durata e fase dell'appalto","clausole e modalità di presentazione richieste dalla stazione appaltante"]]
+    ]
+  },
+  locazioni:{
+    kicker:"Quando serve",
+    intro:"È una garanzia richiesta dal proprietario per tutelarsi dagli obblighi previsti dal contratto di locazione. Può essere valutata per locazioni residenziali e, in base al caso, per altre forme di locazione.",
+    sections:[
+      ["Può riguardare",["pagamento dei canoni","sostituzione del deposito cauzionale","altri obblighi contrattuali espressamente previsti"]],
+      ["Cosa verifichiamo",["contratto o bozza","canone, durata e destinazione dell'immobile","importo e condizioni richieste dal locatore"]]
+    ]
+  },
+  dogane:{
+    kicker:"Quando serve",
+    intro:"È una garanzia collegata a un obbligo doganale specifico. Il regime applicato determina requisiti, importo e caratteristiche della garanzia.",
+    sections:[
+      ["Può riguardare",["diritti doganali","transito e depositi","regimi o semplificazioni doganali, compreso il caso AEO quando previsto"] ],
+      ["Cosa verifichiamo",["richiesta o autorizzazione dell'Agenzia delle Dogane e dei Monopoli","regime doganale interessato","importo e durata dell'obbligo"]]
+    ]
+  },
+  ambiente:{
+    kicker:"Quando serve",
+    intro:"Può essere richiesta da un ente o da un'autorità per specifiche attività, autorizzazioni o obblighi ambientali. La garanzia dipende dalla categoria e dalla richiesta concreta.",
+    sections:[
+      ["Può riguardare",["gestione e smaltimento dei rifiuti","iscrizione all'Albo Gestori Ambientali","recupero ambientale, cave, concessioni e altri obblighi dell'ente"] ],
+      ["Cosa verifichiamo",["provvedimento o richiesta dell'ente","categoria o attività interessata","importo, durata e condizioni della garanzia"]]
+    ]
+  },
+  contributi:{
+    kicker:"Quando serve",
+    intro:"Può essere richiesta dall'ente che concede un contributo o un'agevolazione per garantire la restituzione delle somme nei casi previsti dal provvedimento o dal programma.",
+    sections:[
+      ["Può riguardare",["anticipazioni di contributi","contributi regionali, nazionali o dell'Unione europea","obblighi di restituzione previsti dal provvedimento"] ],
+      ["Cosa verifichiamo",["bando o provvedimento di concessione","ente e misura di riferimento","importo, durata e condizioni richieste"]]
+    ]
+  },
+  urbanistica:{
+    kicker:"Quando serve",
+    intro:"È la garanzia collegata a un obbligo previsto da un Comune o altro ente nell'ambito di interventi edilizi, convenzioni o opere di urbanizzazione.",
+    sections:[
+      ["Può riguardare",["opere di urbanizzazione","convenzioni urbanistiche","permessi, concessioni e obblighi di ripristino quando previsti"] ],
+      ["Cosa verifichiamo",["convenzione, atto o richiesta dell'ente","Comune e riferimento della pratica","importo, durata e condizioni della garanzia"]]
+    ]
+  },
+  fiscali:{
+    kicker:"Quando serve",
+    intro:"Può essere richiesta da un'autorità fiscale in relazione a specifiche procedure, come rimborsi, sospensioni o altri obblighi per i quali è prevista una garanzia.",
+    sections:[
+      ["Può riguardare",["rimborsi fiscali","sospensioni o altre procedure fiscali","altri obblighi per i quali l'ente richiede una garanzia"] ],
+      ["Cosa verifichiamo",["richiesta o provvedimento dell'ente","riferimento della procedura","importo, durata e condizioni richieste"]]
+    ]
+  },
+  "contratti-privati":{
+    kicker:"Quando serve",
+    intro:"È una garanzia prevista da un contratto tra privati o aziende per tutelare una specifica obbligazione. Il contratto, anche in bozza, è il punto di partenza per individuare la garanzia corretta.",
+    sections:[
+      ["Può riguardare",["acconti e anticipazioni","appalti e forniture tra privati","prestazioni continuative, transazioni, licenze, mandati e rata a saldo"] ],
+      ["Cosa verifichiamo",["contratto o capitolato","obbligo da garantire, importo e durata","eventuali clausole specifiche richieste dal beneficiario"]]
+    ]
+  },
+  altro:{
+    kicker:"Se non sai quale garanzia ti serve",
+    intro:"Non devi indovinare la tipologia. Descrivi semplicemente ciò che ti è stato richiesto e allega il documento ricevuto, se lo hai.",
+    sections:[
+      ["Cosa ci aiuta",["chi ti ha richiesto la garanzia","che cosa devi garantire","importo e scadenza, se conosciuti"]],
+      ["Documenti utili",["richiesta del beneficiario","contratto, bando, autorizzazione o altro documento disponibile"]]
+    ]
+  },
+  generica:{
+    kicker:"Valutazione iniziale",
+    intro:"Non devi conoscere il nome della fideiussione. Raccontaci semplicemente la situazione: analizzeremo la richiesta e ti indicheremo quali informazioni o documenti servono.",
+    sections:[]
+  }
+};
+
 const explanations={
   appalti:"<strong>Fideiussione per appalti pubblici</strong>La garanzia da presentare dipende dalla fase della procedura — provvisoria, definitiva, per anticipazione o per rata di saldo — e da quanto richiesto negli atti di gara o nel contratto. Analizziamo la documentazione disponibile e ti aiutiamo a individuare la soluzione corretta.",
   locazioni:"<strong>Fideiussione per la locazione</strong>Se il locatore (proprietario) ti richiede una garanzia sul contratto d'affitto — uso abitativo o commerciale — possiamo aiutarti a ottenerla al posto del classico deposito cauzionale in contanti. La garanzia può coprire il mancato pagamento dei canoni, gli oneri accessori (es. spese condominiali) e altri obblighi del contratto, come eventuali danni all'immobile.",
@@ -304,6 +384,17 @@ function applyType(){
   document.getElementById('typeExplain').innerHTML=explanations[type]||explanations.altro;
   document.getElementById('docList').innerHTML=(docs[type]||docs.altro).map(d=>`<li>${d}</li>`).join('');
   document.getElementById('specificFieldWrap').innerHTML=specificFields[type]||'';
+
+  const detailBox=document.getElementById('typeDetail');
+  const detail=typeDetails[type]||typeDetails.altro;
+  if(detailBox){
+    if(type==='generica'||type==='altro'){
+      detailBox.classList.add('is-generic');
+    }else{
+      detailBox.classList.remove('is-generic');
+    }
+    detailBox.innerHTML='<div class="type-detail-kicker">'+detail.kicker+'</div><p class="type-detail-intro">'+detail.intro+'</p>'+(detail.sections||[]).map(s=>'<div class="type-detail-section"><h4>'+s[0]+'</h4><ul>'+s[1].map(x=>'<li>'+x+'</li>').join('')+'</ul></div>').join('');
+  }
 
   const fl=fieldLabels[type]||fieldLabels.default;
   const addressLabel=document.getElementById('beneficiaryAddressLabel');
