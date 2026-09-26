@@ -541,7 +541,6 @@ async function aiSendMessage(message) {
       sessionStorage.setItem('cm_ai_form_context', JSON.stringify(mergedFormData));
       sessionStorage.removeItem('cm_ai_open_after_route');
       sessionStorage.setItem('cm_ai_scroll_to_form', '1');
-      closeAI();
     }
 
     scrollAssistantToLatest('auto');
