@@ -738,3 +738,14 @@ body.privacy-modal-open{overflow:hidden}
 .cd-request-side small{display:block;margin-top:10px;font-size:11px;line-height:1.45;color:var(--muted,#526778)}
 @media(max-width:980px){.cd-layout{grid-template-columns:1fr;padding:38px 0}.cd-request-side{position:static}.cd-layout .cd-content{padding:0}}
 @media(max-width:700px){.cd-layout{padding:30px 0}.cd-request-side{padding:16px}.cd-request-side li{font-size:12.5px}}
+
+/* Mobile assistant clearance — keep conversation and composer above fixed bottom nav */
+@media(max-width:760px){
+  .ai-panel{
+    bottom:calc(68px + env(safe-area-inset-bottom, 0px) + 8px);
+    max-height:calc(100dvh - 68px - env(safe-area-inset-bottom, 0px) - 20px);
+    z-index:9001;
+  }
+  .ai-panel .ai-content{min-height:0;overflow:hidden;}
+  .ai-panel .ai-chat-log{min-height:0;overflow-y:auto;}
+}
