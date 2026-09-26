@@ -1,0 +1,198 @@
+/* CM Consulting — Form & capacity UX 2026
+   Shared visual layer for request and capacity-financial pages.
+   Keeps existing IDs, JS hooks, security controls and server payloads intact. */
+
+.cm-form-v2,
+.cm-capacity-v2,
+.cm-capacity-detail-v2{--cm-form-bg:#f6f9fb;--cm-form-border:#dce6ec;--cm-form-ink:#102a43;--cm-form-muted:#5f7282;--cm-form-blue:#0b3550;--cm-form-gold:#d6aa45}
+
+.cm-form-v2 .page-hero,
+.cm-capacity-v2 .page-hero,
+.cm-capacity-detail-v2 .page-hero{padding:18px 0 16px}
+
+.cm-form-v2 .page-hero .wrap,
+.cm-capacity-v2 .page-hero .wrap,
+.cm-capacity-detail-v2 .page-hero .wrap{max-width:1120px}
+
+.cm-form-v2 .page-hero h1,
+.cm-capacity-v2 .page-hero h1,
+.cm-capacity-detail-v2 .page-hero h1{font-size:clamp(30px,4vw,46px);line-height:1.08;margin:7px 0 9px;letter-spacing:-.02em}
+
+.cm-form-v2 .page-hero p,
+.cm-capacity-v2 .page-hero p{max-width:760px;margin:0;color:var(--cm-form-muted);font-size:15px;line-height:1.55}
+
+.cm-form-v2 .section,
+.cm-capacity-v2 .section{padding-top:18px}
+
+.cm-form-v2 .request-shell,
+.cm-capacity-v2 .request-shell{max-width:800px}
+
+.cm-form-v2 .progressbar{display:none}
+
+.cm-form-v2 .request-card,
+.cm-capacity-v2 .request-card{max-width:800px;margin:0 auto;padding:clamp(20px,3vw,32px);border-radius:16px;background:#fff;border:1px solid var(--cm-form-border);box-shadow:0 12px 34px rgba(16,42,67,.07)}
+
+.cm-form-v2 .step.active,
+.cm-capacity-v2 #mainForm{display:block}
+
+.cm-form-v2 .cm-universal-intro{display:none!important}
+
+.cm-form-v2 .back-link{display:none}
+
+.cm-form-v2 .type-hero{display:none}
+
+.cm-form-v2 #typeTitle,
+.cm-capacity-v2 #mainForm>h2{margin:0 0 9px;font-size:clamp(23px,3vw,30px);line-height:1.2;color:var(--cm-form-ink)}
+
+.cm-form-v2 .type-explain,
+.cm-capacity-v2 .type-explain{margin:0 0 22px;padding:15px 17px;border:1px solid #cfe0e8;border-left:4px solid var(--cm-form-gold);border-radius:11px;background:#f1f8fa;color:#28475d;font-size:13.5px;line-height:1.58}
+
+.cm-form-v2 .type-explain strong,
+.cm-capacity-v2 .type-explain strong{display:block;margin-bottom:5px;color:var(--cm-form-ink);font-size:14px}
+
+.cm-form-v2 .simplify-grid,
+.cm-capacity-v2 .simplify-grid{display:block}
+
+.cm-form-v2 .essential-field,
+.cm-capacity-v2 .essential-field{display:grid;gap:6px;margin:0 0 14px}
+
+.cm-form-v2 .essential-field label,
+.cm-capacity-v2 .essential-field label{font-size:13px;font-weight:800;color:var(--cm-form-ink);line-height:1.35}
+
+.cm-form-v2 .essential-field label strong,
+.cm-capacity-v2 .essential-field label strong{color:#b34d35}
+
+.cm-form-v2 .essential-field input,
+.cm-form-v2 .essential-field select,
+.cm-form-v2 .essential-field textarea,
+.cm-capacity-v2 .essential-field input,
+.cm-capacity-v2 .essential-field select,
+.cm-capacity-v2 .essential-field textarea{box-sizing:border-box;width:100%;min-height:46px;padding:11px 13px;border:1px solid #cbd8e0;border-radius:9px;background:#fff;color:var(--cm-form-ink);font:inherit;font-size:15px;line-height:1.4;outline:none;transition:border-color .15s,box-shadow .15s,background .15s}
+
+.cm-form-v2 .essential-field textarea{min-height:125px;resize:vertical}
+
+.cm-form-v2 .essential-field input:focus,
+.cm-form-v2 .essential-field select:focus,
+.cm-form-v2 .essential-field textarea:focus,
+.cm-capacity-v2 .essential-field input:focus,
+.cm-capacity-v2 .essential-field select:focus,
+.cm-capacity-v2 .essential-field textarea:focus{border-color:#6d94aa;box-shadow:0 0 0 3px rgba(38,101,133,.11)}
+
+.cm-form-v2 .essential-field small,
+.cm-capacity-v2 .essential-field small{font-size:11.5px;line-height:1.45;color:var(--cm-form-muted)}
+
+.cm-form-v2 .cm-optional-type{margin-top:2px}
+
+.cm-form-v2 .advanced-details,
+.cm-capacity-v2 .advanced-details{margin:18px 0 0;border:1px solid var(--cm-form-border);border-radius:11px;background:#fff;overflow:hidden}
+
+.cm-form-v2 .advanced-details summary,
+.cm-capacity-v2 .advanced-details summary{padding:13px 15px;background:#f7fafb;color:var(--cm-form-ink);font-size:13px}
+
+.cm-form-v2 .advanced-body,
+.cm-capacity-v2 .advanced-body{padding:15px;gap:12px}
+
+.cm-form-v2 .side-box,
+.cm-capacity-v2 .side-box{position:static;display:contents}
+
+.cm-form-v2 .summary-box,
+.cm-capacity-v2 .summary-box{display:none}
+
+.cm-form-v2 .action-box,
+.cm-capacity-v2 .action-box{max-width:none;margin-top:22px;padding:18px;border:1px solid #d7e2e8;border-radius:13px;background:#f9fbfc;box-shadow:none}
+
+.cm-form-v2 .action-box h4,
+.cm-capacity-v2 .action-box h4{margin:0 0 12px;color:var(--cm-form-blue);font-size:14px;letter-spacing:.01em;text-transform:none}
+
+.cm-form-v2 .action-doc-list,
+.cm-capacity-v2 .action-doc-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 15px}
+
+.cm-form-v2 .action-doc-list li,
+.cm-capacity-v2 .action-doc-list li{padding:9px 11px;border:1px solid var(--cm-form-border);border-radius:8px;background:#fff;color:var(--cm-form-ink);font-size:12px;line-height:1.45}
+
+.cm-form-v2 .attachment-box{padding:12px;margin-bottom:14px;background:#fff}
+
+.cm-form-v2 .attachment-help{color:#536a7a;font-size:11.5px}
+
+.cm-form-v2 .attachment-list{margin-top:8px}
+
+.cm-form-v2 .attachment-item{color:var(--cm-form-ink);background:#f5f8fa}
+
+.cm-form-v2 .privacy-check,
+.cm-capacity-v2 .privacy-check{margin:0 0 14px;color:#324d60;font-size:12px;line-height:1.45}
+
+.cm-form-v2 .privacy-check input,
+.cm-capacity-v2 .privacy-check input{margin-top:2px}
+
+.cm-form-v2 .action-box>.btn,
+.cm-capacity-v2 .action-box>.btn{width:100%;min-height:48px;border-radius:9px;font-size:14px;font-weight:900;letter-spacing:.01em}
+
+.cm-form-v2 .action-box>small,
+.cm-capacity-v2 .action-box>small{display:block;margin-top:9px;color:#5d7180;font-size:11px;line-height:1.45}
+
+.cm-form-v2 .notice,
+.cm-capacity-v2 .notice{font-size:12px}
+
+.cm-form-v2 .cm-missing-docs{font-size:12px}
+
+.cm-capacity-v2 .cm-confirmed-hero-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(250px,.8fr);gap:28px;align-items:center}
+
+.cm-capacity-v2 .cm-confirmed-hero-media{max-height:170px;overflow:hidden;border-radius:14px}
+
+.cm-capacity-v2 .cm-confirmed-hero-media img{width:100%;height:170px;object-fit:cover;display:block}
+
+.cm-capacity-v2 .vehicle-stepper{display:inline-flex;align-items:center;gap:10px;width:max-content;padding:3px;border:1px solid var(--cm-form-border);border-radius:9px;background:#fff}
+
+.cm-capacity-v2 .vehicle-stepper .btn{min-width:42px;min-height:38px;padding:6px 12px}
+
+.cm-capacity-v2 #province{width:76px;min-width:76px;text-transform:uppercase}
+
+.cm-capacity-v2 #vehicleDetails .field-grid{display:grid;grid-template-columns:minmax(0,1fr) 160px;gap:12px;margin-bottom:12px}
+
+.cm-capacity-v2 .success-box{max-width:800px;margin:0 auto;padding:36px 24px;text-align:center}
+
+.cm-capacity-v2 .success-box.show{display:block}
+
+.cm-capacity-v2 .section.alt .section-head{max-width:850px}
+
+.cm-capacity-v2 .section.alt .cards-2{max-width:900px;margin:0 auto}
+
+.cm-capacity-detail-v2 .section{padding-top:22px;padding-bottom:22px}
+
+.cm-capacity-detail-v2 .cd-content{max-width:900px;padding:28px 0}
+
+.cm-capacity-detail-v2 .cd-content h2{font-size:24px;margin:28px 0 12px}
+
+.cm-capacity-detail-v2 .cd-content p{font-size:15px;line-height:1.65}
+
+.cm-capacity-detail-v2 .cd-cover-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 28px}
+
+.cm-capacity-detail-v2 .cd-doc-box{padding:18px;border-radius:12px}
+
+.cm-capacity-detail-v2 .cd-doc-box li{padding:11px 13px;font-size:13.5px}
+
+.cm-capacity-detail-v2 .cd-steps{gap:10px}
+
+.cm-capacity-detail-v2 .cd-faq{gap:9px}
+
+.cm-capacity-detail-v2 .cd-faq-item{padding:13px 15px}
+
+.cm-capacity-detail-v2 .cd-cta{margin-top:30px;padding:24px;border-radius:13px}
+
+@media(max-width:760px){
+  .cm-form-v2 .page-hero,.cm-capacity-v2 .page-hero,.cm-capacity-detail-v2 .page-hero{padding:15px 0 12px}
+  .cm-form-v2 .page-hero h1,.cm-capacity-v2 .page-hero h1,.cm-capacity-detail-v2 .page-hero h1{font-size:30px}
+  .cm-form-v2 .request-card,.cm-capacity-v2 .request-card{padding:18px 15px;border-radius:13px}
+  .cm-form-v2 .action-doc-list,.cm-capacity-v2 .action-doc-list{grid-template-columns:1fr}
+  .cm-capacity-v2 .cm-confirmed-hero-grid{grid-template-columns:1fr;gap:12px}
+  .cm-capacity-v2 .cm-confirmed-hero-media{display:none}
+  .cm-capacity-v2 #province{width:72px;min-width:72px}
+  .cm-capacity-v2 #vehicleDetails .field-grid{grid-template-columns:1fr}
+  .cm-capacity-detail-v2 .cd-content{padding:20px 0}
+  .cm-capacity-detail-v2 .cd-cover-list{grid-template-columns:1fr}
+}
+
+@media(min-width:761px){
+  .cm-form-v2 #amount,.cm-form-v2 #duration{max-width:100%}
+  .cm-capacity-v2 #city{max-width:100%}
+}
