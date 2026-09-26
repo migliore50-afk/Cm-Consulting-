@@ -119,6 +119,7 @@
         <li>Carta d'identità e tessera sanitaria dell'amministratore, fronte e retro</li>
         <li>Altra documentazione utile alla valutazione, se disponibile</li>
       </ul>
+      <div id="turnstileWidget" style="margin:0 0 14px;min-height:0"></div>
       <label class="privacy-check"><input id="privacyAccepted" type="checkbox"/> <span>Ho letto l'<a href="/privacy" rel="noopener" target="_blank">informativa privacy</a> e accetto il trattamento dei dati.</span></label>
       <div class="notice hidden" id="submitError" role="alert"></div>
       <button class="btn gold" id="submitBtn" onclick="submitCapacity()" type="button">INVIA RICHIESTA →</button>
@@ -149,6 +150,33 @@
 <section class="section alt"><div class="wrap"><div class="section-head"><div class="eyebrow">Riferimento normativo</div><h2>Documentazione ufficiale</h2><p>La circolare MIT n. 4499 del 17 febbraio 2026 riguarda la dimostrazione annuale del requisito di idoneità finanziaria per l'esercizio della professione di trasportatore su strada.</p><a class="btn dark" href="https://www.mit.gov.it/normativa/circolare-protocollo-n-4499-del-17022026" rel="noopener" target="_blank">VEDI LA CIRCOLARE MIT →</a></div></div></section>
 <script src="assets/app.js"></script><script>
 let vehicles=1;
+let turnstileToken = '';
+let turnstileWidgetId = null;
+
+// Stesso pattern già validato in richiedi-preventivo.html: carica lo script
+// Cloudflare solo se il sito ha una chiave configurata (fail-closed lato
+// server se manca), lo mostra nel contenitore #turnstileWidget e aggiorna
+// turnstileToken tramite i callback del widget.
+async function initTurnstile(){
+  const box=document.getElementById('turnstileWidget'); if(!box) return;
+  try{
+    const configResponse=await fetch('/api/turnstile-config',{cache:'no-store'});
+    const config=await configResponse.json().catch(()=>({}));
+    if(!configResponse.ok || !config.siteKey) return;
+    await new Promise((resolve,reject)=>{
+      if(window.turnstile){resolve();return;}
+      const script=document.createElement('script');
+      script.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit'; script.async=true; script.defer=true;
+      script.onload=resolve; script.onerror=reject; document.head.appendChild(script);
+    });
+    turnstileWidgetId=window.turnstile.render(box,{sitekey:config.siteKey,action:'request',theme:'light',callback:token=>{turnstileToken=token;},'expired-callback':()=>{turnstileToken='';},'error-callback':()=>{turnstileToken='';}});
+  }catch{turnstileToken='';}
+}
+
+function resetTurnstile(){
+  turnstileToken='';
+  if(window.turnstile && turnstileWidgetId !== null){try{window.turnstile.reset(turnstileWidgetId);}catch{}}
+}
 
 function changeVehicles(n){
   const previous=[];
@@ -241,6 +269,11 @@ function submitCapacity(){
     errorBox.classList.remove('hidden');
     return;
   }
+  if(!turnstileToken){
+    errorBox.textContent='Completa la verifica anti-spam prima di inviare la richiesta.';
+    errorBox.classList.remove('hidden');
+    return;
+  }
 
   const vehicleLines=Array.from({length:vehicles},(_,i)=>`Mezzo ${i+1}: ${val('vehicle_type_'+(i+1))||''} / ${val('vehicle_plate_'+(i+1))||''}`);
   const rows=summaryRows();
@@ -263,16 +296,19 @@ function submitCapacity(){
       phone,
       company:val('company'),
       requestType:'capacita',
-      privacyAccepted:true
+      privacyAccepted:true,
+      captchaToken:turnstileToken
     })
   })
   .then(r=>r.json().catch(()=>({})).then(result=>{
     if(!r.ok || !result.ok) throw new Error(result?.error?.message||'Invio non riuscito.');
+    turnstileToken='';
     document.getElementById('mainForm').classList.add('hidden');
     document.getElementById('successBox').classList.add('show');
     window.scrollTo({top:150,behavior:'smooth'});
   }))
   .catch(error=>{
+    resetTurnstile();
     errorBox.textContent=error.message||'Non è stato possibile inviare la richiesta. Riprova.';
     errorBox.classList.remove('hidden');
     button.disabled=false;
@@ -282,6 +318,7 @@ function submitCapacity(){
 
 renderVehicleDetails();
 refreshAll();
+initTurnstile();
 </script><div class="ai-panel" id="aiPanel"><div class="ai-head"><div class="ai-title"><img alt="Assistente CM" decoding="async" height="432" src="assets/assistente-cm-retina-768.webp" width="768"/><b>ASSISTENTE CM · ORIENTAMENTO</b></div><button class="ai-close" onclick="closeAI()">×</button></div><div class="ai-content" id="aiContent"></div><div class="ai-note">Assistente digitale di orientamento. Non sostituisce la valutazione professionale né la documentazione richiesta.</div></div>
 <section aria-label="Navigazione tra i servizi" class="cm-service-nav">
 <div class="cm-service-nav-inner">
