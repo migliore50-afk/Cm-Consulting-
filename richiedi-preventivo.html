@@ -191,6 +191,7 @@
       <h4>Documenti utili e invio</h4>
       <ul class="action-doc-list" id="docList"></ul>
       <div class="attachment-box"><label for="attachmentInput">Documenti utili <span style="font-weight:500;color:var(--muted)">(facoltativi)</span></label><input id="attachmentInput" type="file" multiple accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx,.xls,.xlsx" onchange="handleAttachmentSelection(this)"/><small class="attachment-help">Massimo 5 file, 5 MB ciascuno e 10 MB complessivi. Sono accettati PDF, immagini e documenti Office. I file vengono controllati prima di essere inoltrati.</small><ul class="attachment-list" id="attachmentList"></ul></div>
+      <div id="turnstileWidget" style="margin:0 0 14px;min-height:0"></div>
       <label class="privacy-check"><input id="privacyAccepted" type="checkbox"/> <span>Ho letto l'<a href="/privacy" rel="noopener" target="_blank">informativa privacy</a> e accetto il trattamento dei dati.</span></label>
       <div class="notice hidden" id="submitError" role="alert"></div>
       <button class="btn gold" onclick="submitRequest()" type="button">INVIA RICHIESTA →</button>
@@ -382,6 +383,8 @@ function refreshAll(){
 }
 
 let selectedFiles = [];
+let turnstileToken = '';
+let turnstileWidgetId = null;
 let uploadedAttachments = [];
 
 const ALLOWED_ATTACHMENT_TYPES = new Set([
@@ -393,6 +396,26 @@ const MAX_ATTACHMENT_SIZE = 5 * 1024 * 1024;
 const MAX_TOTAL_ATTACHMENT_SIZE = 10 * 1024 * 1024;
 const MAX_ATTACHMENTS = 5;
 
+async function initTurnstile(){
+  const box=document.getElementById('turnstileWidget'); if(!box) return;
+  try{
+    const configResponse=await fetch('/api/turnstile-config',{cache:'no-store'});
+    const config=await configResponse.json().catch(()=>({}));
+    if(!configResponse.ok || !config.siteKey) return;
+    await new Promise((resolve,reject)=>{
+      if(window.turnstile){resolve();return;}
+      const script=document.createElement('script');
+      script.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit'; script.async=true; script.defer=true;
+      script.onload=resolve; script.onerror=reject; document.head.appendChild(script);
+    });
+    turnstileWidgetId=window.turnstile.render(box,{sitekey:config.siteKey,action:'request',theme:'light',callback:token=>{turnstileToken=token;},'expired-callback':()=>{turnstileToken='';},'error-callback':()=>{turnstileToken='';}});
+  }catch{turnstileToken='';}
+}
+
+function resetTurnstile(){
+  turnstileToken='';
+  if(window.turnstile && turnstileWidgetId !== null){try{window.turnstile.reset(turnstileWidgetId);}catch{}}
+}
 function formatBytes(bytes){
   if(bytes < 1024 * 1024) return Math.round(bytes / 1024) + ' KB';
   return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
@@ -439,6 +462,7 @@ async function submitRequest(){
   if(!validPhone(phone)){errorBox.textContent='Controlla il numero di telefono: inserisci solo cifre, eventualmente con prefisso (es. +39 328 1234567).';errorBox.classList.remove('hidden');return;}
   if(!val('genericDescription').trim()){errorBox.textContent='Descrivi brevemente cosa ti serve prima di proseguire.';errorBox.classList.remove('hidden');return;}
   if(!document.getElementById('privacyAccepted').checked){errorBox.textContent="Per inviare la richiesta devi dichiarare di aver letto l'informativa privacy.";errorBox.classList.remove('hidden');return;}
+  if(!turnstileToken){errorBox.textContent='Completa la verifica anti-spam prima di inviare la richiesta.';errorBox.classList.remove('hidden');return;}
   const typeName=labels[type]||'Valutazione generica';
   const text=currentRows().map(r=>r[0]+': '+r[1]).join('\n');
   const button=document.querySelector('.action-box button.btn.gold'); button.disabled=true;
@@ -446,11 +470,13 @@ async function submitRequest(){
     uploadedAttachments=[];
     for(let i=0;i<selectedFiles.length;i++){button.textContent='CARICAMENTO ALLEGATI '+(i+1)+'/'+selectedFiles.length+'…';uploadedAttachments.push(await uploadOneAttachment(selectedFiles[i]));}
     button.textContent='INVIO IN CORSO…';
-    const response=await fetch('/api/submit-request',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({subject:'Richiesta preventivo — '+typeName,text,email,customerName:name,phone,requestType:type,privacyAccepted:true,attachments:uploadedAttachments})});
+    const response=await fetch('/api/submit-request',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({subject:'Richiesta preventivo — '+typeName,text,email,customerName:name,phone,requestType:type,privacyAccepted:true,captchaToken:turnstileToken,attachments:uploadedAttachments})});
     const result=await response.json().catch(()=>({}));
     if(!response.ok || !result.ok) throw new Error(result?.error?.message || 'La richiesta non è stata inviata.');
+    turnstileToken='';
     document.querySelectorAll('.step').forEach(x=>x.classList.remove('active')); document.getElementById('success').classList.add('show'); document.querySelector('.progressbar').style.display='none'; window.scrollTo({top:180,behavior:'smooth'});
   } catch(error) {
+    resetTurnstile();
     errorBox.textContent=error.message||'Non è stato possibile inviare la richiesta. Riprova.'; errorBox.classList.remove('hidden'); button.disabled=false; button.textContent='INVIA RICHIESTA →';
   }
 }
@@ -546,6 +572,7 @@ function restoreAIAssistantContext(){
     refreshAll();
   }
   restoreAIAssistantContext();
+  initTurnstile();
 })();
 
 </script>
