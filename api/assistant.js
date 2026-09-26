@@ -44,6 +44,13 @@ export default async function handler(req, res) {
     const explicitFinancialCapacity = /capacità\s+finanziaria/i.test(message) &&
       /(trasport|autotrasport|mezzi|veicol|albo)/i.test(message);
 
+    // Intento esplicito di locazione abitativa: se il visitatore parla già
+    // di casa/abitazione e del proprietario/affitto/locazione/garanzia, il
+    // percorso è sufficientemente chiaro. Non va chiesto nuovamente se si
+    // tratta di un'abitazione o di un locale commerciale.
+    const explicitResidentialLease = /(?:casa|abitazione|appartamento|immobile\s+abitativo)/i.test(message) &&
+      /(?:proprietari[oa]|affitt[oa]|locazione|contratto\s+d['’]?affitto|garanzia)/i.test(message);
+
     const history = Array.isArray(body.history)
       ? body.history
           .filter(item => item && (item.role === 'user' || item.role === 'assistant'))
@@ -228,11 +235,19 @@ ${JSON.stringify(formContext)}`;
     // Protezione deterministica del percorso: un'esigenza già esplicitata
     // come capacità finanziaria per trasporto/mezzi non deve essere riclassificata.
     if (explicitFinancialCapacity) safeRoute = '/capacita-finanziaria';
+    if (explicitResidentialLease) safeRoute = LEASE_ROUTE;
     const formMatch = rawReply.match(/\[\[FORM:(\{[\s\S]*?\})\]\]/i);
-    const reply = rawReply
+    let reply = rawReply
       .replace(/\s*\[\[ROUTE:\/[^\]]+\]\]\s*/ig, ' ')
       .replace(/\s*\[\[FORM:\{[\s\S]*?\}\]\]\s*/ig, ' ')
       .trim();
+
+    // Per una locazione abitativa già esplicitata, evita che il modello
+    // reinterroghi l'utente: il modulo è il posto corretto per raccogliere
+    // importo, canone, durata e gli altri dati necessari.
+    if (explicitResidentialLease) {
+      reply = 'Ho capito: si tratta di una garanzia per una locazione abitativa. Ti porto direttamente al modulo corretto, dove potrai inserire i dati della richiesta.';
+    }
 
     let form = null;
     if (formMatch) {
