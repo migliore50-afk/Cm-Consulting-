@@ -749,3 +749,9 @@ body.privacy-modal-open{overflow:hidden}
   .ai-panel .ai-content{min-height:0;overflow:hidden;}
   .ai-panel .ai-chat-log{min-height:0;overflow-y:auto;}
 }
+
+/* CM — compact desktop assistant */
+@media(min-width:761px){
+  .ai-panel{width:min(400px,calc(100vw - 24px));}
+  .ai-portrait{height:215px;}
+}
