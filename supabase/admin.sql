@@ -42,3 +42,33 @@ alter table public.admin_practices enable row level security;
 -- Il service role server-side bypassa RLS e viene usato esclusivamente da /api/admin.
 revoke all on table public.admin_practices from anon, authenticated;
 grant all on table public.admin_practices to service_role;
+
+
+-- ============================================================================
+-- admin_requests — NOTA IMPORTANTE (25/09/2026)
+-- ============================================================================
+-- Questa tabella è scritta da api/submit-request.js e letta da
+-- api/cleanup-attachments.js, ma NON è mai stata definita in questo file:
+-- risulta creata direttamente su Supabase (dashboard/SQL editor), in un
+-- momento non tracciato qui. Di conseguenza questo repository NON documenta
+-- ancora lo schema completo di admin_requests (colonne, tipi, indici,
+-- eventuali policy RLS) — solo la singola colonna aggiunta più sotto.
+--
+-- Prima di considerare chiuso questo punto, andrebbe fatta una migrazione
+-- separata che esporti lo schema reale della tabella così com'è oggi su
+-- Supabase (ad es. da Database → Tables → admin_requests → "..." → 
+-- "Download table definition", oppure con una query su information_schema)
+-- e la incolli qui come CREATE TABLE completo. Questa nota resta finché
+-- quel passaggio non viene fatto.
+--
+-- La modifica sotto riguarda SOLO la colonna richiesta per il collegamento
+-- sicuro allegato → richiesta (Fase C). È scritta in forma idempotente
+-- (IF NOT EXISTS): eseguirla più volte, o su un database dove la colonna
+-- esiste già, non produce errori né perdita di dati.
+-- ============================================================================
+
+alter table public.admin_requests
+  add column if not exists attachment_paths text[] not null default '{}'::text[];
+
+comment on column public.admin_requests.attachment_paths is
+  'Percorsi (pathname) degli allegati su Vercel Blob privato collegati a questa richiesta. Usata da api/cleanup-attachments.js per non cancellare allegati ancora collegati a una richiesta salvata.';
