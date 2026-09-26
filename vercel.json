@@ -1,6 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
+  "crons": [
+    { "path": "/api/cleanup-attachments", "schedule": "17 3 * * *" }
+  ],
   "trailingSlash": false,
   "redirects": [
     {
