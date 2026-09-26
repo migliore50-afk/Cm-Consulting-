@@ -5,6 +5,11 @@ const LEASE_ROUTE = '/richiedi-preventivo?tipo=locazioni';
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Metodo non consentito' });
 
+  const contentType = String(req.headers['content-type'] || '').toLowerCase();
+  if (!contentType.includes('application/json')) {
+    return res.status(415).json({ error: 'Formato richiesta non supportato', code: 'UNSUPPORTED_MEDIA_TYPE' });
+  }
+
   const rate = await consumeRateLimit(req, 'assistant', 20, 900);
   if (!rate.allowed) {
     return res.status(rate.reason === 'redis_unavailable' ? 503 : 429).json({
