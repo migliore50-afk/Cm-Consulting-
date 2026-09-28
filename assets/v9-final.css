@@ -768,3 +768,14 @@ body.privacy-modal-open{overflow:hidden}
   .page-hero.cm-confirmed-hero .cm-confirmed-hero-media img{height:clamp(190px,42vw,300px)}
 }
 
+/* HERO HOME: stessa altezza delle pagine interne (332px), solo computer */
+@media(min-width:1101px){
+  .hero-home .hero-grid{height:332px}
+  .hero-home .hero-copy{display:flex;flex-direction:column;justify-content:center;padding-top:16px;padding-bottom:16px}
+  .hero-home .hero-copy .eyebrow{margin:0 0 10px}
+  .hero-home .hero-copy h1{font-size:clamp(30px,3vw,40px);line-height:1.06;margin:0 0 12px}
+  .hero-home .hero-copy p{font-size:15px;line-height:1.5;margin:0 0 20px;max-width:none}
+  .hero-home .hero-copy .actions{margin:0}
+  .hero-home .hero-stage img{object-position:center 20%}
+}
+
