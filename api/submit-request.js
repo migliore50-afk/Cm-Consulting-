@@ -575,7 +575,6 @@ export default async function handler(req, res) {
 
     const whatsapp = await sendWhatsAppWebhook({
       event: "cm_request_submitted",
-      destination: "+393286382612",
       customer: { name: customerName, email, phone },
       request: { type: requestType, typeName: requestTypeName, subject, text },
       attachmentsCount: safeAttachments.length,

@@ -291,7 +291,6 @@ Tecnica usata per tutte le correzioni al menu: **una sola funzione IIFE in `asse
 
 **Nota tecnica importante**: la rimozione di numero di telefono e riga RUI è fatta interamente **a runtime via JavaScript** — l'HTML statico di ogni pagina *contiene ancora* quelle righe nel markup sorgente, ma vengono rimosse dal DOM ad ogni caricamento pagina (flash impercettibile, non un bug). **Non scambiare "presente nell'HTML sorgente" per "visibile sul sito live".**
 
-- **Numero di cellulare personale (328 6382612) rimosso da tutto il sito** — su richiesta di Carmelo.
 - **Pulsante "torna su"** — ovale dorato "↑ Torna su", centrato in basso. `initBackToTop()`.
 - **Riquadro "Dati societari e iscrizione"** — vedi evoluzione completa in §22 (ulteriore restyle il 19 sera).
 - **Riga "Registro Unico degli Intermediari — IVASS"** rimossa dalla barra finale del footer.

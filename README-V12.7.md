@@ -25,7 +25,6 @@ Opzionale:
 ### Webhook WhatsApp
 Se `CM_WHATSAPP_WEBHOOK_URL` è valorizzato, `/api/submit-request` invia un POST JSON con:
 - evento `cm_request_submitted`;
-- destinatario `+393286382612`;
 - nome/email/telefono cliente;
 - tipologia e testo richiesta;
 - numero allegati;
@@ -34,4 +33,3 @@ Se `CM_WHATSAPP_WEBHOOK_URL` è valorizzato, `/api/submit-request` invia un POST
 Il webhook è non bloccante: un suo eventuale errore non annulla l'invio email della richiesta.
 
 ## Note operative
-Il pulsante WhatsApp apre direttamente una conversazione verso `+393286382612` con testo precompilato. L'invio automatico server-side via WhatsApp richiede la configurazione di un provider/webhook esterno.

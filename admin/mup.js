@@ -185,7 +185,6 @@
       mupDistributorSection: 'E',
       mupDistributorRole: 'Collaboratore di intermediario iscritto nella sezione A/B',
       mupDistributorAddress: 'Via Spinoza n. 49, 00137 Roma',
-      mupDistributorPhone: '328 6382612',
       mupDistributorEmail: 'info@cm-consulting.info',
       mupDistributorPec: 'carmelo.migliore@legalmail.it',
       mupDistributorWebsite: 'https://www.cm-consulting.info',
