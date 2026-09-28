@@ -755,3 +755,16 @@ body.privacy-modal-open{overflow:hidden}
   .ai-panel{width:min(400px,calc(100vw - 24px));}
   .ai-portrait{height:215px;}
 }
+
+/* HERO UNIFORME PAGINE INFORMATIVE: stessa altezza per tutte */
+.page-hero.cm-confirmed-hero{padding:36px 0}
+.page-hero.cm-confirmed-hero .cm-confirmed-hero-grid{min-height:260px;align-items:center}
+.page-hero.cm-confirmed-hero h1{font-size:clamp(28px,2.8vw,38px);line-height:1.1;margin:6px 0 10px}
+.page-hero.cm-confirmed-hero p{font-size:15px;line-height:1.55;margin:0;max-width:none}
+.page-hero.cm-confirmed-hero .cm-confirmed-hero-media img{height:260px}
+@media(max-width:1100px){
+  .page-hero.cm-confirmed-hero{padding:28px 0}
+  .page-hero.cm-confirmed-hero .cm-confirmed-hero-grid{grid-template-columns:1fr;gap:20px;min-height:0}
+  .page-hero.cm-confirmed-hero .cm-confirmed-hero-media img{height:clamp(190px,42vw,300px)}
+}
+
