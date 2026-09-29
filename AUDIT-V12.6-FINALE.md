@@ -5,7 +5,7 @@
 - Qualificazione: Intermediazione assicurativa
 - RUI IVASS: Sezione E — n. E000437237
 - Data iscrizione RUI: 24 gennaio 2013
-- Sede legale: Via Giacomo Puccini 4, 10092 Beinasco (TO)
+- Sede legale: Via Spinoza n. 49 - 00137 - Roma
 - Sito: www.cm-consulting.info
 - Email ordinaria / reclami: info@cm-consulting.info
 - PEC / Legalmail: carmelo.migliore@legalmail.it

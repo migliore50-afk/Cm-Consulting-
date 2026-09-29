@@ -212,7 +212,7 @@ Frase breve: **"Riprendiamo il progetto CM Consulting."**
 
 # 17. AGGIORNAMENTO — 13 SETTEMBRE 2026 — Correzione sede legale
 
-Corretta su `index.html` e `capacita-finanziaria.html`: vecchio indirizzo di Beinasco → `Via Spinoza n. 49 - 00137 - Roma`. Verificata lungo tutta la catena PC → GitHub → Vercel → Produzione. **Stato: CHIUSO.**
+Corretta su `index.html` e `capacita-finanziaria.html`: vecchio indirizzo → `Via Spinoza n. 49 - 00137 - Roma`. Verificata lungo tutta la catena PC → GitHub → Vercel → Produzione. **Stato: CHIUSO.**
 
 ---
 
