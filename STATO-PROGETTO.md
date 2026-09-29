@@ -572,3 +572,46 @@ La chiusura richiede contemporaneamente:
 4. test end-to-end superati;
 5. registro aggiornato.
 
+
+
+# 29. DECISIONE OPERATIVA — DATI SOCIETARI DA DEFINIRE NELLA FASE FINALE
+
+**Decisione di progetto confermata da Carmelo Migliore — 29 settembre 2026**
+
+I dati societari definitivi **non devono essere modificati ora**. Carmelo sta definendo con la commercialista la nuova azienda da costituire.
+
+Pertanto, fino alla fase finale:
+
+- non sostituire P.IVA, REA, denominazione, sede legale o altri dati identificativi con dati ipotetici o con la residenza personale;
+- mantenere il progetto tecnico, funzionale, SEO e di sicurezza verificabile indipendentemente dall'identità societaria finale;
+- trattare i dati societari attualmente presenti come **provvisori/non definitivi**, da sottoporre a revisione finale;
+- prima della pubblicazione definitiva su Aruba e della presentazione ad IVASS eseguire una scansione globale dei dati identificativi, privacy, trasparenza, footer, contatti, dati strutturati e documentazione MUP;
+- la pubblicazione definitiva avverrà solo dopo il completamento della nuova identità societaria e delle verifiche finali.
+
+## Correzione sulla migrazione Supabase
+
+La migrazione live 20260929053347_harden_admin_tables_and_function_search_path era stata applicata direttamente al progetto Supabase ma non era ancora presente nel repository.
+
+Il file è stato ora versionato sul branch:
+supabase/migrations/20260929053347_harden_admin_tables_and_function_search_path.sql
+
+Commit di sincronizzazione: f351f77abf927b461bc5f58fad73af0482be528b
+
+Il file riproduce esattamente l'hardening già applicato:
+- revoke dei privilegi anon/authenticated sulle quattro tabelle amministrative;
+- search_path = pg_catalog per le due funzioni trigger amministrative.
+
+Questo chiude la discrepanza di versionamento rilevata nel controllo incrociato con Claude.
+
+## Stato corretto del progetto
+
+La parte tecnica può quindi proseguire verso la **verifica completa pre-pubblicazione**, senza attendere la nuova denominazione societaria.
+
+La nuova identità societaria entra nella **fase finale di release**, insieme a:
+1. aggiornamento globale dei dati identificativi;
+2. verifica MUP/documentazione precontrattuale con gli intermediari;
+3. configurazione Production;
+4. test end-to-end;
+5. controllo finale SEO, sicurezza, privacy e IVASS;
+6. pubblicazione su Aruba;
+7. preparazione della documentazione per IVASS.
