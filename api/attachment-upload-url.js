@@ -47,10 +47,14 @@ export default async function handler(req, res) {
 
   const rate = await consumeRateLimit(req, 'attachment-upload-url', 20, 900);
   if (!rate.allowed) {
-    return res.status(429).setHeader('Retry-After', '900').json({
-      error: 'Troppe richieste. Riprova più tardi.',
-      code: 'RATE_LIMITED'
-    });
+    return res.status(rate.reason === 'redis_unavailable' ? 503 : 429)
+      .setHeader('Retry-After', '900')
+      .json({
+        error: rate.reason === 'redis_unavailable'
+          ? 'Servizio temporaneamente non disponibile.'
+          : 'Troppe richieste. Riprova più tardi.',
+        code: rate.reason === 'redis_unavailable' ? 'RATE_LIMIT_UNAVAILABLE' : 'RATE_LIMITED'
+      });
   }
 
   let body;
