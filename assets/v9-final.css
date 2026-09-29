@@ -525,7 +525,7 @@ body.privacy-modal-open{overflow:hidden}
     align-items:stretch;
     z-index:70;
   }
-  .links.open a{padding:12px}
+  .links.open a{padding:11px 14px}
   .links.open a:after{display:none}
 }
 
@@ -597,7 +597,7 @@ body.privacy-modal-open{overflow:hidden}
 
 /* CM CONSULTING — HEADER / NAVIGATION REFINEMENT 2026 */
 .header .links{align-items:center;gap:clamp(16px,1.65vw,24px)}
-@media(max-width:880px){.header .links.open{align-items:stretch}}
+@media(max-width:880px){.header .links.open{align-items:stretch;gap:6px}}
 .header .links>a,
 .header .nav-fideiussioni-trigger{
   position:relative;
