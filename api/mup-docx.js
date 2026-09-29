@@ -109,6 +109,7 @@ export async function generateMupDocx(data) {
       ['Sito internet intermediario', d.mupMainWebsite]
     ]),
     ...section('2. Informazioni sul modello di distribuzione', [
+      ['Mandato del cliente', d.mupMandate],
       ['Modello di distribuzione', d.mupDistribution],
       ['Impresa/e di assicurazione', d.mupInsurer],
       ['Collaborazione orizzontale', d.mupHorizontal],
