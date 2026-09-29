@@ -19,14 +19,12 @@ async function loadLinkedPaths() {
 
   if (!base || !key) throw new Error('Supabase cleanup configuration missing');
 
+  const headers = { apikey: key };
+  if (!key.startsWith('sb_secret_')) headers.Authorization = `Bearer ${key}`;
+
   const response = await fetch(
     `${base}/rest/v1/admin_requests?select=attachment_paths&attachment_paths=not.is.null`,
-    {
-      headers: {
-        apikey: key,
-        Authorization: `Bearer ${key}`
-      }
-    }
+    { headers }
   );
 
   if (!response.ok) throw new Error(`Supabase request list failed: ${response.status}`);
