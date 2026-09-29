@@ -479,3 +479,96 @@ Carmelo ha chiesto se Claude o ChatGPT potessero eseguire da soli le modifiche s
 La voce **"NON SAI QUALE GARANZIA?"** è stata rimossa dal menu principale come deciso in precedenza. Il percorso generico resta disponibile tramite `/altre-esigenze`, il preventivo e l'Assistente CM.
 
 Il menu **SERVIZI** è stato ampliato per riflettere il nuovo catalogo SEO: contributi/AGEA, ambiente, edilizia e immobiliare, capacità finanziaria, attività regolamentate, stranieri/visti e altre esigenze. Sono state inoltre rifinite spaziatura, gerarchia visiva e dropdown desktop.
+
+---
+
+# 28. AUDIT DI CHIUSURA — 29 SETTEMBRE 2026
+
+**Branch verificato:** `feat/seo-market-catalog-2026`  
+**Commit tip verificato:** `6e20c180a0d6d420d4a3c5f536ec3a2c011c9187`  
+**Oggetto:** audit incrociato ChatGPT + verifica del resoconto Claude + hardening finale.
+
+## Stato verificato
+
+### CHIUSO / VERIFICATO
+- Commit `173d7bc7`: rimozione endpoint temporaneo `debug-key-check` e sostituzione immagine Wikimedia con asset locale.
+- `cm_last_request`: pulizia una tantum presente; il flusso corrente non deve ripristinare il salvataggio dei dati della richiesta in localStorage.
+- `capacita-finanziaria.html`: invio con `requestType: "capacita"` verificato.
+- Rate limit Assistente CM: 20 richieste/15 minuti, fail-closed su Redis non disponibile.
+- Upload allegati: allowlist MIME, limiti dimensione, firma Blob privata e scansione prima dell'inoltro; il percorso completo resta subordinato alla configurazione antivirus scelta.
+- MUP Word/PDF server-side: generazione e salvataggio verificati nel codice.
+- Allineamento MUP Word/PDF: aggiunto nel Word il campo "Mandato del cliente" presente nel PDF.
+- Messaggio UI MUP obsoleto sull'"Importo del compenso" rimosso: il campo è già presente nei generatori Word/PDF.
+- Supabase: rimossi i privilegi `anon/authenticated` dalle quattro tabelle amministrative; RLS resta attivo senza policy pubbliche.
+- Supabase: corretto `search_path` delle due funzioni trigger amministrative.
+- Endpoint database pubblico: nessuna tabella amministrativa viene intenzionalmente esposta al client.
+- SEO: home con Organization JSON-LD; pagina AGEA verificata con canonical, robots index/follow, H1 e BreadcrumbList.
+- Sitemap/robots presenti e coerenti con la struttura pubblica corrente.
+
+## DA NON CONFONDERE CON PROBLEMI APERTI
+- I 5 commit presenti su `main` rispetto al branch sono documentazione/registro e non rappresentano funzionalità da recuperare.
+- `url.parse()` non è usato direttamente da `api/admin.js`, `api/mup-docx.js`, `api/mup-pdf.js` o `api/facsimile-extract.js`; eventuali warning residui vanno ricondotti a dipendenze prima di intervenire.
+- Il test esterno di sicurezza non è un requisito tecnico già dimostrato dal progetto e resta una scelta separata.
+- La fase facsimile è costruita ma deve restare congelata finché non viene deciso di usarla operativamente.
+
+## APERTI / BLOCCANTI PER LA VERSIONE DEFINITIVA
+
+### 1. Identità societaria e sede
+Il sito e il MUP contengono ancora dati dell'attuale entità (P.IVA, REA, sede legale, recapiti e dati RUI) mentre resta aperta la decisione del commercialista su riattivazione dell'entità attuale o nuova impresa.
+**Non sostituire questi dati con la residenza di Carmelo e non inventare una nuova sede.**
+Una volta definita l'entità, eseguire un aggiornamento globale controllato di footer, privacy, trasparenza, contatti, MUP e dati strutturati.
+
+### 2. MUP operativo
+Il generatore tecnico è pronto, ma prima dell'uso reale deve essere confermato con gli intermediari principali quale MUP/documentazione precontrattuale deve essere consegnato al cliente nel rapporto specifico di collaborazione Sezione E.
+Non considerare questa verifica come una violazione accertata: è una verifica operativa/compliance ancora necessaria.
+
+### 3. Configurazione operativa Vercel
+Devono essere verificati nell'ambiente Production, senza esporre i valori:
+`RESEND_API_KEY`, `CM_FROM_EMAIL`, `CM_DESTINATION_EMAIL`, `TURNSTILE_SECRET_KEY`, `TURNSTILE_SITE_KEY`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, `GEMINI_API_KEY`, `GEMINI_MODEL`, `CRON_SECRET` e le variabili Blob/OIDC necessarie.
+Il controllo dei valori non va riportato nel registro.
+
+### 4. Test end-to-end finale
+Prima della pubblicazione definitiva devono essere eseguiti almeno:
+- richiesta semplice senza allegati;
+- richiesta con allegati;
+- capacità finanziaria;
+- Assistente CM con classificazione e trasferimento dati;
+- login admin + MFA + session timeout;
+- creazione/modifica pratica;
+- archivio intermediari;
+- generazione MUP Word/PDF e download singolo;
+- facsimile solo se esplicitamente riattivato;
+- verifica mobile/desktop delle pagine pubbliche;
+- verifica email Resend e registrazione Supabase;
+- verifica cron cleanup;
+- controllo HTTP headers e canonical/robots/sitemap.
+
+### 5. Gemini
+Il modello configurato di default `gemini-3.5-flash-lite` è attualmente un modello stabile disponibile tramite Gemini API; non cambiarlo senza una ragione tecnica misurabile.
+Fonte verificata il 29/09/2026: documentazione ufficiale Google AI.
+
+### 6. Leaked Password Protection
+Supabase segnala ancora **Leaked Password Protection Disabled**. Va abilitata nella configurazione Auth prima della chiusura definitiva dell'Area Amministratore.
+
+## HARDENING GIÀ APPLICATO NEL DATABASE
+Migrazione Supabase:
+`20260929053347_harden_admin_tables_and_function_search_path`
+
+Azioni:
+- revoke privilegi `anon/authenticated` sulle quattro tabelle amministrative;
+- `search_path = pg_catalog` sulle funzioni trigger amministrative.
+
+Verifica successiva:
+- nessun privilegio tabellare residuo per `anon/authenticated`;
+- gli avvisi `function_search_path_mutable` sono scomparsi;
+- resta solo il notice informativo RLS-without-policy e il warning Auth sulla leaked password protection.
+
+## REGOLA DI CHIUSURA
+Il progetto non va dichiarato "definitivo" solo perché il build passa.
+La chiusura richiede contemporaneamente:
+1. identità societaria definitiva;
+2. conferma operativa MUP;
+3. configurazione Production verificata;
+4. test end-to-end superati;
+5. registro aggiornato.
+
