@@ -417,7 +417,7 @@
       downloadBase64(result.docxBase64, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', result.documentId + '_' + safeClient + '.docx');
 
       if (typeof loadPractices === 'function') await loadPractices();
-      $('mupMsg').textContent = 'MUP generato e salvato nella pratica. Se uno dei due file (in genere il Word) non si è scaricato, apri la pratica e usa "Scarica Word" / "Scarica PDF" per riprenderlo singolarmente. Nota: il nuovo campo "Importo del compenso" non è ancora incluso nel documento generato — arriva nella prossima fase.';
+      $('mupMsg').textContent = 'MUP generato e salvato nella pratica. Se uno dei due file (in genere il Word) non si è scaricato, apri la pratica e usa "Scarica Word" / "Scarica PDF" per riprenderlo singolarmente.';
     } catch (err) {
       $('mupMsg').textContent = err?.message || 'Generazione dei file MUP non riuscita.';
     } finally {
