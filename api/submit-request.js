@@ -229,7 +229,15 @@ export default async function handler(req, res) {
 
   const rate = await consumeRateLimit(req, 'submit-request', 12, 900);
   if (!rate.allowed) {
-    return json(res, 429, { ok: false, error: { code: 'RATE_LIMITED', message: 'Troppe richieste. Riprova tra qualche minuto.' } });
+    return json(res, rate.reason === 'redis_unavailable' ? 503 : 429, {
+      ok: false,
+      error: {
+        code: rate.reason === 'redis_unavailable' ? 'RATE_LIMIT_UNAVAILABLE' : 'RATE_LIMITED',
+        message: rate.reason === 'redis_unavailable'
+          ? 'Servizio temporaneamente non disponibile.'
+          : 'Troppe richieste. Riprova tra qualche minuto.'
+      }
+    });
   }
 
   if (!process.env.RESEND_API_KEY || !process.env.CM_FROM_EMAIL) {
@@ -459,16 +467,30 @@ export default async function handler(req, res) {
       });
     }
 
+    const supabaseUrl = str(process.env.SUPABASE_URL).replace(/\/$/, '');
+    const serviceKey = str(process.env.SUPABASE_SERVICE_ROLE_KEY);
+    if (!supabaseUrl || !serviceKey) {
+      console.error("CM Consulting API - database configuration missing.");
+      return json(res, 503, {
+        ok: false,
+        error: { code: "DATABASE_NOT_CONFIGURED", message: "Servizio momentaneamente non disponibile." }
+      });
+    }
+
+    const dbHeaders = {
+      apikey: serviceKey,
+      "Content-Type": "application/json",
+      Prefer: "return=minimal"
+    };
+    if (!serviceKey.startsWith("sb_secret_")) {
+      dbHeaders.Authorization = `Bearer ${serviceKey}`;
+    }
+
     const requestSave = await fetch(
-      `${str(process.env.SUPABASE_URL).replace(/\/$/, '')}/rest/v1/admin_requests`,
+      `${supabaseUrl}/rest/v1/admin_requests`,
       {
         method: "POST",
-        headers: {
-          apikey: str(process.env.SUPABASE_SERVICE_ROLE_KEY),
-          Authorization: `Bearer ${str(process.env.SUPABASE_SERVICE_ROLE_KEY)}`,
-          "Content-Type": "application/json",
-          Prefer: "return=minimal"
-        },
+        headers: dbHeaders,
         body: JSON.stringify({
           customer_name: customerName || null,
           company: company || null,
