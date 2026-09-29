@@ -597,6 +597,7 @@ body.privacy-modal-open{overflow:hidden}
 
 /* CM CONSULTING — HEADER / NAVIGATION REFINEMENT 2026 */
 .header .links{align-items:center;gap:clamp(16px,1.65vw,24px)}
+@media(max-width:880px){.header .links.open{align-items:stretch}}
 .header .links>a,
 .header .nav-fideiussioni-trigger{
   position:relative;
