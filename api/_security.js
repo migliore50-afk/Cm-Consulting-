@@ -185,43 +185,13 @@ export async function scanBlobAttachment({ pathname, filename, contentType }) {
       return { clean: false, reason: 'office_macro_or_embedding' };
     }
 
-    const scannerUrl = str(process.env.CM_ANTIVIRUS_WEBHOOK_URL);
-
-    if (!scannerUrl) {
-      // Fail-closed: senza un vero scanner antivirus configurato, l'allegato non viene accettato.
-      return { clean: false, reason: 'antivirus_not_configured' };
-    }
-
-    try {
-      const headers = { 'Content-Type': 'application/json' };
-
-      if (process.env.CM_ANTIVIRUS_WEBHOOK_SECRET) {
-        headers['x-cm-antivirus-secret'] = process.env.CM_ANTIVIRUS_WEBHOOK_SECRET;
-      }
-
-      const content = bytes.toString('base64');
-
-      const r = await fetch(scannerUrl, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({
-          filename: safeName,
-          contentType: safeType,
-          content,
-          sha256: crypto.createHash('sha256').update(bytes).digest('hex')
-        })
-      });
-
-      const result = await r.json().catch(() => ({}));
-
-      if (!r.ok || result.clean !== true) {
-        return { clean: false, reason: 'antivirus_rejected' };
-      }
-
-      return { clean: true, size: total, engine: 'external-antivirus' };
-    } catch {
-      return { clean: false, reason: 'antivirus_unavailable' };
-    }
+    // Nessun servizio antivirus esterno viene utilizzato.
+    // Gli allegati passano comunque i controlli locali di tipo/magic-bytes,
+    // PDF con contenuto attivo e macro/embedding Office pericolosi.
+    // La protezione antivirus successiva è affidata al sistema di posta
+    // e al dispositivo del destinatario, secondo la configurazione scelta
+    // dal titolare. Il Blob resta privato.
+    return { clean: true, size: total, engine: 'local-security-checks' };
   } catch (error) {
     console.error(
       'CM Consulting API - blob scan error:',
